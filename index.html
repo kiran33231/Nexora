@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexora — Backend as a Service</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .hero {
+        position: relative;
+        padding: 10rem 0 7rem;
+        text-align: center;
+        overflow: hidden;
+      }
+      .hero-headline {
+        max-width: 900px;
+        margin: 0 auto 1.5rem;
+      }
+      .hero-desc {
+        max-width: 560px;
+        margin: 0 auto 2.5rem;
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+      .hero-ctas {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .hero-note {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .hero-note a {
+        color: var(--accent-light);
+        text-decoration: none;
+      }
+
+      .hero-eyebrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .terminal-preview {
+        max-width: 680px;
+        margin: 4.5rem auto 0;
+        background: #08080f;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        text-align: left;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(124, 58, 237, 0.08);
+      }
+      .terminal-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.25rem;
+        background: #0b0b14;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .terminal-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .terminal-title {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-left: 0.5rem;
+        font-family: var(--font-mono);
+      }
+      .terminal-body {
+        padding: 1.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        line-height: 1.95;
+      }
+
+      .logos-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+        opacity: 0.3;
+        filter: grayscale(1);
+      }
+      .logo-pill {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+      .features-grid-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-top: 1.25rem;
+      }
+      @media (max-width: 860px) {
+        .features-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .features-grid-2col {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 560px) {
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+      }
+      @media (max-width: 700px) {
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* Testimonials */
+      .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+      @media (max-width: 860px) {
+        .testimonials-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .testimonial-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        transition:
+          border-color 0.25s,
+          transform 0.2s;
+      }
+      .testimonial-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+      }
+      .testimonial-quote {
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+        line-height: 1.72;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+      }
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .testimonial-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .testimonial-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+      }
+      .testimonial-role {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.1rem;
+      }
+
+      /* ── Upgraded Bento grid ── */
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1rem;
+      }
+      .bento-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 1.75rem;
+        transition:
+          border-color 0.3s,
+          transform 0.25s,
+          box-shadow 0.3s;
+        overflow: hidden;
+        position: relative;
+      }
+      .bento-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-3px);
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(124, 58, 237, 0.08);
+      }
+      /* Subtle glow on hover per card */
+      .bento-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: var(--radius-xl);
+        opacity: 0;
+        transition: opacity 0.35s;
+        pointer-events: none;
+      }
+      .bento-card:hover::before {
+        opacity: 1;
+      }
+
+      .bento-1 {
+        grid-column: span 7;
+      }
+      .bento-2 {
+        grid-column: span 5;
+      }
+      .bento-3 {
+        grid-column: span 5;
+      }
+      .bento-4 {
+        grid-column: span 7;
+      }
+      .bento-5 {
+        grid-column: span 4;
+      }
+      .bento-6 {
+        grid-column: span 4;
+      }
+      .bento-7 {
+        grid-column: span 4;
+      }
+
+      @media (max-width: 960px) {
+        .bento-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .bento-1,
+        .bento-2,
+        .bento-3,
+        .bento-4,
+        .bento-5,
+        .bento-6,
+        .bento-7 {
+          grid-column: span 1;
+        }
+      }
+      @media (max-width: 560px) {
+        .bento-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Card label tag inside bento */
+      .bento-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      .bento-title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: var(--text-primary);
+        margin-bottom: 0.55rem;
+        line-height: 1.25;
+      }
+      .bento-desc {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.72;
+      }
+
+      /* ── Mini code block inside bento ── */
+      .bento-code {
+        background: #07070e;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.1rem;
+        font-family: var(--font-mono);
+        font-size: 0.73rem;
+        line-height: 1.85;
+        color: var(--text-secondary);
+        margin-top: 1.25rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .bento-code::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(124, 58, 237, 0.5),
+          transparent
+        );
+      }
+
+      /* ── Stat pill row ── */
+      .bento-stat-row {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .bento-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 0.6rem 1rem;
+        flex: 1;
+        min-width: 70px;
+      }
+      .bento-stat-val {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+      .bento-stat-lbl {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-align: center;
+        letter-spacing: 0.03em;
+      }
+
+      /* ── Badge pill row ── */
+      .bento-pills {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+      .bento-pill {
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 0.22rem 0.65rem;
+        border-radius: 999px;
+        border: 1px solid;
+        letter-spacing: 0.01em;
+      }
+      .pill-v {
+        color: #a78bfa;
+        border-color: rgba(167, 139, 250, 0.25);
+        background: rgba(167, 139, 250, 0.08);
+      }
+      .pill-t {
+        color: #2dd4bf;
+        border-color: rgba(45, 212, 191, 0.25);
+        background: rgba(45, 212, 191, 0.08);
+      }
+      .pill-a {
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.25);
+        background: rgba(251, 191, 36, 0.08);
+      }
+      .pill-g {
+        color: #60a5fa;
+        border-color: rgba(96, 165, 250, 0.25);
+        background: rgba(96, 165, 250, 0.08);
+      }
+      .pill-r {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.25);
+        background: rgba(248, 113, 113, 0.08);
+      }
+
+      /* ── Live pulse indicator ── */
+      .live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--green);
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .live-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse-dot 1.8s infinite;
+      }
+
+      /* ── Auth providers visual ── */
+      .auth-providers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+      }
+      .auth-provider {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.35rem 0.65rem;
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .auth-provider:hover {
+        border-color: var(--border-hover);
+        color: var(--text-primary);
+      }
+
+      /* ── Realtime messages animation ── */
+      .rt-messages {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .rt-msg {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.73rem;
+        font-family: var(--font-mono);
+        color: var(--text-secondary);
+        padding: 0.45rem 0.75rem;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-sm);
+        animation: rt-slide-in 0.4s ease both;
+      }
+      .rt-msg:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .rt-msg:nth-child(2) {
+        animation-delay: 0.5s;
+      }
+      .rt-msg:nth-child(3) {
+        animation-delay: 0.9s;
+      }
+      @keyframes rt-slide-in {
+        from {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .rt-event-type {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.1rem 0.4rem;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+      }
+      .rt-insert {
+        background: rgba(52, 211, 153, 0.18);
+        color: var(--green);
+      }
+      .rt-update {
+        background: rgba(96, 165, 250, 0.18);
+        color: var(--blue);
+      }
+      .rt-delete {
+        background: rgba(248, 113, 113, 0.18);
+        color: var(--red);
+      }
+
+      /* ── Vector similarity visual ── */
+      .vector-bars {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .vector-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-size: 0.72rem;
+        font-family: var(--font-mono);
+      }
+      .vector-bar-label {
+        color: var(--text-muted);
+        width: 110px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .vector-bar-track {
+        flex: 1;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .vector-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .vector-bar-score {
+        color: var(--accent-light);
+        width: 36px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* ── Storage visual ── */
+      .storage-files {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .storage-file {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.4rem 0.65rem;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-sm);
+        font-size: 0.73rem;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+      }
+      .storage-file-icon {
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+      .storage-file-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .storage-file-size {
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .storage-cdn-badge {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--teal);
+        background: rgba(45, 212, 191, 0.1);
+        border: 1px solid rgba(45, 212, 191, 0.2);
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+
+      /* ── Region map dots ── */
+      .region-map {
+        position: relative;
+        height: 80px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'%3E%3Cpath d='M70 80 Q80 60 100 70 L130 65 Q150 55 165 70 L175 75 Q195 65 220 75 L240 70 Q260 55 285 65 L310 70 Q330 60 360 55 L400 60 Q430 50 460 55 L490 60 Q510 55 530 65 L545 60 Q560 55 570 65 L575 80 Q580 100 570 110 L565 130 Q570 150 555 160 L540 170 Q530 185 515 180 L495 175 Q475 185 460 180 L440 175 Q420 185 400 175 L375 165 Q355 175 335 165 L310 155 Q285 165 265 155 L240 145 Q220 160 195 145 L170 140 Q150 155 130 145 L110 135 Q85 145 70 130 Z' fill='rgba(124,58,237,0.06)' stroke='rgba(124,58,237,0.12)' stroke-width='1'/%3E%3C/svg%3E")
+          center/cover no-repeat;
+        margin-top: 1rem;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+      }
+      .region-dot {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--teal);
+        box-shadow: 0 0 8px var(--teal);
+        animation: pulse-dot 2s infinite;
+        transform: translate(-50%, -50%);
+      }
+      .region-dot::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 1px solid rgba(45, 212, 191, 0.3);
+        animation: ripple 2s infinite;
+      }
+      @keyframes ripple {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(2.5);
+          opacity: 0;
+        }
+      }
+
+      /* ── Section divider line ── */
+      .bento-accent-line {
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent) 0%, var(--teal) 100%);
+        border-radius: 1px;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="announcement-bar">
+      ✦ Nexora v2.0 is live — Real-time engine rebuilt, pgvector + branching now
+      in beta.
+      <a href="changelog.html">See what's new →</a>
+    </div>
+
+    <nav>
+      <a href="index.html" class="nav-logo">
+        <!-- <span class="nav-logo-mark">N</span> -->
+        <img src="./logo.png" alt="" width="55" height="40" />
+        <span class="nav-logo-text">Nexora</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign in</a>
+        <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-grid-bg"></div>
+      <div class="hero-radial"></div>
+      <div class="hero-orbs">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+      </div>
+      <div class="container" style="position: relative; z-index: 1">
+        <div class="hero-eyebrow animate-fade-up">
+          <span class="glow-dot"></span>
+          <span class="label-tag">Now in general availability</span>
+        </div>
+        <div class="hero-headline animate-fade-up animate-delay-1">
+          <h1 class="display-title">
+            Ship your backend<br />
+            <span class="gradient-text">in minutes, not months</span>
+          </h1>
+        </div>
+        <p class="hero-desc animate-fade-up animate-delay-2">
+          Nexora gives you a Postgres database, instant APIs, authentication,
+          realtime subscriptions, edge functions, and vector search — all in one
+          unified platform.
+        </p>
+        <div class="hero-ctas animate-fade-up animate-delay-3">
+          <a href="signup.html" class="btn btn-primary btn-xl"
+            >Start building free</a
+          >
+          <a href="docs.html" class="btn btn-outline btn-xl">Read the docs</a>
+        </div>
+        <p class="hero-note animate-fade-up animate-delay-4">
+          Free tier includes 500MB database · 2GB bandwidth ·
+          <a href="pricing.html">Compare plans</a>
+        </p>
+
+        <div class="terminal-preview animate-fade-up animate-delay-4">
+          <div class="terminal-header">
+            <span class="terminal-dot" style="background: #ff5f56"></span>
+            <span class="terminal-dot" style="background: #ffbd2e"></span>
+            <span class="terminal-dot" style="background: #27c93f"></span>
+            <span class="terminal-title">nexora-client.ts</span>
+          </div>
+          <div class="terminal-body">
+            <span class="code-comment"
+              >// Install: npm install @nexora/client</span
+            ><br />
+            <span class="code-keyword">import</span> {
+            <span class="code-fn">createClient</span> }
+            <span class="code-keyword">from</span>
+            <span class="code-string">'@nexora/client'</span><br />
+            <br />
+            <span class="code-keyword">const</span> nexora =
+            <span class="code-fn">createClient</span>(<span class="code-string"
+              >'https://xyz.nexora.io'</span
+            >, <span class="code-string">'anon-key'</span>)<br />
+            <br />
+            <span class="code-comment"
+              >// Fully typed queries — no schema needed</span
+            ><br />
+            <span class="code-keyword">const</span> { data } =
+            <span class="code-keyword">await</span> nexora<br />
+            &nbsp;&nbsp;.<span class="code-fn">from</span>(<span
+              class="code-string"
+              >'users'</span
+            >)<br />
+            &nbsp;&nbsp;.<span class="code-fn">select</span>(<span
+              class="code-string"
+              >'id, name, email, avatar_url'</span
+            >)<br />
+            &nbsp;&nbsp;.<span class="code-fn">eq</span>(<span
+              class="code-string"
+              >'active'</span
+            >, <span class="code-keyword">true</span>)<br />
+            &nbsp;&nbsp;.<span class="code-fn">order</span>(<span
+              class="code-string"
+              >'created_at'</span
+            >, { ascending: <span class="code-keyword">false</span> })<br />
+            &nbsp;&nbsp;.<span class="code-fn">limit</span>(<span
+              class="code-num"
+              >20</span
+            >)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section
+      class="section-sm"
+      style="
+        border-top: 1px solid var(--border-subtle);
+        border-bottom: 1px solid var(--border-subtle);
+      "
+    >
+      <div class="container">
+        <p
+          style="
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+          "
+        >
+          Trusted by teams building the future
+        </p>
+        <div class="logos-row">
+          <span class="logo-pill">Veritas</span>
+          <span class="logo-pill">Monolith</span>
+          <span class="logo-pill">Driftwave</span>
+          <span class="logo-pill">Arcana</span>
+          <span class="logo-pill">Lunra AI</span>
+          <span class="logo-pill">Crestline</span>
+          <span class="logo-pill">Polarix</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section">
+      <div class="container">
+        <div class="stats-grid">
+          <div
+            class="card stat-item"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--bg-card) 0%,
+                rgba(124, 58, 237, 0.06) 100%
+              );
+            "
+          >
+            <div class="stat-num gradient-text">48k+</div>
+            <div class="stat-label">Projects launched</div>
+          </div>
+          <div
+            class="card stat-item"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--bg-card) 0%,
+                rgba(16, 185, 129, 0.06) 100%
+              );
+            "
+          >
+            <div class="stat-num" style="color: var(--green)">99.99%</div>
+            <div class="stat-label">Uptime SLA</div>
+          </div>
+          <div
+            class="card stat-item"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--bg-card) 0%,
+                rgba(45, 212, 191, 0.06) 100%
+              );
+            "
+          >
+            <div class="stat-num" style="color: var(--teal)">&lt;40ms</div>
+            <div class="stat-label">Global avg latency</div>
+          </div>
+          <div
+            class="card stat-item"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--bg-card) 0%,
+                rgba(245, 158, 11, 0.06) 100%
+              );
+            "
+          >
+            <div class="stat-num" style="color: var(--amber)">18</div>
+            <div class="stat-label">Edge regions</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bento Features -->
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 3.5rem">
+          <span class="label-tag">Everything you need</span>
+          <h2 class="section-title">One platform. Zero lock-in.</h2>
+          <p
+            class="section-subtitle"
+            style="max-width: 520px; margin: 0.75rem auto 0"
+          >
+            Replace five services with one. Built on open-source, deployable
+            anywhere, fully self-hostable.
+          </p>
+        </div>
+
+        <div class="bento-grid">
+          <!-- ── CARD 1: Postgres (wide, hero card) ── -->
+          <div
+            class="bento-card bento-1"
+            style="
+              background: linear-gradient(
+                145deg,
+                #0d0620 0%,
+                #100c22 40%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(124, 58, 237, 0.2);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 220px;
+                height: 220px;
+                background: radial-gradient(
+                  circle at top right,
+                  rgba(124, 58, 237, 0.12),
+                  transparent 70%
+                );
+                pointer-events: none;
+                border-radius: var(--radius-xl);
+              "
+            ></div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                margin-bottom: 1rem;
+              "
+            >
+              <div
+                class="feature-icon"
+                style="
+                  margin-bottom: 0;
+                  flex-shrink: 0;
+                  background: linear-gradient(
+                    135deg,
+                    rgba(124, 58, 237, 0.2),
+                    rgba(167, 139, 250, 0.1)
+                  );
+                  border-color: rgba(124, 58, 237, 0.3);
+                  font-size: 1.1rem;
+                "
+              >
+                🗄
+              </div>
+              <div>
+                <div class="bento-label">Database</div>
+              </div>
+              <div style="margin-left: auto">
+                <span class="live-badge"
+                  ><span class="live-dot"></span>Live</span
+                >
+              </div>
+            </div>
+            <h3 class="bento-title" style="font-size: 1.35rem">
+              Postgres.<br /><span style="color: var(--accent-light)"
+                >Fully managed.</span
+              >
+            </h3>
+            <p class="bento-desc">
+              Full Postgres with row-level security, every extension,
+              auto-generated REST + GraphQL APIs, and real-time change streams.
+              No ORM needed — or use your favorite one.
+            </p>
+            <div class="bento-code">
+              <span style="color: var(--text-muted)"
+                >-- Row-level security policy</span
+              ><br />
+              <span style="color: #a78bfa">CREATE POLICY</span>
+              <span style="color: #2dd4bf">"users_own_data"</span>
+              <span style="color: #a78bfa">ON</span> profiles<br />
+              &nbsp;&nbsp;<span style="color: #a78bfa">USING</span> (auth.<span
+                style="color: #60a5fa"
+                >uid</span
+              >() = user_id);<br />
+              <br />
+              <span style="color: var(--text-muted)"
+                >-- Instant typed client query</span
+              ><br />
+              <span style="color: #a78bfa">const</span> { data } =
+              <span style="color: #a78bfa">await</span> nexora.<span
+                style="color: #60a5fa"
+                >from</span
+              >(<span style="color: #2dd4bf">'profiles'</span>).<span
+                style="color: #60a5fa"
+                >select</span
+              >(<span style="color: #2dd4bf">'*'</span>)
+            </div>
+            <div class="bento-pills" style="margin-top: 1rem">
+              <span class="bento-pill pill-v">PostgreSQL 16</span>
+              <span class="bento-pill pill-t">RLS Policies</span>
+              <span class="bento-pill pill-v">pgvector</span>
+              <span class="bento-pill pill-g">GraphQL</span>
+              <span class="bento-pill pill-t">REST API</span>
+            </div>
+          </div>
+
+          <!-- ── CARD 2: Auth & Identity ── -->
+          <div
+            class="bento-card bento-2"
+            style="
+              background: linear-gradient(
+                145deg,
+                #0a1220 0%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(96, 165, 250, 0.15);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 140px;
+                height: 140px;
+                background: radial-gradient(
+                  circle at top right,
+                  rgba(96, 165, 250, 0.08),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div
+              class="feature-icon"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(96, 165, 250, 0.15),
+                  rgba(96, 165, 250, 0.05)
+                );
+                border-color: rgba(96, 165, 250, 0.2);
+                margin-bottom: 0.75rem;
+              "
+            >
+              🔐
+            </div>
+            <div class="bento-label">Auth &amp; Identity</div>
+            <h3 class="bento-title">Auth that<br />just works.</h3>
+            <p class="bento-desc" style="font-size: 0.825rem">
+              Email, magic link, OAuth with 20+ providers, MFA, and SAML for
+              enterprise SSO.
+            </p>
+            <div class="auth-providers">
+              <span class="auth-provider">𝔾 Google</span>
+              <span class="auth-provider">⌥ GitHub</span>
+              <span class="auth-provider">🐦 Twitter</span>
+              <span class="auth-provider">📧 Magic Link</span>
+              <span class="auth-provider">🔑 SAML SSO</span>
+              <span class="auth-provider">📱 MFA / TOTP</span>
+            </div>
+          </div>
+
+          <!-- ── CARD 3: Realtime ── -->
+          <div
+            class="bento-card bento-3"
+            style="
+              background: linear-gradient(
+                145deg,
+                #061a14 0%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(45, 212, 191, 0.15);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 160px;
+                height: 160px;
+                background: radial-gradient(
+                  circle at top left,
+                  rgba(45, 212, 191, 0.07),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <div
+                class="feature-icon"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(45, 212, 191, 0.15),
+                    rgba(45, 212, 191, 0.05)
+                  );
+                  border-color: rgba(45, 212, 191, 0.2);
+                  margin-bottom: 0;
+                "
+              >
+                🔄
+              </div>
+              <span class="live-badge" style="margin-left: auto"
+                ><span class="live-dot"></span>Streaming</span
+              >
+            </div>
+            <div class="bento-label">Realtime</div>
+            <h3 class="bento-title">Live data,<br />everywhere.</h3>
+            <p class="bento-desc" style="font-size: 0.825rem">
+              Subscribe to DB changes, broadcast to channels, track presence.
+              WebSocket-native with 500k concurrent connections.
+            </p>
+            <div class="rt-messages">
+              <div class="rt-msg">
+                <span class="rt-event-type rt-insert">INSERT</span
+                ><span style="color: var(--text-muted)">messages</span
+                ><span
+                  style="
+                    margin-left: auto;
+                    color: var(--green);
+                    font-size: 0.65rem;
+                  "
+                  >just now</span
+                >
+              </div>
+              <div class="rt-msg">
+                <span class="rt-event-type rt-update">UPDATE</span
+                ><span style="color: var(--text-muted)">profiles</span
+                ><span
+                  style="
+                    margin-left: auto;
+                    color: var(--text-muted);
+                    font-size: 0.65rem;
+                  "
+                  >2s ago</span
+                >
+              </div>
+              <div class="rt-msg">
+                <span class="rt-event-type rt-delete">DELETE</span
+                ><span style="color: var(--text-muted)">sessions</span
+                ><span
+                  style="
+                    margin-left: auto;
+                    color: var(--text-muted);
+                    font-size: 0.65rem;
+                  "
+                  >5s ago</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ── CARD 4: Edge Functions (wide) ── -->
+          <div
+            class="bento-card bento-4"
+            style="
+              background: linear-gradient(
+                145deg,
+                #060e1a 0%,
+                #091520 40%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(45, 212, 191, 0.18);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(
+                  circle at bottom right,
+                  rgba(45, 212, 191, 0.1),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+              "
+            >
+              <div
+                class="feature-icon"
+                style="
+                  margin-bottom: 0;
+                  flex-shrink: 0;
+                  background: linear-gradient(
+                    135deg,
+                    rgba(45, 212, 191, 0.18),
+                    rgba(45, 212, 191, 0.05)
+                  );
+                  border-color: rgba(45, 212, 191, 0.25);
+                  font-size: 1.1rem;
+                "
+              >
+                ⚡
+              </div>
+              <div>
+                <div class="bento-label">Edge Functions</div>
+              </div>
+            </div>
+            <h3 class="bento-title" style="font-size: 1.3rem">
+              Serverless at the edge.<br /><span
+                style="color: var(--teal); font-size: 1rem"
+                >18 global regions.</span
+              >
+            </h3>
+            <p class="bento-desc">
+              Deploy TypeScript serverless functions to 18 global regions.
+              Sub-5ms cold starts, Deno runtime, cron jobs, and webhook handling
+              — right alongside your database.
+            </p>
+            <div
+              style="
+                display: flex;
+                gap: 1rem;
+                align-items: flex-start;
+                margin-top: 1.25rem;
+                flex-wrap: wrap;
+              "
+            >
+              <div
+                class="bento-code"
+                style="margin-top: 0; flex: 1; min-width: 200px"
+              >
+                <span style="color: var(--text-muted)"
+                  >// functions/send-welcome.ts</span
+                ><br />
+                <span style="color: #a78bfa">serve</span>(<span
+                  style="color: #a78bfa"
+                  >async</span
+                >
+                (req) => {<br />
+                &nbsp;&nbsp;<span style="color: #a78bfa">const</span> { email }
+                = <span style="color: #a78bfa">await</span> req.<span
+                  style="color: #60a5fa"
+                  >json</span
+                >()<br />
+                &nbsp;&nbsp;<span style="color: #a78bfa">await</span>
+                <span style="color: #60a5fa">sendEmail</span>({ to: email })<br />
+                &nbsp;&nbsp;<span style="color: #a78bfa">return new</span>
+                <span style="color: #2dd4bf">Response</span>(<span
+                  style="color: #2dd4bf"
+                  >'OK'</span
+                >)<br />
+                })
+              </div>
+              <div
+                class="bento-stat-row"
+                style="
+                  flex-direction: column;
+                  margin-top: 0;
+                  gap: 0.5rem;
+                  min-width: 90px;
+                "
+              >
+                <div class="bento-stat">
+                  <div class="bento-stat-val" style="color: var(--teal)">
+                    &lt;5ms
+                  </div>
+                  <div class="bento-stat-lbl">Cold start</div>
+                </div>
+                <div class="bento-stat">
+                  <div
+                    class="bento-stat-val"
+                    style="color: var(--accent-light)"
+                  >
+                    18
+                  </div>
+                  <div class="bento-stat-lbl">Regions</div>
+                </div>
+              </div>
+            </div>
+            <div class="bento-pills" style="margin-top: 1rem">
+              <span class="bento-pill pill-t">Deno Runtime</span>
+              <span class="bento-pill pill-g">TypeScript</span>
+              <span class="bento-pill pill-a">Cron Jobs</span>
+              <span class="bento-pill pill-t">Webhooks</span>
+            </div>
+          </div>
+
+          <!-- ── CARD 5: Vector Search ── -->
+          <div
+            class="bento-card bento-5"
+            style="
+              background: linear-gradient(
+                145deg,
+                #0e1020 0%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(167, 139, 250, 0.15);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 120px;
+                height: 120px;
+                background: radial-gradient(
+                  circle at top right,
+                  rgba(167, 139, 250, 0.1),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div
+              class="feature-icon"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(167, 139, 250, 0.15),
+                  rgba(167, 139, 250, 0.05)
+                );
+                border-color: rgba(167, 139, 250, 0.2);
+                margin-bottom: 0.75rem;
+              "
+            >
+              🧠
+            </div>
+            <div class="bento-label">Vector Search</div>
+            <h3 class="bento-title">AI-native<br />in Postgres.</h3>
+            <p class="bento-desc" style="font-size: 0.82rem">
+              pgvector built-in. Store embeddings, run similarity search, build
+              AI-powered features — no separate vector DB required.
+            </p>
+            <div class="vector-bars">
+              <div class="vector-bar-row">
+                <span class="vector-bar-label">"dark fantasy art"</span>
+                <div class="vector-bar-track">
+                  <div
+                    class="vector-bar-fill"
+                    style="
+                      width: 92%;
+                      background: linear-gradient(
+                        90deg,
+                        var(--accent),
+                        var(--accent-light)
+                      );
+                    "
+                  ></div>
+                </div>
+                <span class="vector-bar-score">0.92</span>
+              </div>
+              <div class="vector-bar-row">
+                <span class="vector-bar-label">"gothic illustration"</span>
+                <div class="vector-bar-track">
+                  <div
+                    class="vector-bar-fill"
+                    style="
+                      width: 78%;
+                      background: linear-gradient(
+                        90deg,
+                        var(--accent-mid),
+                        var(--accent-light)
+                      );
+                    "
+                  ></div>
+                </div>
+                <span class="vector-bar-score">0.78</span>
+              </div>
+              <div class="vector-bar-row">
+                <span class="vector-bar-label">"surrealist painting"</span>
+                <div class="vector-bar-track">
+                  <div
+                    class="vector-bar-fill"
+                    style="
+                      width: 61%;
+                      background: linear-gradient(
+                        90deg,
+                        rgba(124, 58, 237, 0.6),
+                        var(--accent-light)
+                      );
+                    "
+                  ></div>
+                </div>
+                <span class="vector-bar-score">0.61</span>
+              </div>
+            </div>
+            <div class="bento-pills" style="margin-top: 1rem">
+              <span class="bento-pill pill-v">pgvector</span>
+              <span class="bento-pill pill-g">HNSW Index</span>
+              <span class="bento-pill pill-v">1536-dim</span>
+            </div>
+          </div>
+
+          <!-- ── CARD 6: Object Storage ── -->
+          <div
+            class="bento-card bento-6"
+            style="
+              background: linear-gradient(
+                145deg,
+                #0a1808 0%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(52, 211, 153, 0.13);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 130px;
+                height: 130px;
+                background: radial-gradient(
+                  circle at bottom left,
+                  rgba(52, 211, 153, 0.08),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div
+              class="feature-icon"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(52, 211, 153, 0.14),
+                  rgba(52, 211, 153, 0.04)
+                );
+                border-color: rgba(52, 211, 153, 0.2);
+                margin-bottom: 0.75rem;
+              "
+            >
+              🪣
+            </div>
+            <div class="bento-label">Object Storage</div>
+            <h3 class="bento-title">S3-compatible.<br />CDN-powered.</h3>
+            <p class="bento-desc" style="font-size: 0.82rem">
+              Global CDN, on-the-fly image transforms, and access policies tied
+              directly to your Postgres RLS.
+            </p>
+            <div class="storage-files">
+              <div class="storage-file">
+                <span class="storage-file-icon">🖼</span
+                ><span class="storage-file-name">avatar-001.webp</span
+                ><span class="storage-cdn-badge">CDN</span
+                ><span class="storage-file-size">84 KB</span>
+              </div>
+              <div class="storage-file">
+                <span class="storage-file-icon">📄</span
+                ><span class="storage-file-name">report-q3.pdf</span
+                ><span class="storage-cdn-badge">CDN</span
+                ><span class="storage-file-size">1.2 MB</span>
+              </div>
+              <div class="storage-file">
+                <span class="storage-file-icon">🎥</span
+                ><span class="storage-file-name">intro-video.mp4</span
+                ><span class="storage-cdn-badge">CDN</span
+                ><span class="storage-file-size">24 MB</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── CARD 7: Global infra stat strip ── -->
+          <div
+            class="bento-card bento-7"
+            style="
+              background: linear-gradient(
+                145deg,
+                #0c0820 0%,
+                var(--bg-card) 100%
+              );
+              border-color: rgba(251, 191, 36, 0.13);
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 110px;
+                height: 110px;
+                background: radial-gradient(
+                  circle at top right,
+                  rgba(251, 191, 36, 0.07),
+                  transparent 70%
+                );
+                pointer-events: none;
+              "
+            ></div>
+            <div class="bento-label">Global Infrastructure</div>
+            <h3
+              class="bento-title"
+              style="font-size: 1.05rem; margin-bottom: 1rem"
+            >
+              Built for scale<br />from day one.
+            </h3>
+            <div
+              class="bento-stat-row"
+              style="flex-direction: column; gap: 0.6rem"
+            >
+              <div
+                class="bento-stat"
+                style="
+                  flex-direction: row;
+                  justify-content: space-between;
+                  gap: 0;
+                "
+              >
+                <span class="bento-stat-lbl" style="text-align: left"
+                  >Uptime SLA</span
+                >
+                <span
+                  class="bento-stat-val"
+                  style="font-size: 0.95rem; color: var(--green)"
+                  >99.99%</span
+                >
+              </div>
+              <div
+                class="bento-stat"
+                style="
+                  flex-direction: row;
+                  justify-content: space-between;
+                  gap: 0;
+                "
+              >
+                <span class="bento-stat-lbl" style="text-align: left"
+                  >Global latency</span
+                >
+                <span
+                  class="bento-stat-val"
+                  style="font-size: 0.95rem; color: var(--teal)"
+                  >&lt;40ms</span
+                >
+              </div>
+              <div
+                class="bento-stat"
+                style="
+                  flex-direction: row;
+                  justify-content: space-between;
+                  gap: 0;
+                "
+              >
+                <span class="bento-stat-lbl" style="text-align: left"
+                  >Concurrent conns</span
+                >
+                <span
+                  class="bento-stat-val"
+                  style="font-size: 0.95rem; color: var(--accent-light)"
+                  >500k</span
+                >
+              </div>
+              <div
+                class="bento-stat"
+                style="
+                  flex-direction: row;
+                  justify-content: space-between;
+                  gap: 0;
+                "
+              >
+                <span class="bento-stat-lbl" style="text-align: left"
+                  >Edge regions</span
+                >
+                <span
+                  class="bento-stat-val"
+                  style="font-size: 0.95rem; color: var(--amber)"
+                  >18</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2.5rem">
+          <a href="features.html" class="btn btn-outline btn-lg"
+            >Explore all features →</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section" style="background: var(--bg-surface)">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 3.5rem">
+          <span class="label-tag">Loved by developers</span>
+          <h2 class="section-title">Built by devs, for devs</h2>
+          <p class="section-subtitle">
+            Hear from teams who replaced their entire backend stack with Nexora.
+          </p>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <p class="testimonial-quote">
+              "We migrated from a custom Express + Firebase setup in one
+              weekend. The RLS policies replaced 400 lines of authorization
+              middleware."
+            </p>
+            <div class="testimonial-author">
+              <div
+                class="testimonial-avatar"
+                style="background: linear-gradient(135deg, #7c3aed, #2dd4bf)"
+              >
+                MK
+              </div>
+              <div>
+                <div class="testimonial-name">Maya Krishnan</div>
+                <div class="testimonial-role">CTO, Driftwave</div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="testimonial-card"
+            style="border-color: rgba(124, 58, 237, 0.25)"
+          >
+            <p class="testimonial-quote">
+              "The realtime subscriptions work exactly as advertised — sub-100ms
+              globally, no babysitting websocket connections, just works."
+            </p>
+            <div class="testimonial-author">
+              <div
+                class="testimonial-avatar"
+                style="background: linear-gradient(135deg, #0891b2, #7c3aed)"
+              >
+                JT
+              </div>
+              <div>
+                <div class="testimonial-name">Jake Torres</div>
+                <div class="testimonial-role">Founding Engineer, Polarix</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <p class="testimonial-quote">
+              "We use vector search for our AI recommendations engine. Having
+              embeddings sit next to relational data in Postgres is a
+              game-changer."
+            </p>
+            <div class="testimonial-author">
+              <div
+                class="testimonial-avatar"
+                style="background: linear-gradient(135deg, #f59e0b, #ef4444)"
+              >
+                SW
+              </div>
+              <div>
+                <div class="testimonial-name">Sofia Williams</div>
+                <div class="testimonial-role">Lead Engineer, Lunra AI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Band -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <span class="label-tag" style="margin-bottom: 1.5rem"
+            >Get started today</span
+          >
+          <h2 class="section-title" style="margin-bottom: 0.75rem">
+            Ready to ship faster?
+          </h2>
+          <p class="section-subtitle" style="margin-bottom: 2.5rem">
+            Join 48,000+ developers building on Nexora. No credit card required.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 0.75rem;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a href="signup.html" class="btn btn-primary btn-xl"
+              >Create free project</a
+            >
+            <a href="#" class="btn btn-outline btn-xl">Talk to sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="index.html" class="nav-logo" style="display: inline-flex">
+              <span
+                class="nav-logo-mark"
+                style="width: 28px; height: 28px; font-size: 0.78rem"
+                >N</span
+              >
+              <span class="nav-logo-text">Nexora</span>
+            </a>
+            <p>
+              Backend infrastructure for ambitious teams. Postgres, auth,
+              storage, and functions — all in one.
+            </p>
+          </div>
+          <div class="footer-col">
+            <h4>Product</h4>
+            <ul>
+              <li><a href="features.html">Features</a></li>
+              <li><a href="pricing.html">Pricing</a></li>
+              <li><a href="changelog.html">Changelog</a></li>
+              <li><a href="#">Status</a></li>
+              <li><a href="#">Roadmap</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Developers</h4>
+            <ul>
+              <li><a href="docs.html">Documentation</a></li>
+              <li><a href="#">API Reference</a></li>
+              <li><a href="#">CLI</a></li>
+              <li><a href="#">GitHub</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Security</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <ul>
+              <li><a href="#">Privacy</a></li>
+              <li><a href="#">Terms</a></li>
+              <li><a href="#">DPA</a></li>
+              <li><a href="#">SOC 2</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2025 Nexora, Inc.</span>
+          <div style="display: flex; gap: 1.25rem">
+            <a
+              href="#"
+              style="
+                color: var(--text-muted);
+                text-decoration: none;
+                transition: color 0.2s;
+              "
+              onmouseover="this.style.color = 'var(--text-primary)'"
+              onmouseout="this.style.color = 'var(--text-muted)'"
+              >X (Twitter)</a
+            >
+            <a
+              href="#"
+              style="
+                color: var(--text-muted);
+                text-decoration: none;
+                transition: color 0.2s;
+              "
+              onmouseover="this.style.color = 'var(--text-primary)'"
+              onmouseout="this.style.color = 'var(--text-muted)'"
+              >GitHub</a
+            >
+            <a
+              href="#"
+              style="
+                color: var(--text-muted);
+                text-decoration: none;
+                transition: color 0.2s;
+              "
+              onmouseover="this.style.color = 'var(--text-primary)'"
+              onmouseout="this.style.color = 'var(--text-muted)'"
+              >Discord</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,2820 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Nexora</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background: var(--bg-base);
+      }
+
+      /* ── Dashboard Shell ── */
+      .dash-shell {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        background: var(--bg-surface);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        padding: 0;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 1.25rem 1.25rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        text-decoration: none;
+      }
+      .sidebar-logo-text {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+      }
+      .sidebar-section {
+        padding: 1rem 0.75rem 0.5rem;
+      }
+      .sidebar-section-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 0 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.48rem 0.75rem;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 0.845rem;
+        color: var(--text-secondary);
+        transition:
+          background 0.15s,
+          color 0.15s;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--font-body);
+      }
+      .sidebar-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+      }
+      .sidebar-item.active {
+        background: rgba(124, 58, 237, 0.12);
+        color: var(--accent-bright);
+      }
+      .sidebar-item svg {
+        flex-shrink: 0;
+        opacity: 0.7;
+      }
+      .sidebar-item.active svg {
+        opacity: 1;
+      }
+
+      .sidebar-bottom {
+        margin-top: auto;
+        padding: 0.75rem;
+        border-top: 1px solid var(--border-subtle);
+      }
+      .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.5rem 0.6rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .user-chip:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .user-name {
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      .user-email {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      /* ── Main Content ── */
+      .dash-main {
+        margin-left: 240px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .dash-topbar {
+        height: 56px;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        background: rgba(6, 6, 9, 0.8);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      .dash-topbar-title {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+      }
+      .dash-content {
+        padding: 2.5rem 2rem;
+        max-width: 1100px;
+      }
+
+      /* ── Org selector ── */
+      .org-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+      .org-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.45rem 0.85rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        transition: border-color 0.2s;
+      }
+      .org-selector:hover {
+        border-color: var(--border-hover);
+      }
+
+      /* ── Empty State ── */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 5rem 2rem;
+        border: 1px dashed rgba(120, 60, 220, 0.2);
+        border-radius: var(--radius-xl);
+        background: rgba(124, 58, 237, 0.03);
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .empty-state:hover {
+        border-color: rgba(120, 60, 220, 0.35);
+        background: rgba(124, 58, 237, 0.06);
+      }
+      .empty-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: var(--radius-xl);
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── Project cards ── */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 1rem;
+      }
+      .project-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.4rem;
+        text-decoration: none;
+        display: block;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.2s;
+        cursor: pointer;
+      }
+      .project-card:hover {
+        border-color: var(--border-hover);
+        background: var(--bg-card-hover);
+        transform: translateY(-1px);
+      }
+      .project-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 0.9rem;
+      }
+      .project-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+      .project-status {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.73rem;
+        color: var(--green);
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        animation: pulse-dot 2s infinite;
+      }
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .project-name {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+      .project-region {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+      .project-stats {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-subtle);
+      }
+      .project-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+      .project-stat-val {
+        font-size: 0.825rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .project-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      /* ── New project card ── */
+      .new-project-card {
+        background: transparent;
+        border: 1px dashed rgba(120, 60, 220, 0.25);
+        border-radius: var(--radius-lg);
+        padding: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-family: var(--font-body);
+        min-height: 160px;
+      }
+      .new-project-card:hover {
+        border-color: rgba(120, 60, 220, 0.5);
+        background: rgba(124, 58, 237, 0.05);
+        color: var(--text-secondary);
+      }
+      .new-project-plus {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, 0.15);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--accent-light);
+      }
+
+      /* ── Modal ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px;
+        box-shadow:
+          0 32px 80px rgba(0, 0, 0, 0.7),
+          0 0 0 1px rgba(120, 60, 220, 0.15);
+        transform: scale(0.95) translateY(10px);
+        transition:
+          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.2s;
+        opacity: 0;
+      }
+      .modal-overlay.open .modal {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+      .modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
+      .modal-title {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+      }
+      .modal-subtitle {
+        font-size: 0.825rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
+      .modal-close {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 1rem;
+        transition: background 0.15s;
+      }
+      .modal-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+      }
+
+      .form-group {
+        margin-bottom: 1.1rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+      }
+      .form-input {
+        width: 100%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 0.9rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .form-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      }
+      .form-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-select {
+        width: 100%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 0.9rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234e4870' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+      }
+      .form-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      }
+
+      .template-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .template-option {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.75rem;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .template-option:hover {
+        border-color: var(--border-hover);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .template-option.selected {
+        border-color: var(--accent);
+        background: rgba(124, 58, 237, 0.1);
+      }
+      .template-emoji {
+        font-size: 1.1rem;
+      }
+      .template-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+      .template-option.selected .template-label {
+        color: var(--accent-bright);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 1.5rem;
+      }
+      .modal-actions .btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.7rem;
+      }
+
+      /* ── Spinner for creating ── */
+      .btn-spinner {
+        display: none;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── Stats bar ── */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 800px) {
+        .stats-row {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.1rem 1.25rem;
+      }
+      .stat-card-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+      .stat-card-val {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+      }
+      .stat-card-sub {
+        font-size: 0.72rem;
+        color: var(--green);
+        margin-top: 0.2rem;
+      }
+
+      /* toast */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1.1rem;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-lift);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dash-shell">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="index.html" class="sidebar-logo">
+          <img src="./logo.png" alt="" width="45" height="32" />
+          <span class="sidebar-logo-text">Nexora</span>
+        </a>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Overview</div>
+          <button
+            class="sidebar-item active"
+            id="nav-projects"
+            onclick="navigate('projects')"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <rect
+                x="1"
+                y="1"
+                width="5.5"
+                height="5.5"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <rect
+                x="8.5"
+                y="1"
+                width="5.5"
+                height="5.5"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <rect
+                x="1"
+                y="8.5"
+                width="5.5"
+                height="5.5"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <rect
+                x="8.5"
+                y="8.5"
+                width="5.5"
+                height="5.5"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+            </svg>
+            All projects
+          </button>
+          <button
+            class="sidebar-item"
+            id="nav-activity"
+            onclick="navigate('activity')"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path
+                d="M7.5 1a6.5 6.5 0 100 13A6.5 6.5 0 007.5 1z"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <path
+                d="M7.5 4v4l2.5 2.5"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+            Activity
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Organization</div>
+          <button
+            class="sidebar-item"
+            id="nav-members"
+            onclick="navigate('members')"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path
+                d="M7.5 7a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <path
+                d="M2 13c0-2.76 2.46-5 5.5-5s5.5 2.24 5.5 5"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+            Members
+          </button>
+          <button
+            class="sidebar-item"
+            id="nav-billing"
+            onclick="navigate('billing')"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <rect
+                x="1"
+                y="3"
+                width="13"
+                height="9"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <path d="M1 6h13" stroke="currentColor" stroke-width="1.3" />
+              <path
+                d="M4 9.5h3"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+            Billing
+          </button>
+          <button
+            class="sidebar-item"
+            id="nav-settings"
+            onclick="navigate('settings')"
+          >
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <circle
+                cx="7.5"
+                cy="7.5"
+                r="2"
+                stroke="currentColor"
+                stroke-width="1.3"
+              />
+              <path
+                d="M7.5 1.5v1.2M7.5 12.3v1.2M1.5 7.5h1.2M12.3 7.5h1.2M3.2 3.2l.85.85M10.95 10.95l.85.85M10.95 4.05l-.85.85M4.05 10.95l-.85.85"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+            Settings
+          </button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div
+            class="user-chip"
+            id="userChip"
+            onclick="toggleUserMenu()"
+            style="position: relative"
+          >
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div>
+              <div class="user-name" id="userName">Alex Johnson</div>
+              <div class="user-email" id="userEmail">alex@example.com</div>
+            </div>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              style="margin-left: auto; color: var(--text-muted)"
+            >
+              <path
+                d="M2 4l4 4 4-4"
+                stroke="currentColor"
+                stroke-width="1.3"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+          <!-- User dropdown -->
+          <div
+            id="userMenu"
+            style="
+              display: none;
+              position: absolute;
+              bottom: 72px;
+              left: 0.75rem;
+              right: 0.75rem;
+              background: var(--bg-elevated);
+              border: 1px solid var(--border);
+              border-radius: var(--radius-md);
+              box-shadow: var(--shadow-lift);
+              z-index: 100;
+              overflow: hidden;
+            "
+          >
+            <div
+              style="
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid var(--border-subtle);
+              "
+            >
+              <div
+                style="
+                  font-size: 0.825rem;
+                  font-weight: 600;
+                  color: var(--text-primary);
+                "
+                id="userMenuName"
+              >
+                Alex Johnson
+              </div>
+              <div
+                style="font-size: 0.72rem; color: var(--text-muted)"
+                id="userMenuEmail"
+              >
+                alex@example.com
+              </div>
+            </div>
+            <button
+              onclick="
+                navigate('settings');
+                toggleUserMenu();
+              "
+              style="
+                width: 100%;
+                background: none;
+                border: none;
+                padding: 0.6rem 1rem;
+                text-align: left;
+                font-size: 0.825rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-family: var(--font-body);
+              "
+              onmouseover="this.style.background = 'rgba(255,255,255,0.05)'"
+              onmouseout="this.style.background = 'none'"
+            >
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="1.8"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M6.5 1.5v1M6.5 10.5v1M1.5 6.5h1M10.5 6.5h1M3 3l.7.7M9.3 9.3l.7.7M9.3 3.7L8.6 4.4M3.7 9.3l-.7.7"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Account settings
+            </button>
+            <div style="height: 1px; background: var(--border-subtle)"></div>
+            <button
+              onclick="handleSignOut()"
+              style="
+                width: 100%;
+                background: none;
+                border: none;
+                padding: 0.6rem 1rem;
+                text-align: left;
+                font-size: 0.825rem;
+                color: #ef4444;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-family: var(--font-body);
+              "
+              onmouseover="this.style.background = 'rgba(239,68,68,0.06)'"
+              onmouseout="this.style.background = 'none'"
+            >
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path
+                  d="M5 2H2.5A1.5 1.5 0 001 3.5v6A1.5 1.5 0 002.5 11H5M9 9l3-2.5L9 4M12 6.5H5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Sign out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="dash-main">
+        <div class="dash-topbar">
+          <div class="dash-topbar-title" id="topbarTitle">Projects</div>
+          <div style="display: flex; align-items: center; gap: 0.75rem">
+            <!-- Search -->
+            <div style="position: relative">
+              <svg
+                style="
+                  position: absolute;
+                  left: 0.6rem;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  color: var(--text-muted);
+                  pointer-events: none;
+                "
+                width="13"
+                height="13"
+                viewBox="0 0 13 13"
+                fill="none"
+              >
+                <circle
+                  cx="5.5"
+                  cy="5.5"
+                  r="4"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                />
+                <path
+                  d="M8.5 8.5l3 3"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <input
+                id="projectSearch"
+                type="text"
+                placeholder="Search projects…"
+                oninput="filterProjects()"
+                style="
+                  background: var(--bg-card);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-md);
+                  padding: 0.35rem 0.75rem 0.35rem 2rem;
+                  font-size: 0.8rem;
+                  color: var(--text-primary);
+                  font-family: var(--font-body);
+                  outline: none;
+                  width: 200px;
+                  transition: border-color 0.2s;
+                "
+                onfocus="this.style.borderColor = 'var(--accent)'"
+                onblur="this.style.borderColor = 'var(--border)'"
+              />
+            </div>
+            <!-- Notifications -->
+            <button
+              id="notifBtn"
+              onclick="toggleNotifications()"
+              style="
+                position: relative;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                width: 34px;
+                height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: border-color 0.2s;
+                color: var(--text-secondary);
+              "
+              onmouseover="this.style.borderColor = 'var(--border-hover)'"
+              onmouseout="this.style.borderColor = 'var(--border)'"
+            >
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path
+                  d="M7.5 1.5A4.5 4.5 0 003 6v3.5L1.5 11h12L12 9.5V6A4.5 4.5 0 007.5 1.5z"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                />
+                <path
+                  d="M6 11.5a1.5 1.5 0 003 0"
+                  stroke="currentColor"
+                  stroke-width="1.3"
+                />
+              </svg>
+              <span
+                id="notifDot"
+                style="
+                  position: absolute;
+                  top: 5px;
+                  right: 5px;
+                  width: 7px;
+                  height: 7px;
+                  background: #ef4444;
+                  border-radius: 50%;
+                  border: 1.5px solid var(--bg-base);
+                  display: none;
+                "
+              ></span>
+            </button>
+            <!-- Notifications panel -->
+            <div
+              id="notifPanel"
+              style="
+                display: none;
+                position: fixed;
+                top: 60px;
+                right: 1.5rem;
+                width: 320px;
+                background: var(--bg-elevated);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                box-shadow: var(--shadow-lift);
+                z-index: 150;
+                overflow: hidden;
+              "
+            >
+              <div
+                style="
+                  padding: 0.75rem 1rem;
+                  border-bottom: 1px solid var(--border-subtle);
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <span
+                  style="
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: var(--text-primary);
+                  "
+                  >Notifications</span
+                >
+                <button
+                  onclick="clearNotifications()"
+                  style="
+                    background: none;
+                    border: none;
+                    font-size: 0.72rem;
+                    color: var(--text-muted);
+                    cursor: pointer;
+                    font-family: var(--font-body);
+                  "
+                >
+                  Mark all read
+                </button>
+              </div>
+              <div
+                id="notifList"
+                style="max-height: 320px; overflow-y: auto"
+              ></div>
+            </div>
+            <button
+              class="btn btn-primary"
+              id="topNewBtn"
+              onclick="openModal()"
+              style="padding: 0.4rem 0.85rem; font-size: 0.825rem"
+            >
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path
+                  d="M6.5 1v11M1 6.5h11"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+              New project
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-content">
+          <!-- ── PROJECTS PAGE ── -->
+          <div id="page-projects" class="dash-page" style="display: block">
+            <!-- Org bar -->
+            <div class="org-bar" style="position: relative">
+              <button
+                class="org-selector"
+                id="orgSelector"
+                onclick="toggleOrgDropdown()"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect
+                    x="1"
+                    y="1"
+                    width="12"
+                    height="12"
+                    rx="3"
+                    stroke="currentColor"
+                    stroke-width="1.3"
+                  />
+                  <path
+                    d="M4 7h6M4 4.5h6M4 9.5h4"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <span id="activeOrgName">Personal</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path
+                    d="M2 3.5l3 3 3-3"
+                    stroke="currentColor"
+                    stroke-width="1.3"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+              <!-- Org dropdown -->
+              <div
+                id="orgDropdown"
+                style="
+                  display: none;
+                  position: absolute;
+                  top: calc(100% + 6px);
+                  left: 0;
+                  background: var(--bg-elevated);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-md);
+                  min-width: 200px;
+                  box-shadow: var(--shadow-lift);
+                  z-index: 60;
+                  overflow: hidden;
+                "
+              >
+                <div
+                  style="
+                    padding: 0.4rem 0.85rem;
+                    font-size: 0.68rem;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: var(--text-muted);
+                  "
+                >
+                  Organizations
+                </div>
+                <div id="orgList"></div>
+                <div
+                  style="height: 1px; background: var(--border-subtle)"
+                ></div>
+                <button
+                  onclick="openCreateOrgModal()"
+                  style="
+                    width: 100%;
+                    background: none;
+                    border: none;
+                    padding: 0.6rem 0.85rem;
+                    text-align: left;
+                    font-size: 0.825rem;
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    font-family: var(--font-body);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                  "
+                  onmouseover="this.style.background = 'rgba(255,255,255,0.04)'"
+                  onmouseout="this.style.background = 'none'"
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path
+                      d="M6 1v10M1 6h10"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Create organization
+                </button>
+              </div>
+              <span
+                style="font-size: 0.78rem; color: var(--text-muted)"
+                id="planLabel"
+                >Free plan · 0 of 2 projects</span
+              >
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" id="statsRow" style="display: none">
+              <div class="stat-card">
+                <div class="stat-card-label">Total requests</div>
+                <div class="stat-card-val" id="statRequests">0</div>
+                <div class="stat-card-sub" id="statRequestsSub">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">DB size</div>
+                <div class="stat-card-val" id="statDb">0 B</div>
+                <div class="stat-card-sub" style="color: var(--text-muted)">
+                  500 MB limit
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">Auth users</div>
+                <div class="stat-card-val" id="statUsers">0</div>
+                <div class="stat-card-sub" id="statUsersSub">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card-label">Edge invocations</div>
+                <div class="stat-card-val" id="statEdge">0</div>
+                <div class="stat-card-sub" style="color: var(--text-muted)">
+                  500k limit
+                </div>
+              </div>
+            </div>
+
+            <!-- Projects grid -->
+            <div
+              id="projectsGrid"
+              class="projects-grid"
+              style="display: none"
+            ></div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState">
+              <div class="empty-icon">🗂</div>
+              <h3
+                style="
+                  font-family: var(--font-display);
+                  font-weight: 700;
+                  font-size: 1.1rem;
+                  margin-bottom: 0.5rem;
+                "
+              >
+                No projects yet
+              </h3>
+              <p
+                style="
+                  font-size: 0.875rem;
+                  color: var(--text-muted);
+                  max-width: 300px;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                Create your first project to get a Postgres database, Auth,
+                Storage, and Edge Functions — all in one place.
+              </p>
+              <button class="btn btn-primary" onclick="openModal()">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path
+                    d="M6.5 1v11M1 6.5h11"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Create new project
+              </button>
+            </div>
+          </div>
+          <!-- /page-projects -->
+
+          <!-- ── ACTIVITY PAGE ── -->
+          <div id="page-activity" class="dash-page" style="display: none">
+            <h2
+              style="
+                font-size: 1rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                color: var(--text-primary);
+              "
+            >
+              Activity
+            </h2>
+            <div
+              id="activityFeed"
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+              "
+            ></div>
+          </div>
+
+          <!-- ── MEMBERS PAGE ── -->
+          <div id="page-members" class="dash-page" style="display: none">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+              "
+            >
+              <h2
+                style="
+                  font-size: 1rem;
+                  font-weight: 700;
+                  color: var(--text-primary);
+                "
+              >
+                Members
+              </h2>
+              <button
+                class="btn btn-primary"
+                style="padding: 0.4rem 0.85rem; font-size: 0.825rem"
+                onclick="openInviteMemberModal()"
+              >
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path
+                    d="M6.5 1v11M1 6.5h11"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Invite member
+              </button>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+              "
+            >
+              <table style="width: 100%; border-collapse: collapse">
+                <thead>
+                  <tr style="background: var(--bg-elevated)">
+                    <th
+                      style="
+                        padding: 0.65rem 1.25rem;
+                        text-align: left;
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Member
+                    </th>
+                    <th
+                      style="
+                        padding: 0.65rem 1.25rem;
+                        text-align: left;
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Role
+                    </th>
+                    <th
+                      style="
+                        padding: 0.65rem 1.25rem;
+                        text-align: left;
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Joined
+                    </th>
+                    <th
+                      style="
+                        padding: 0.65rem 1.25rem;
+                        text-align: left;
+                        font-size: 0.72rem;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Last active
+                    </th>
+                    <th style="border-bottom: 1px solid var(--border)"></th>
+                  </tr>
+                </thead>
+                <tbody id="membersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ── BILLING PAGE ── -->
+          <div id="page-billing" class="dash-page" style="display: none">
+            <h2
+              style="
+                font-size: 1rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                color: var(--text-primary);
+              "
+            >
+              Billing
+            </h2>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+              "
+            >
+              <div
+                style="
+                  background: var(--bg-card);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-lg);
+                  padding: 1.25rem;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  Current plan
+                </div>
+                <div
+                  style="
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    color: var(--text-primary);
+                    margin-bottom: 0.25rem;
+                  "
+                >
+                  Free
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted)">
+                  $0 / month
+                </div>
+                <button
+                  onclick="showToast('Upgrade coming soon! 🚀')"
+                  class="btn btn-primary"
+                  style="
+                    margin-top: 1rem;
+                    padding: 0.4rem 0.85rem;
+                    font-size: 0.8rem;
+                  "
+                >
+                  Upgrade to Pro
+                </button>
+              </div>
+              <div
+                style="
+                  background: var(--bg-card);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-lg);
+                  padding: 1.25rem;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.78rem;
+                    color: var(--text-muted);
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  Usage this month
+                </div>
+                <div style="margin-bottom: 0.85rem">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.8rem;
+                      margin-bottom: 0.3rem;
+                    "
+                  >
+                    <span style="color: var(--text-secondary)">Projects</span
+                    ><span
+                      id="billingProjects"
+                      style="color: var(--text-primary); font-weight: 600"
+                      >0 / 2</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      background: var(--bg-elevated);
+                      border-radius: 999px;
+                      height: 5px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      id="billingProjBar"
+                      style="
+                        height: 100%;
+                        background: var(--accent);
+                        border-radius: 999px;
+                        width: 0%;
+                        transition: width 0.4s;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-size: 0.8rem;
+                      margin-bottom: 0.3rem;
+                    "
+                  >
+                    <span style="color: var(--text-secondary)">DB storage</span
+                    ><span
+                      id="billingDb"
+                      style="color: var(--text-primary); font-weight: 600"
+                      >0 MB / 500 MB</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      background: var(--bg-elevated);
+                      border-radius: 999px;
+                      height: 5px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      id="billingDbBar"
+                      style="
+                        height: 100%;
+                        background: var(--accent);
+                        border-radius: 999px;
+                        width: 0%;
+                        transition: width 0.4s;
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+              "
+            >
+              <div
+                style="
+                  padding: 0.85rem 1.25rem;
+                  border-bottom: 1px solid var(--border-subtle);
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                  color: var(--text-primary);
+                "
+              >
+                Invoice history
+              </div>
+              <div
+                id="invoiceList"
+                style="
+                  padding: 2.5rem;
+                  text-align: center;
+                  color: var(--text-muted);
+                  font-size: 0.85rem;
+                "
+              >
+                No invoices yet — you're on the free plan.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SETTINGS PAGE ── -->
+          <div id="page-settings" class="dash-page" style="display: none">
+            <h2
+              style="
+                font-size: 1rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                color: var(--text-primary);
+              "
+            >
+              Account Settings
+            </h2>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 600;
+                  color: var(--text-primary);
+                  margin-bottom: 1rem;
+                "
+              >
+                Profile
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <div>
+                  <label class="form-label">Full name</label>
+                  <input
+                    class="form-input"
+                    id="settingName"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Email address</label>
+                  <input
+                    class="form-input"
+                    id="settingEmail"
+                    type="email"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="saveProfile()"
+                style="padding: 0.45rem 1rem; font-size: 0.825rem"
+              >
+                Save changes
+              </button>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 600;
+                  color: var(--text-primary);
+                  margin-bottom: 1rem;
+                "
+              >
+                Change password
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <div>
+                  <label class="form-label">Current password</label>
+                  <input
+                    class="form-input"
+                    type="password"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">New password</label>
+                  <input
+                    class="form-input"
+                    id="newPassword"
+                    type="password"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="savePassword()"
+                style="padding: 0.45rem 1rem; font-size: 0.825rem"
+              >
+                Update password
+              </button>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid rgba(248, 113, 113, 0.25);
+                border-radius: var(--radius-lg);
+                padding: 1.5rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 600;
+                  color: #ef4444;
+                  margin-bottom: 0.5rem;
+                "
+              >
+                Danger zone
+              </div>
+              <div
+                style="
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  margin-bottom: 1rem;
+                "
+              >
+                Deleting your account is permanent and cannot be undone.
+              </div>
+              <button
+                onclick="confirmDeleteAccount()"
+                style="
+                  background: none;
+                  border: 1px solid rgba(248, 113, 113, 0.4);
+                  border-radius: var(--radius-md);
+                  padding: 0.45rem 1rem;
+                  font-size: 0.825rem;
+                  color: #ef4444;
+                  cursor: pointer;
+                  font-family: var(--font-body);
+                "
+              >
+                Delete account
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- /dash-content -->
+      </main>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal-overlay"
+      id="modalOverlay"
+      onclick="handleOverlayClick(event)"
+    >
+      <div class="modal" id="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Create new project</div>
+            <div class="modal-subtitle">
+              Deploy a new Postgres instance in seconds
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="projName">Project name</label>
+          <input
+            id="projName"
+            class="form-input"
+            type="text"
+            placeholder="my-awesome-app"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Database password</label>
+          <div style="position: relative">
+            <input
+              id="projPassword"
+              class="form-input"
+              type="password"
+              placeholder="Generate a strong password"
+              style="padding-right: 6.5rem"
+            />
+            <button
+              onclick="generatePassword()"
+              style="
+                position: absolute;
+                right: 0.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 0.22rem 0.55rem;
+                font-size: 0.72rem;
+                color: var(--accent-bright);
+                cursor: pointer;
+                transition: background 0.15s;
+                font-family: var(--font-body);
+              "
+              onmouseover="this.style.background = 'rgba(124,58,237,0.15)'"
+              onmouseout="this.style.background = 'var(--bg-card)'"
+            >
+              Generate
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Region</label>
+          <select id="projRegion" class="form-select">
+            <option>🌏 Southeast Asia (Singapore)</option>
+            <option>🌎 US East (N. Virginia)</option>
+            <option>🌎 US West (Oregon)</option>
+            <option>🌍 Europe (Frankfurt)</option>
+            <option>🌍 Europe (London)</option>
+            <option>🌏 Asia Pacific (Tokyo)</option>
+            <option>🌏 Asia Pacific (Sydney)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"
+            >Starter template
+            <span style="color: var(--text-muted); font-weight: 400"
+              >(optional)</span
+            ></label
+          >
+          <div class="template-grid" id="templateGrid">
+            <div
+              class="template-option selected"
+              onclick="selectTemplate(this)"
+            >
+              <span class="template-emoji">📦</span>
+              <span class="template-label">Blank</span>
+            </div>
+            <div class="template-option" onclick="selectTemplate(this)">
+              <span class="template-emoji">🛒</span>
+              <span class="template-label">E-commerce</span>
+            </div>
+            <div class="template-option" onclick="selectTemplate(this)">
+              <span class="template-emoji">💬</span>
+              <span class="template-label">Chat app</span>
+            </div>
+            <div class="template-option" onclick="selectTemplate(this)">
+              <span class="template-emoji">🧠</span>
+              <span class="template-label">AI / Vector</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button
+            class="btn btn-primary"
+            id="createBtn"
+            onclick="createProject()"
+          >
+            <span id="createLabel">Create project</span>
+            <span class="btn-spinner" id="createSpinner"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Modal -->
+    <div
+      class="modal-overlay"
+      id="renameModal"
+      onclick="if (event.target === this) closeRenameModal();"
+    >
+      <div class="modal" style="max-width: 420px">
+        <div class="modal-header">
+          <div><div class="modal-title">Rename project</div></div>
+          <button class="modal-close" onclick="closeRenameModal()">✕</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New name</label>
+          <input
+            id="renameInput"
+            class="form-input"
+            placeholder="my-new-name"
+            onkeydown="if (event.key === 'Enter') confirmRename();"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeRenameModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmRename()">
+            Rename
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Member Modal -->
+    <div
+      class="modal-overlay"
+      id="inviteMemberModal"
+      onclick="if (event.target === this) closeInviteMemberModal();"
+    >
+      <div class="modal" style="max-width: 420px">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Invite member</div>
+            <div class="modal-subtitle">
+              They'll get access to all projects in this org
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeInviteMemberModal()">
+            ✕
+          </button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input
+            id="inviteEmail"
+            class="form-input"
+            type="email"
+            placeholder="colleague@example.com"
+            onkeydown="if (event.key === 'Enter') sendInvite();"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select id="inviteRole" class="form-select">
+            <option value="owner">Owner — full access</option>
+            <option value="editor" selected>Editor — read + write</option>
+            <option value="viewer">Viewer — read only</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeInviteMemberModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="sendInvite()">
+            Send invite
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Org Modal -->
+    <div
+      class="modal-overlay"
+      id="createOrgModal"
+      onclick="if (event.target === this) closeCreateOrgModal();"
+    >
+      <div class="modal" style="max-width: 400px">
+        <div class="modal-header">
+          <div><div class="modal-title">Create organization</div></div>
+          <button class="modal-close" onclick="closeCreateOrgModal()">✕</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organization name</label>
+          <input
+            id="orgNameInput"
+            class="form-input"
+            placeholder="Acme Corp"
+            onkeydown="if (event.key === 'Enter') confirmCreateOrg();"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeCreateOrgModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmCreateOrg()">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">
+      <span id="toastIcon">✅</span>
+      <span id="toastMsg">Done!</span>
+    </div>
+
+    <script>
+      // ── State ──
+      let projects = JSON.parse(
+        localStorage.getItem("nexora_projects") || "[]",
+      );
+      let members = JSON.parse(
+        localStorage.getItem("nexora_members") || "null",
+      ) || [
+        {
+          name: "Alex Johnson",
+          email: "alex@example.com",
+          role: "owner",
+          joined: "Jan 2025",
+          lastActive: "Just now",
+          color: "#7c3aed",
+        },
+        {
+          name: "Maria Torres",
+          email: "maria@example.com",
+          role: "editor",
+          joined: "Feb 2025",
+          lastActive: "2h ago",
+          color: "#0d9488",
+        },
+        {
+          name: "Sam Rivera",
+          email: "sam@example.com",
+          role: "viewer",
+          joined: "Mar 2025",
+          lastActive: "Yesterday",
+          color: "#d97706",
+        },
+      ];
+      let orgs = JSON.parse(localStorage.getItem("nexora_orgs") || "null") || [
+        "Personal",
+      ];
+      let activeOrg = localStorage.getItem("nexora_active_org") || "Personal";
+      let currentUser = JSON.parse(
+        localStorage.getItem("nexora_user") || "null",
+      ) || { name: "Alex Johnson", email: "alex@example.com" };
+      let notifications = JSON.parse(
+        localStorage.getItem("nexora_notifs") || "[]",
+      );
+      let activityLog = JSON.parse(
+        localStorage.getItem("nexora_activity") || "[]",
+      );
+      let renamingIdx = -1;
+
+      const ICONS = [
+        "🚀",
+        "🧩",
+        "⚡",
+        "🔮",
+        "🎯",
+        "🌊",
+        "🦾",
+        "🔥",
+        "💡",
+        "🛸",
+      ];
+      const COLORS = [
+        "linear-gradient(135deg,#7c3aed,#9333ea)",
+        "linear-gradient(135deg,#0d9488,#14b8a6)",
+        "linear-gradient(135deg,#dc2626,#ef4444)",
+        "linear-gradient(135deg,#d97706,#f59e0b)",
+        "linear-gradient(135deg,#2563eb,#3b82f6)",
+        "linear-gradient(135deg,#db2777,#ec4899)",
+      ];
+
+      // ── Save helpers ──
+      function save() {
+        localStorage.setItem("nexora_projects", JSON.stringify(projects));
+        localStorage.setItem("nexora_members", JSON.stringify(members));
+        localStorage.setItem("nexora_orgs", JSON.stringify(orgs));
+        localStorage.setItem("nexora_active_org", activeOrg);
+        localStorage.setItem("nexora_user", JSON.stringify(currentUser));
+        localStorage.setItem("nexora_notifs", JSON.stringify(notifications));
+        localStorage.setItem("nexora_activity", JSON.stringify(activityLog));
+      }
+
+      // ── Activity ──
+      function addActivity(msg, icon = "📌") {
+        const ts = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        activityLog.unshift({
+          msg,
+          icon,
+          ts,
+          date: new Date().toLocaleDateString(),
+        });
+        if (activityLog.length > 50) activityLog.pop();
+        save();
+      }
+
+      // ── Notifications ──
+      function addNotification(msg, icon = "🔔") {
+        notifications.unshift({
+          msg,
+          icon,
+          read: false,
+          ts: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        });
+        if (notifications.length > 20) notifications.pop();
+        save();
+        updateNotifDot();
+      }
+
+      function updateNotifDot() {
+        const unread = notifications.filter((n) => !n.read).length;
+        document.getElementById("notifDot").style.display =
+          unread > 0 ? "block" : "none";
+      }
+
+      function toggleNotifications() {
+        const panel = document.getElementById("notifPanel");
+        const open = panel.style.display !== "none";
+        closeAllDropdowns();
+        if (!open) {
+          renderNotifications();
+          panel.style.display = "block";
+        }
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById("notifList");
+        if (!notifications.length) {
+          list.innerHTML =
+            '<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.825rem;">No notifications</div>';
+          return;
+        }
+        list.innerHTML = notifications
+          .map(
+            (n, i) => `
+          <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border-subtle);display:flex;gap:0.75rem;align-items:flex-start;background:${n.read ? "transparent" : "rgba(124,58,237,0.04)"};">
+            <span style="font-size:1rem;flex-shrink:0;margin-top:0.05rem;">${n.icon}</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:0.81rem;color:var(--text-primary);line-height:1.4;">${n.msg}</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem;">${n.ts}</div>
+            </div>
+          </div>`,
+          )
+          .join("");
+      }
+
+      function clearNotifications() {
+        notifications.forEach((n) => (n.read = true));
+        save();
+        updateNotifDot();
+        renderNotifications();
+      }
+
+      // ── Navigation ──
+      function navigate(page) {
+        document
+          .querySelectorAll(".dash-page")
+          .forEach((p) => (p.style.display = "none"));
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((i) => i.classList.remove("active"));
+        document.getElementById("page-" + page).style.display = "block";
+        const navEl = document.getElementById("nav-" + page);
+        if (navEl) navEl.classList.add("active");
+
+        const titles = {
+          projects: "Projects",
+          activity: "Activity",
+          members: "Members",
+          billing: "Billing",
+          settings: "Settings",
+        };
+        document.getElementById("topbarTitle").textContent =
+          titles[page] || "Projects";
+        document.getElementById("topNewBtn").style.display =
+          page === "projects" ? "" : "none";
+
+        if (page === "activity") renderActivity();
+        if (page === "members") renderMembers();
+        if (page === "billing") renderBilling();
+        if (page === "settings") initSettings();
+
+        closeAllDropdowns();
+      }
+
+      // ── Org Dropdown ──
+      function renderOrgList() {
+        const list = document.getElementById("orgList");
+        list.innerHTML = orgs
+          .map(
+            (o) => `
+          <div onclick="selectOrg('${o.replace(/'/g, "\\'")}');closeAllDropdowns();" style="padding:0.55rem 0.85rem;font-size:0.845rem;cursor:pointer;color:${o === activeOrg ? "var(--accent-bright)" : "var(--text-secondary)"};display:flex;align-items:center;gap:0.6rem;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='none'">
+            <div style="width:20px;height:20px;border-radius:4px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#fff;">${o[0].toUpperCase()}</div>
+            ${o}
+            ${o === activeOrg ? '<svg style="margin-left:auto;" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ""}
+          </div>`,
+          )
+          .join("");
+      }
+
+      function toggleOrgDropdown() {
+        const dd = document.getElementById("orgDropdown");
+        const open = dd.style.display !== "none";
+        closeAllDropdowns();
+        if (!open) {
+          renderOrgList();
+          dd.style.display = "block";
+        }
+      }
+
+      function selectOrg(name) {
+        activeOrg = name;
+        document.getElementById("activeOrgName").textContent = name;
+        save();
+        showToast(`Switched to "${name}"`, "🏢");
+      }
+
+      function openCreateOrgModal() {
+        closeAllDropdowns();
+        document.getElementById("orgNameInput").value = "";
+        document.getElementById("createOrgModal").classList.add("open");
+        setTimeout(() => document.getElementById("orgNameInput").focus(), 150);
+      }
+      function closeCreateOrgModal() {
+        document.getElementById("createOrgModal").classList.remove("open");
+      }
+      function confirmCreateOrg() {
+        const name = document.getElementById("orgNameInput").value.trim();
+        if (!name) {
+          document.getElementById("orgNameInput").focus();
+          return;
+        }
+        if (orgs.includes(name)) {
+          showToast("Organization already exists", "⚠️");
+          return;
+        }
+        orgs.push(name);
+        activeOrg = name;
+        document.getElementById("activeOrgName").textContent = name;
+        save();
+        addActivity(`Organization "${name}" created`, "🏢");
+        addNotification(`New organization "${name}" created`, "🏢");
+        closeCreateOrgModal();
+        showToast(`Organization "${name}" created!`, "🏢");
+      }
+
+      // ── Project Rendering ──
+      function renderProjects(filter = "") {
+        const grid = document.getElementById("projectsGrid");
+        const empty = document.getElementById("emptyState");
+        const stats = document.getElementById("statsRow");
+        const list = filter
+          ? projects.filter((p) =>
+              p.name.toLowerCase().includes(filter.toLowerCase()),
+            )
+          : projects;
+
+        document.getElementById("planLabel").textContent =
+          `Free plan · ${projects.length} of 2 projects`;
+
+        if (projects.length === 0) {
+          grid.style.display = "none";
+          empty.style.display = "flex";
+          stats.style.display = "none";
+          return;
+        }
+        empty.style.display = "none";
+        stats.style.display = "grid";
+        updateStats();
+
+        if (list.length === 0) {
+          grid.style.display = "block";
+          grid.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--text-muted);font-size:0.875rem;">No projects match "<strong>${filter}</strong>"</div>`;
+          return;
+        }
+
+        grid.style.display = "grid";
+        grid.innerHTML =
+          list
+            .map((p, i) => {
+              const realIdx = projects.indexOf(p);
+              return `
+          <div class="project-card" style="position:relative;" onclick="openProject(${realIdx},event)">
+            <div style="position:absolute;top:0.75rem;right:0.75rem;z-index:2;" onclick="event.stopPropagation()">
+              <button onclick="toggleCardMenu(${realIdx},event)" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);opacity:0;transition:opacity 0.15s;" id="menuBtn-${realIdx}" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-muted)'">⋯</button>
+              <div id="cardMenu-${realIdx}" style="display:none;position:absolute;top:28px;right:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);min-width:160px;box-shadow:var(--shadow-lift);z-index:10;overflow:hidden;">
+                <button onclick="openProject(${realIdx},event)" style="width:100%;background:none;border:none;padding:0.55rem 0.9rem;text-align:left;font-size:0.825rem;color:var(--text-secondary);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6s2-3.5 4-3.5S10 6 10 6s-2 3.5-4 3.5S2 6 2 6z" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                  Open project
+                </button>
+                <button onclick="openRenameModal(${realIdx})" style="width:100%;background:none;border:none;padding:0.55rem 0.9rem;text-align:left;font-size:0.825rem;color:var(--text-secondary);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9.5l.7-2.8L8.5 1l2.5 2.5-5.8 5.8L2 9.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                  Rename
+                </button>
+                <button onclick="duplicateProject(${realIdx})" style="width:100%;background:none;border:none;padding:0.55rem 0.9rem;text-align:left;font-size:0.825rem;color:var(--text-secondary);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="1" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="3" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+                  Duplicate
+                </button>
+                <div style="height:1px;background:var(--border-subtle);"></div>
+                <button onclick="deleteProject(${realIdx})" style="width:100%;background:none;border:none;padding:0.55rem 0.9rem;text-align:left;font-size:0.825rem;color:#ef4444;cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.background='rgba(239,68,68,0.06)'" onmouseout="this.style.background='none'">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3.5v5M7.5 3.5v5M2.5 3l.5 6.5A1 1 0 004 10.5h4a1 1 0 001-1L9.5 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  Delete
+                </button>
+              </div>
+            </div>
+            <div class="project-card-header">
+              <div class="project-icon" style="background:${p.color}">${p.icon}</div>
+              <div class="project-status"><span class="status-dot"></span> Active</div>
+            </div>
+            <div class="project-name">${p.name}</div>
+            <div class="project-region">${p.region}</div>
+            <div class="project-stats">
+              <div class="project-stat"><span class="project-stat-val">${p.dbSize}</span><span class="project-stat-label">DB size</span></div>
+              <div class="project-stat"><span class="project-stat-val">${p.users}</span><span class="project-stat-label">Users</span></div>
+              <div class="project-stat"><span class="project-stat-val">${p.requests}</span><span class="project-stat-label">Requests</span></div>
+            </div>
+          </div>`;
+            })
+            .join("") +
+          (projects.length < 2
+            ? `<button class="new-project-card" onclick="openModal()"><div class="new-project-plus">+</div>New project</button>`
+            : "");
+
+        // Show ⋯ buttons on hover
+        list.forEach((p) => {
+          const realIdx = projects.indexOf(p);
+          const card = grid.children[list.indexOf(p)];
+          if (!card) return;
+          const btn = document.getElementById(`menuBtn-${realIdx}`);
+          if (!btn) return;
+          card.addEventListener("mouseenter", () => (btn.style.opacity = "1"));
+          card.addEventListener("mouseleave", () => (btn.style.opacity = "0"));
+        });
+      }
+
+      function updateStats() {
+        const totalReq = projects.reduce(
+          (s, p) => s + (parseInt(p.requests) || 0),
+          0,
+        );
+        const totalUsers = projects.reduce(
+          (s, p) => s + (parseInt(p.users) || 0),
+          0,
+        );
+        const dbMB = projects.length * 12;
+        document.getElementById("statRequests").textContent =
+          totalReq > 1000 ? (totalReq / 1000).toFixed(1) + "k" : totalReq;
+        document.getElementById("statRequestsSub").textContent =
+          totalReq > 0 ? "↑ 8% this week" : "—";
+        document.getElementById("statDb").textContent = dbMB + " MB";
+        document.getElementById("statUsers").textContent = totalUsers;
+        document.getElementById("statUsersSub").textContent =
+          totalUsers > 0
+            ? `↑ ${Math.max(1, Math.ceil(totalUsers * 0.05))} new today`
+            : "—";
+        document.getElementById("statEdge").textContent = (
+          projects.length * 800
+        ).toLocaleString();
+      }
+
+      function filterProjects() {
+        renderProjects(document.getElementById("projectSearch").value);
+      }
+
+      function openProject(idx, e) {
+        if (e) e.stopPropagation();
+        const p = projects[idx];
+        window.location.href = `project.html?id=${encodeURIComponent(p.name)}&region=${encodeURIComponent(p.region)}&template=${encodeURIComponent(p.template)}`;
+      }
+
+      // ── Card Menu ──
+      function toggleCardMenu(idx, e) {
+        e.stopPropagation();
+        const menu = document.getElementById("cardMenu-" + idx);
+        const open = menu.style.display !== "none";
+        closeAllDropdowns();
+        if (!open) menu.style.display = "block";
+      }
+
+      // ── Modal: Create Project ──
+      function openModal() {
+        if (projects.length >= 2) {
+          showToast("Free plan limit: 2 projects. Upgrade to add more.", "⚠️");
+          return;
+        }
+        document.getElementById("modalOverlay").classList.add("open");
+        setTimeout(() => document.getElementById("projName").focus(), 200);
+      }
+
+      function closeModal() {
+        document.getElementById("modalOverlay").classList.remove("open");
+        document.getElementById("projName").value = "";
+        document.getElementById("projPassword").value = "";
+        document.getElementById("createLabel").textContent = "Create project";
+        document.getElementById("createSpinner").style.display = "none";
+        document.getElementById("createBtn").disabled = false;
+        document
+          .querySelectorAll(".template-option")
+          .forEach((t, i) => t.classList.toggle("selected", i === 0));
+      }
+
+      function handleOverlayClick(e) {
+        if (e.target === document.getElementById("modalOverlay")) closeModal();
+      }
+
+      function selectTemplate(el) {
+        document
+          .querySelectorAll(".template-option")
+          .forEach((t) => t.classList.remove("selected"));
+        el.classList.add("selected");
+      }
+
+      function generatePassword() {
+        const chars =
+          "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*";
+        const pw = Array.from(
+          { length: 20 },
+          () => chars[Math.floor(Math.random() * chars.length)],
+        ).join("");
+        const inp = document.getElementById("projPassword");
+        inp.value = pw;
+        inp.type = "text";
+        setTimeout(() => (inp.type = "password"), 2000);
+        showToast("Password generated (visible for 2s)", "🔐");
+      }
+
+      function createProject() {
+        const name = document.getElementById("projName").value.trim();
+        if (!name) {
+          const inp = document.getElementById("projName");
+          inp.focus();
+          inp.style.borderColor = "var(--red)";
+          setTimeout(() => (inp.style.borderColor = ""), 1500);
+          return;
+        }
+        if (projects.find((p) => p.name.toLowerCase() === name.toLowerCase())) {
+          showToast(`A project named "${name}" already exists`, "⚠️");
+          document.getElementById("projName").focus();
+          return;
+        }
+        const region = document.getElementById("projRegion").value;
+        const template = document.querySelector(
+          ".template-option.selected .template-label",
+        ).textContent;
+
+        document.getElementById("createLabel").textContent = "Creating…";
+        document.getElementById("createSpinner").style.display = "block";
+        document.getElementById("createBtn").disabled = true;
+
+        setTimeout(() => {
+          const p = {
+            name,
+            region,
+            template,
+            icon: ICONS[projects.length % ICONS.length],
+            color: COLORS[projects.length % COLORS.length],
+            dbSize: "0 B",
+            users: "0",
+            requests: "0",
+            createdAt: new Date().toISOString(),
+          };
+          projects.push(p);
+          save();
+          addActivity(
+            `Project <strong>${name}</strong> created (${template} · ${region})`,
+            "🚀",
+          );
+          addNotification(`Project "${name}" is ready!`, "🚀");
+          closeModal();
+          renderProjects();
+          showToast(`"${name}" is ready!`, "🚀");
+          setTimeout(() => {
+            window.location.href = `project.html?id=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}&template=${encodeURIComponent(template)}`;
+          }, 800);
+        }, 1800);
+      }
+
+      // ── Rename ──
+      function openRenameModal(idx) {
+        closeAllDropdowns();
+        renamingIdx = idx;
+        document.getElementById("renameInput").value = projects[idx].name;
+        document.getElementById("renameModal").classList.add("open");
+        setTimeout(() => document.getElementById("renameInput").focus(), 150);
+      }
+      function closeRenameModal() {
+        document.getElementById("renameModal").classList.remove("open");
+        renamingIdx = -1;
+      }
+      function confirmRename() {
+        const name = document.getElementById("renameInput").value.trim();
+        if (!name || renamingIdx < 0) return;
+        if (
+          projects.find(
+            (p, i) =>
+              i !== renamingIdx && p.name.toLowerCase() === name.toLowerCase(),
+          )
+        ) {
+          showToast("A project with that name already exists", "⚠️");
+          return;
+        }
+        const old = projects[renamingIdx].name;
+        projects[renamingIdx].name = name;
+        save();
+        addActivity(
+          `Project <strong>${old}</strong> renamed to <strong>${name}</strong>`,
+          "✏️",
+        );
+        closeRenameModal();
+        renderProjects();
+        showToast(`Renamed to "${name}"`, "✏️");
+      }
+
+      // ── Duplicate ──
+      function duplicateProject(idx) {
+        closeAllDropdowns();
+        if (projects.length >= 2) {
+          showToast("Free plan limit reached. Upgrade to duplicate.", "⚠️");
+          return;
+        }
+        const src = projects[idx];
+        const name = src.name + "-copy";
+        const p = {
+          ...src,
+          name,
+          icon: ICONS[projects.length % ICONS.length],
+          color: COLORS[projects.length % COLORS.length],
+          createdAt: new Date().toISOString(),
+        };
+        projects.push(p);
+        save();
+        addActivity(
+          `Project <strong>${src.name}</strong> duplicated as <strong>${name}</strong>`,
+          "📋",
+        );
+        renderProjects();
+        showToast(`"${name}" created as a copy`, "📋");
+      }
+
+      // ── Delete ──
+      function deleteProject(idx) {
+        closeAllDropdowns();
+        const name = projects[idx].name;
+        if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+        // Also remove project state
+        localStorage.removeItem("nexora_proj_" + name);
+        localStorage.removeItem("nexora_team_" + name);
+        projects.splice(idx, 1);
+        save();
+        addActivity(`Project <strong>${name}</strong> deleted`, "🗑️");
+        addNotification(`Project "${name}" was deleted`, "🗑️");
+        renderProjects();
+        showToast(`"${name}" deleted`, "🗑️");
+      }
+
+      // ── Activity ──
+      function renderActivity() {
+        const feed = document.getElementById("activityFeed");
+        if (!activityLog.length) {
+          feed.innerHTML =
+            '<div style="padding:3rem;text-align:center;color:var(--text-muted);font-size:0.875rem;">No activity yet. Create a project to get started.</div>';
+          return;
+        }
+        feed.innerHTML = activityLog
+          .map(
+            (a, i) => `
+          <div style="display:flex;align-items:flex-start;gap:0.85rem;padding:0.85rem 1.25rem;border-bottom:1px solid var(--border-subtle);${i === activityLog.length - 1 ? "border-bottom:none;" : ""}">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;">${a.icon}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">${a.msg}</div>
+              <div style="font-size:0.71rem;color:var(--text-muted);margin-top:0.2rem;">${a.date} · ${a.ts}</div>
+            </div>
+          </div>`,
+          )
+          .join("");
+      }
+
+      // ── Members ──
+      function renderMembers() {
+        const tbody = document.getElementById("membersTableBody");
+        const ROLE_COLORS = {
+          owner: "rgba(124,58,237,0.15)",
+          editor: "rgba(52,211,153,0.1)",
+          viewer: "rgba(255,255,255,0.05)",
+        };
+        const ROLE_TEXT = {
+          owner: "var(--accent-bright)",
+          editor: "#34d399",
+          viewer: "var(--text-muted)",
+        };
+        tbody.innerHTML = members
+          .map(
+            (m, i) => `
+          <tr>
+            <td style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-subtle);">
+              <div style="display:flex;align-items:center;gap:0.65rem;">
+                <div style="width:28px;height:28px;border-radius:50%;background:${m.color};display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;flex-shrink:0;">${m.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}</div>
+                <div>
+                  <div style="font-size:0.825rem;font-weight:500;color:var(--text-primary);">${m.name}</div>
+                  <div style="font-size:0.72rem;color:var(--text-muted);">${m.email}</div>
+                </div>
+              </div>
+            </td>
+            <td style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-subtle);">
+              <span style="font-size:0.7rem;font-weight:600;padding:0.18rem 0.55rem;border-radius:999px;background:${ROLE_COLORS[m.role]};color:${ROLE_TEXT[m.role]};text-transform:uppercase;letter-spacing:0.05em;">${m.role}</span>
+            </td>
+            <td style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-subtle);font-size:0.82rem;color:var(--text-muted);">${m.joined}</td>
+            <td style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-subtle);font-size:0.82rem;color:var(--text-muted);">${m.lastActive}</td>
+            <td style="padding:0.75rem 1.25rem;border-bottom:1px solid var(--border-subtle);">
+              ${i > 0 ? `<button onclick="removeMember(${i})" style="background:none;border:none;font-size:0.8rem;color:var(--text-muted);cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;font-family:var(--font-body);" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text-muted)'">Remove</button>` : '<span style="font-size:0.75rem;color:var(--text-muted);">You</span>'}
+            </td>
+          </tr>`,
+          )
+          .join("");
+      }
+
+      function removeMember(idx) {
+        const name = members[idx].name;
+        if (!confirm(`Remove ${name}?`)) return;
+        members.splice(idx, 1);
+        save();
+        addActivity(`<strong>${name}</strong> removed from organization`, "👤");
+        renderMembers();
+        showToast(`${name} removed`, "🗑️");
+      }
+
+      function openInviteMemberModal() {
+        document.getElementById("inviteEmail").value = "";
+        document.getElementById("inviteMemberModal").classList.add("open");
+        setTimeout(() => document.getElementById("inviteEmail").focus(), 150);
+      }
+      function closeInviteMemberModal() {
+        document.getElementById("inviteMemberModal").classList.remove("open");
+      }
+      function sendInvite() {
+        const email = document.getElementById("inviteEmail").value.trim();
+        const role = document.getElementById("inviteRole").value;
+        if (!email || !email.includes("@")) {
+          document.getElementById("inviteEmail").focus();
+          return;
+        }
+        if (members.find((m) => m.email === email)) {
+          showToast("Already a member", "⚠️");
+          return;
+        }
+        const colors = [
+          "#7c3aed",
+          "#0d9488",
+          "#dc2626",
+          "#d97706",
+          "#2563eb",
+          "#db2777",
+        ];
+        const name = email
+          .split("@")[0]
+          .replace(/[._-]/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        members.push({
+          name,
+          email,
+          role,
+          joined: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          }),
+          lastActive: "Invited",
+          color: colors[members.length % colors.length],
+        });
+        save();
+        addActivity(`<strong>${email}</strong> invited as ${role}`, "📧");
+        addNotification(`Invite sent to ${email}`, "📧");
+        closeInviteMemberModal();
+        renderMembers();
+        showToast(`Invite sent to ${email}`, "📧");
+      }
+
+      // ── Billing ──
+      function renderBilling() {
+        const n = projects.length;
+        document.getElementById("billingProjects").textContent = `${n} / 2`;
+        document.getElementById("billingProjBar").style.width =
+          `${(n / 2) * 100}%`;
+        document.getElementById("billingDb").textContent =
+          `${n * 12} MB / 500 MB`;
+        document.getElementById("billingDbBar").style.width =
+          `${((n * 12) / 500) * 100}%`;
+      }
+
+      // ── Settings ──
+      function initSettings() {
+        document.getElementById("settingName").value = currentUser.name;
+        document.getElementById("settingEmail").value = currentUser.email;
+      }
+
+      function saveProfile() {
+        const name = document.getElementById("settingName").value.trim();
+        const email = document.getElementById("settingEmail").value.trim();
+        if (!name || !email) {
+          showToast("Fill in all fields", "⚠️");
+          return;
+        }
+        currentUser = { name, email };
+        save();
+        // Update sidebar
+        document.getElementById("userName").textContent = name;
+        document.getElementById("userEmail").textContent = email;
+        document.getElementById("userAvatar").textContent =
+          name[0].toUpperCase();
+        document.getElementById("userMenuName").textContent = name;
+        document.getElementById("userMenuEmail").textContent = email;
+        addActivity("Profile updated", "⚙️");
+        showToast("Profile saved!", "✅");
+      }
+
+      function savePassword() {
+        const pw = document.getElementById("newPassword").value;
+        if (!pw || pw.length < 8) {
+          showToast("Password must be at least 8 characters", "⚠️");
+          return;
+        }
+        document.getElementById("newPassword").value = "";
+        addActivity("Password changed", "🔐");
+        showToast("Password updated!", "🔐");
+      }
+
+      function confirmDeleteAccount() {
+        if (
+          confirm("Delete your account permanently? All projects will be lost.")
+        ) {
+          localStorage.clear();
+          showToast("Account deletion requested", "⚠️");
+        }
+      }
+
+      // ── User menu ──
+      function toggleUserMenu() {
+        const menu = document.getElementById("userMenu");
+        const open = menu.style.display !== "none";
+        closeAllDropdowns();
+        if (!open) menu.style.display = "block";
+      }
+
+      function handleSignOut() {
+        closeAllDropdowns();
+        showToast("Signed out — see you soon!", "👋");
+        setTimeout(() => navigate("projects"), 1500);
+      }
+
+      // ── Utilities ──
+      function closeAllDropdowns() {
+        document.getElementById("orgDropdown").style.display = "none";
+        document.getElementById("notifPanel").style.display = "none";
+        document.getElementById("userMenu").style.display = "none";
+        document
+          .querySelectorAll('[id^="cardMenu-"]')
+          .forEach((m) => (m.style.display = "none"));
+      }
+
+      function showToast(msg, icon = "✅") {
+        document.getElementById("toastMsg").textContent = msg;
+        document.getElementById("toastIcon").textContent = icon;
+        const t = document.getElementById("toast");
+        t.classList.add("show");
+        clearTimeout(t._timeout);
+        t._timeout = setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      // ── Close dropdowns on outside click ──
+      document.addEventListener("click", (e) => {
+        if (
+          !e.target.closest("#orgSelector") &&
+          !e.target.closest("#orgDropdown")
+        ) {
+          document.getElementById("orgDropdown").style.display = "none";
+        }
+        if (
+          !e.target.closest("#notifBtn") &&
+          !e.target.closest("#notifPanel")
+        ) {
+          document.getElementById("notifPanel").style.display = "none";
+        }
+        if (!e.target.closest("#userChip") && !e.target.closest("#userMenu")) {
+          document.getElementById("userMenu").style.display = "none";
+        }
+        if (
+          !e.target.closest('[id^="cardMenu-"]') &&
+          !e.target.closest('[id^="menuBtn-"]')
+        ) {
+          document
+            .querySelectorAll('[id^="cardMenu-"]')
+            .forEach((m) => (m.style.display = "none"));
+        }
+      });
+
+      // ── Keyboard shortcuts ──
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeModal();
+          closeAllDropdowns();
+          document.getElementById("renameModal").classList.remove("open");
+          document.getElementById("inviteMemberModal").classList.remove("open");
+          document.getElementById("createOrgModal").classList.remove("open");
+        }
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+          e.preventDefault();
+          openModal();
+        }
+      });
+
+      // ── Boot ──
+      // Restore user info in sidebar
+      document.getElementById("userName").textContent = currentUser.name;
+      document.getElementById("userEmail").textContent = currentUser.email;
+      document.getElementById("userAvatar").textContent =
+        currentUser.name[0].toUpperCase();
+      document.getElementById("userMenuName").textContent = currentUser.name;
+      document.getElementById("userMenuEmail").textContent = currentUser.email;
+      document.getElementById("activeOrgName").textContent = activeOrg;
+      updateNotifDot();
+
+      // Add a welcome notification if first visit
+      if (!localStorage.getItem("nexora_welcomed")) {
+        addNotification(
+          "Welcome to Nexora! Create your first project to get started.",
+          "👋",
+        );
+        localStorage.setItem("nexora_welcomed", "1");
+      }
+
+      renderProjects();
+    </script>
+  </body>
+</html>

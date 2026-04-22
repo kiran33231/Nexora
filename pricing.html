@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing — Nexora</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* ── PRICING GRID ── */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        align-items: start;
+      }
+      @media (max-width: 1100px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 600px)  { .pricing-grid { grid-template-columns: 1fr; } }
+
+      .pricing-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 2rem 1.75rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+      }
+      .pricing-card:hover { border-color: var(--border-hover); transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+      .pricing-card.featured {
+        background: linear-gradient(160deg, #130d28 0%, #0e0a1e 100%);
+        border-color: rgba(124,58,237,0.45);
+        box-shadow: 0 0 40px rgba(124,58,237,0.12), var(--shadow-card);
+      }
+      .pricing-card.enterprise-card {
+        background: linear-gradient(160deg, #0a1a14 0%, #070f0d 100%);
+        border-color: rgba(16,185,129,0.3);
+      }
+
+      .price-amount { font-family: var(--font-display); font-size: 2.75rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.06em; line-height: 1; margin: 0.5rem 0 0.2rem; }
+      .price-period { font-size: 0.78rem; color: var(--text-muted); }
+      .price-npr { font-size: 0.8rem; color: var(--accent-light); font-weight: 500; opacity: 0.85; margin-top: 0.2rem; }
+
+      .features-list { display: flex; flex-direction: column; gap: 0.55rem; margin: 1.5rem 0; flex: 1; }
+      .feature-section-label {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 0.1rem;
+        padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-subtle);
+      }
+
+      /* ── TOGGLE ── */
+      .toggle-wrap { display: flex; align-items: center; gap: 0.75rem; justify-content: center; margin-bottom: 3rem; }
+      .toggle-label { font-size: 0.875rem; color: var(--text-secondary); transition: color 0.2s; }
+      .toggle-label.active { color: var(--text-primary); font-weight: 500; }
+      .toggle { width: 44px; height: 24px; background: var(--accent); border-radius: 999px; position: relative; cursor: pointer; transition: background 0.2s; }
+      .toggle-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+      .save-badge { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,214,138,0.2); font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.55rem; border-radius: 999px; letter-spacing: 0.04em; }
+
+      /* ── FEATURE HIGHLIGHT PILLS ── */
+      .plan-highlights { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+      .plan-highlight { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 500; }
+      .hl-purple { background: rgba(124,58,237,0.12); color: var(--accent-light); border: 1px solid rgba(124,58,237,0.22); }
+      .hl-green  { background: rgba(16,185,129,0.1);  color: var(--green);        border: 1px solid rgba(16,185,129,0.2); }
+      .hl-amber  { background: rgba(245,158,11,0.1);  color: var(--amber);        border: 1px solid rgba(245,158,11,0.2); }
+      .hl-teal   { background: rgba(45,212,191,0.1);  color: var(--teal);         border: 1px solid rgba(45,212,191,0.2); }
+
+      /* ── COMPARE TABLE ── */
+      .compare-table-wrap { overflow-x: auto; }
+      .compare-table { min-width: 700px; }
+      .compare-table .check { color: var(--green); font-size: 1rem; }
+      .compare-table .dash  { color: var(--text-muted); }
+      .compare-table th:first-child { width: 35%; }
+
+      /* ── FAQ ── */
+      .faq-item { border-bottom: 1px solid var(--border-subtle); padding: 1.25rem 0; }
+      .faq-q { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--text-primary); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+      .faq-q .faq-icon { flex-shrink: 0; transition: transform 0.2s; font-size: 1.1rem; color: var(--text-muted); }
+      .faq-q.open .faq-icon { transform: rotate(45deg); color: var(--accent-light); }
+      .faq-a { color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.75rem; line-height: 1.7; display: none; }
+      .faq-item.open .faq-a { display: block; }
+
+      /* ── PAYMENT MODAL ── */
+      .modal-overlay {
+        position: fixed; inset: 0; z-index: 900;
+        background: rgba(4,4,10,0.85);
+        backdrop-filter: blur(16px) saturate(1.2);
+        display: flex; align-items: center; justify-content: center;
+        padding: 1.5rem;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s;
+      }
+      .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+      .modal {
+        background: var(--bg-card);
+        border: 1px solid var(--border-hover);
+        border-radius: var(--radius-xl);
+        width: 100%; max-width: 460px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.12);
+        transform: scale(0.96) translateY(10px);
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
+        opacity: 0;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-overlay.open .modal { transform: scale(1) translateY(0); opacity: 1; }
+
+      .modal-header {
+        padding: 1.75rem 1.75rem 0;
+        display: flex; justify-content: space-between; align-items: flex-start;
+      }
+      .modal-close {
+        width: 32px; height: 32px; border-radius: 50%;
+        background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: var(--text-muted); font-size: 1rem;
+        transition: all 0.2s; flex-shrink: 0;
+      }
+      .modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+      .modal-plan-tag {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+        color: var(--accent-light); background: rgba(167,139,250,0.08);
+        border: 1px solid rgba(167,139,250,0.18); padding: 0.3rem 0.85rem; border-radius: 999px;
+        margin-bottom: 0.6rem;
+      }
+      .modal-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.04em; }
+      .modal-price-row { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.4rem; }
+      .modal-price { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+      .modal-price-sub { font-size: 0.8rem; color: var(--text-muted); }
+      .modal-price-npr-badge {
+        display: inline-flex; align-items: center;
+        background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.18);
+        border-radius: var(--radius-sm); padding: 0.2rem 0.55rem;
+        font-size: 0.75rem; color: var(--accent-light); font-weight: 600; margin-top: 0.35rem;
+      }
+
+      .modal-body { padding: 1.5rem 1.75rem 1.75rem; }
+
+      /* Payment method selector */
+      .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+      .pay-method {
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+        background: var(--bg-elevated);
+        position: relative;
+        overflow: hidden;
+      }
+      .pay-method:hover { border-color: var(--border-hover); }
+      .pay-method.selected { border-color: transparent; }
+      .pay-method.selected::before {
+        content: ''; position: absolute; inset: 0;
+        border-radius: var(--radius-lg);
+        border: 2px solid transparent;
+        background: var(--method-color, var(--accent)) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out; mask-composite: exclude;
+      }
+      .pay-method.selected { background: var(--method-bg, rgba(124,58,237,0.08)); }
+
+      .pay-method-logo {
+        width: 56px; height: 28px;
+        border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.8rem;
+        letter-spacing: -0.02em;
+      }
+      .logo-esewa { background: #60BB46; color: #fff; }
+      .logo-khalti { background: #5C2D91; color: #fff; }
+
+      .pay-method-name { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); }
+      .pay-method-badge { font-size: 0.65rem; color: var(--text-muted); }
+      .check-mark {
+        position: absolute; top: 0.5rem; right: 0.5rem;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: var(--method-color, var(--accent));
+        display: none; align-items: center; justify-content: center;
+        font-size: 0.6rem; color: #fff;
+      }
+      .pay-method.selected .check-mark { display: flex; }
+
+      /* esewa colors */
+      .pay-method[data-method="esewa"] { --method-color: #60BB46; --method-bg: rgba(96,187,70,0.06); }
+      /* khalti colors */
+      .pay-method[data-method="khalti"] { --method-color: #5C2D91; --method-bg: rgba(92,45,145,0.08); }
+
+      .modal-divider { height: 1px; background: var(--border-subtle); margin: 1.25rem 0; }
+
+      /* Phone/ID input area */
+      .payment-form { display: flex; flex-direction: column; gap: 0.85rem; }
+      .pay-input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+      .pay-label { font-size: 0.78rem; font-weight: 500; color: var(--text-secondary); }
+      .pay-input {
+        background: var(--bg-input); border: 1px solid var(--border);
+        border-radius: var(--radius-md); padding: 0.7rem 1rem;
+        color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem;
+        outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+      }
+      .pay-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.12); }
+      .pay-input::placeholder { color: var(--text-muted); }
+
+      .otp-wrap { display: flex; gap: 0.5rem; align-items: center; }
+      .otp-wrap .pay-input { flex: 1; }
+      .send-otp-btn {
+        white-space: nowrap; font-size: 0.78rem; font-weight: 600;
+        padding: 0.7rem 1rem; border-radius: var(--radius-md);
+        border: 1px solid var(--border-strong); background: rgba(255,255,255,0.05);
+        color: var(--text-primary); cursor: pointer; transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .send-otp-btn:hover { background: rgba(255,255,255,0.09); }
+      .send-otp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      /* Order summary */
+      .order-summary {
+        background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+      }
+      .order-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; padding: 0.3rem 0; }
+      .order-row .label { color: var(--text-secondary); }
+      .order-row .value { color: var(--text-primary); font-weight: 500; }
+      .order-row.total { border-top: 1px solid var(--border-subtle); margin-top: 0.5rem; padding-top: 0.75rem; }
+      .order-row.total .label { font-weight: 600; color: var(--text-primary); }
+      .order-row.total .value { font-size: 1.05rem; font-weight: 700; color: var(--accent-light); }
+
+      /* Pay button */
+      .pay-btn {
+        width: 100%; padding: 0.9rem; border: none; border-radius: var(--radius-lg);
+        font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+        cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        letter-spacing: -0.02em; margin-top: 0.5rem;
+        display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      }
+      .pay-btn.esewa-btn { background: linear-gradient(135deg, #4caf3f, #72d060); color: #fff; box-shadow: 0 4px 20px rgba(96,187,70,0.3); }
+      .pay-btn.khalti-btn { background: linear-gradient(135deg, #4a2275, #7b3fc4); color: #fff; box-shadow: 0 4px 20px rgba(92,45,145,0.35); }
+      .pay-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+      .pay-btn:active { transform: translateY(0); }
+      .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+      /* Step system */
+      .step { display: none; }
+      .step.active { display: block; }
+
+      /* Success state */
+      .success-icon {
+        width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 1.25rem;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+      }
+      .success-icon.green { background: rgba(16,185,129,0.1); border: 2px solid rgba(16,185,129,0.25); }
+      .confetti-dot {
+        position: absolute; width: 6px; height: 6px; border-radius: 50%;
+        animation: confettiFall 1s ease-out forwards;
+        pointer-events: none;
+      }
+      @keyframes confettiFall {
+        0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(60px) rotate(360deg); }
+      }
+
+      /* Progress steps indicator */
+      .step-indicator {
+        display: flex; align-items: center; gap: 0; margin-bottom: 1.5rem;
+      }
+      .step-dot {
+        width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
+        flex-shrink: 0; background: var(--bg-elevated); transition: all 0.3s;
+      }
+      .step-dot.active { border-color: var(--accent); color: var(--accent-light); background: rgba(124,58,237,0.1); }
+      .step-dot.done { border-color: var(--green); background: var(--green); color: #fff; }
+      .step-line { flex: 1; height: 2px; background: var(--border-subtle); transition: background 0.3s; }
+      .step-line.done { background: var(--green); }
+      .step-label-row { display: flex; justify-content: space-between; margin-bottom: 1.25rem; margin-top: -0.75rem; }
+      .step-label { font-size: 0.65rem; color: var(--text-muted); text-align: center; width: 28px; }
+
+      /* eSewa/Khalti UI screens */
+      .gateway-screen {
+        background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem;
+        position: relative; overflow: hidden;
+      }
+      .gateway-header {
+        display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-subtle); margin-bottom: 1rem;
+      }
+      .gateway-logo-big { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.75rem; flex-shrink: 0; }
+      .gateway-logo-big.esewa { background: linear-gradient(135deg,#4caf3f,#72d060); color:#fff; }
+      .gateway-logo-big.khalti { background: linear-gradient(135deg,#4a2275,#7b3fc4); color:#fff; }
+      .gateway-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+      .gateway-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+      .secure-badge {
+        position: absolute; top: 1rem; right: 1rem;
+        display: flex; align-items: center; gap: 0.3rem;
+        font-size: 0.65rem; color: var(--green); font-weight: 500;
+      }
+
+      /* plan features pop */
+      .plan-features-mini {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 0.4rem 0.75rem; margin: 1rem 0;
+      }
+      .pfm-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--text-secondary); }
+      .pfm-icon { color: var(--green); flex-shrink: 0; }
+
+      /* compare table */
+      .compare-table .check { color: var(--green); }
+      .compare-table .dash { color: var(--text-muted); }
+
+      /* toast */
+      .toast {
+        position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+        background: var(--bg-elevated); border: 1px solid var(--border-hover);
+        border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+        display: flex; align-items: center; gap: 0.75rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        transform: translateY(20px); opacity: 0;
+        transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        pointer-events: none;
+      }
+      .toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+      .toast-icon { font-size: 1.25rem; }
+      .toast-text { font-size: 0.875rem; color: var(--text-primary); font-weight: 500; }
+      .toast-sub { font-size: 0.75rem; color: var(--text-muted); }
+    </style>
+  </head>
+  <body>
+
+    <!-- ── NAV ── -->
+    <nav>
+      <a href="index.html" class="nav-logo">
+        <img src="./logo.png" alt="" width="55" height="40" />
+        <span class="nav-logo-text">Nexora</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html" class="active">Pricing</a></li>
+        <li><a href="docs.html">Docs</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign in</a>
+        <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+      </div>
+    </nav>
+
+    <!-- ── HERO ── -->
+    <section class="section" style="padding-top:8rem; text-align:center;">
+      <div class="container-sm">
+        <span class="label-tag">Pricing</span>
+        <h1 class="display-title" style="font-size:clamp(2rem,5vw,3.25rem);">Simple, transparent pricing</h1>
+        <p class="section-subtitle">Start free. Scale as you grow. Pay with eSewa or Khalti.</p>
+        <div style="display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-top:1.25rem;">
+          <span style="font-size:0.78rem; color:var(--text-muted);">Accepted payments:</span>
+          <span style="background:#60BB46; color:#fff; font-size:0.7rem; font-weight:800; padding:0.25rem 0.7rem; border-radius:6px; letter-spacing:-0.01em;">eSewa</span>
+          <span style="background:#5C2D91; color:#fff; font-size:0.7rem; font-weight:800; padding:0.25rem 0.7rem; border-radius:6px; letter-spacing:-0.01em;">Khalti</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BILLING TOGGLE ── -->
+    <div class="toggle-wrap">
+      <span class="toggle-label active" id="monthly-label">Monthly</span>
+      <div class="toggle" id="billing-toggle" onclick="toggleBilling()">
+        <div class="toggle-knob" id="toggle-knob"></div>
+      </div>
+      <span class="toggle-label" id="annual-label">Annual <span class="save-badge">Save 20%</span></span>
+    </div>
+
+    <!-- ── PRICING CARDS ── -->
+    <section style="padding-bottom:5rem;">
+      <div class="container">
+        <div class="pricing-grid">
+
+          <!-- Free -->
+          <div class="pricing-card">
+            <div style="margin-bottom:1.5rem;">
+              <span class="badge badge-purple" style="margin-bottom:0.75rem;">Free</span>
+              <div class="price-amount" id="free-price">$0</div>
+              <div class="price-period">forever</div>
+              <div class="price-npr" id="free-npr">NPR 0</div>
+            </div>
+            <div class="plan-highlights">
+              <span class="plan-highlight hl-purple">No credit card</span>
+              <span class="plan-highlight hl-purple">Instant setup</span>
+            </div>
+            <div class="features-list">
+              <div class="feature-section-label">Database</div>
+              <div class="feature-check">500MB Postgres database</div>
+              <div class="feature-check">Auto REST + GraphQL API</div>
+              <div class="feature-section-label">Platform</div>
+              <div class="feature-check">1GB bandwidth / mo</div>
+              <div class="feature-check">50MB file storage</div>
+              <div class="feature-check">50k auth users</div>
+              <div class="feature-check">500k edge invocations</div>
+              <div class="feature-section-label">Support</div>
+              <div class="feature-check">Community support</div>
+              <div class="feature-cross">Custom domains</div>
+              <div class="feature-cross">Daily backups</div>
+              <div class="feature-cross">Priority support</div>
+            </div>
+            <a href="signup.html" class="btn btn-outline" style="margin-top:auto; width:100%; justify-content:center;">Get started free</a>
+          </div>
+
+          <!-- Pro -->
+          <div class="pricing-card featured">
+            <div style="position:absolute; top:-13px; left:50%; transform:translateX(-50%);">
+              <span class="badge badge-purple" style="font-size:0.7rem; padding:0.3rem 0.9rem;">Most popular</span>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+              <span class="badge badge-purple" style="margin-bottom:0.75rem;">Pro</span>
+              <div class="price-amount" id="pro-price">$25</div>
+              <div class="price-period">per project / month</div>
+              <div class="price-npr" id="pro-npr">≈ NPR 3,325 / mo</div>
+            </div>
+            <div class="plan-highlights">
+              <span class="plan-highlight hl-purple">14-day free trial</span>
+              <span class="plan-highlight hl-purple">Custom domain</span>
+            </div>
+            <div class="features-list">
+              <div class="feature-section-label">Database</div>
+              <div class="feature-check">8GB Postgres database</div>
+              <div class="feature-check">Point-in-time recovery</div>
+              <div class="feature-check">pgvector + PostGIS</div>
+              <div class="feature-section-label">Platform</div>
+              <div class="feature-check">50GB bandwidth / mo</div>
+              <div class="feature-check">100GB file storage</div>
+              <div class="feature-check">100k auth users</div>
+              <div class="feature-check">2M edge invocations</div>
+              <div class="feature-section-label">Support & Security</div>
+              <div class="feature-check">Custom domains ✓</div>
+              <div class="feature-check">Daily backups (7 days)</div>
+              <div class="feature-check">Email support</div>
+              <div class="feature-cross">Priority SLA</div>
+            </div>
+            <button class="btn btn-primary" onclick="openPayment('pro')" style="margin-top:auto; width:100%; justify-content:center;">
+              Start Pro →
+            </button>
+          </div>
+
+          <!-- Team -->
+          <div class="pricing-card">
+            <div style="margin-bottom:1.5rem;">
+              <span class="badge badge-amber" style="margin-bottom:0.75rem;">Team</span>
+              <div class="price-amount" id="team-price">$599</div>
+              <div class="price-period">per month</div>
+              <div class="price-npr" id="team-npr">≈ NPR 79,667 / mo</div>
+            </div>
+            <div class="plan-highlights">
+              <span class="plan-highlight hl-amber">30-day trial</span>
+              <span class="plan-highlight hl-amber">Read replicas</span>
+              <span class="plan-highlight hl-amber">SSO / SAML</span>
+            </div>
+            <div class="features-list">
+              <div class="feature-section-label">Database</div>
+              <div class="feature-check">64GB Postgres (dedicated)</div>
+              <div class="feature-check">Read replicas (2nd region)</div>
+              <div class="feature-check">30-day backups (PITR)</div>
+              <div class="feature-section-label">Platform</div>
+              <div class="feature-check">500GB bandwidth / mo</div>
+              <div class="feature-check">1TB file storage</div>
+              <div class="feature-check">Unlimited auth users</div>
+              <div class="feature-check">10M edge invocations</div>
+              <div class="feature-section-label">Support & Security</div>
+              <div class="feature-check">SAML SSO</div>
+              <div class="feature-check">Priority support + SLA</div>
+              <div class="feature-check">Audit logs</div>
+              <div class="feature-cross">Dedicated CSM</div>
+            </div>
+            <button class="btn btn-outline" onclick="openPayment('team')" style="margin-top:auto; width:100%; justify-content:center;">
+              Start Team →
+            </button>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="pricing-card enterprise-card">
+            <div style="margin-bottom:1.5rem;">
+              <span class="badge badge-green" style="margin-bottom:0.75rem;">Enterprise</span>
+              <div class="price-amount" style="font-size:2rem;">Custom</div>
+              <div class="price-period">tailored to you</div>
+              <div class="price-npr" style="color:var(--green);">Contact for NPR pricing</div>
+            </div>
+            <div class="plan-highlights">
+              <span class="plan-highlight hl-green">Dedicated CSM</span>
+              <span class="plan-highlight hl-green">Custom SLA</span>
+              <span class="plan-highlight hl-teal">On-prem option</span>
+            </div>
+            <div class="features-list">
+              <div class="feature-section-label">Database</div>
+              <div class="feature-check">Custom Postgres cluster size</div>
+              <div class="feature-check">Multi-region active-active</div>
+              <div class="feature-check">99.99% uptime SLA</div>
+              <div class="feature-section-label">Platform</div>
+              <div class="feature-check">Unlimited bandwidth</div>
+              <div class="feature-check">Unlimited storage</div>
+              <div class="feature-check">Unlimited edge invocations</div>
+              <div class="feature-section-label">Support & Security</div>
+              <div class="feature-check">Dedicated CSM</div>
+              <div class="feature-check">24/7 Slack support</div>
+              <div class="feature-check">Custom security review</div>
+              <div class="feature-check">On-premise / VPC option</div>
+            </div>
+            <button class="btn btn-outline" onclick="openPayment('enterprise')" style="margin-top:auto; width:100%; justify-content:center; border-color:rgba(16,185,129,0.3); color:var(--green);">
+              Contact Sales →
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COMPARE TABLE ── -->
+    <section class="section" style="padding-top:0; background:var(--bg-surface);">
+      <div class="container">
+        <div style="text-align:center; margin-bottom:3rem;">
+          <h2 class="section-title">Compare plans</h2>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Free</th><th>Pro</th><th>Team</th><th>Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="background:rgba(142,45,226,0.04); color:var(--text-muted); font-size:0.75rem; letter-spacing:0.07em; text-transform:uppercase; padding:0.65rem 1rem;">Database</td></tr>
+              <tr><td>Database size</td><td>500 MB</td><td>8 GB</td><td>64 GB</td><td>Custom</td></tr>
+              <tr><td>pgvector support</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>Read replicas</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>PITR backups</td><td class="dash">—</td><td>7 days</td><td>30 days</td><td>Custom</td></tr>
+              <tr><td colspan="5" style="background:rgba(142,45,226,0.04); color:var(--text-muted); font-size:0.75rem; letter-spacing:0.07em; text-transform:uppercase; padding:0.65rem 1rem;">Auth</td></tr>
+              <tr><td>Auth users</td><td>50k</td><td>100k</td><td>Unlimited</td><td>Unlimited</td></tr>
+              <tr><td>MFA / TOTP</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>SAML SSO</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td colspan="5" style="background:rgba(142,45,226,0.04); color:var(--text-muted); font-size:0.75rem; letter-spacing:0.07em; text-transform:uppercase; padding:0.65rem 1rem;">Edge Functions</td></tr>
+              <tr><td>Invocations / month</td><td>500k</td><td>2M</td><td>10M</td><td>Unlimited</td></tr>
+              <tr><td>Execution timeout</td><td>2s</td><td>10s</td><td>60s</td><td>Custom</td></tr>
+              <tr><td colspan="5" style="background:rgba(142,45,226,0.04); color:var(--text-muted); font-size:0.75rem; letter-spacing:0.07em; text-transform:uppercase; padding:0.65rem 1rem;">Support</td></tr>
+              <tr><td>Community</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>Email support</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>Priority / SLA</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+              <tr><td>Dedicated CSM</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <section class="section" style="padding-top:5rem;">
+      <div class="container-sm">
+        <h2 class="section-title" style="text-align:center; margin-bottom:2.5rem;">Frequently asked questions</h2>
+
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Can I pay in Nepali Rupees (NPR)? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes! We accept payments via eSewa and Khalti, Nepal's most popular digital wallets. All prices displayed in NPR use the current USD/NPR exchange rate (~133 NPR per USD). You'll see the exact NPR amount before confirming payment.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How do eSewa and Khalti payments work? <span class="faq-icon">+</span></div>
+          <div class="faq-a">After selecting your plan, choose eSewa or Khalti as your payment method. Enter your registered mobile number, receive an OTP, and confirm. The amount is debited from your digital wallet. You'll receive a payment confirmation email and your subscription activates instantly.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">What happens when I exceed my plan limits? <span class="faq-icon">+</span></div>
+          <div class="faq-a">On the free tier, services will be paused until the next billing cycle. On paid plans, you'll get usage-based overages charged at transparent per-unit rates. We'll notify you before you're charged.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Is there a free trial for paid plans? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Pro projects come with a 14-day trial. No payment required to start. Team plans include a 30-day trial when initiated from a Pro project.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Can I self-host Nexora? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes. Nexora is 100% open source under the Apache 2.0 license. You can deploy the full stack with Docker Compose or our Helm chart for Kubernetes. The community edition has no feature restrictions.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How does billing work for organizations? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Billing is per-project on Free and Pro. Team plan is a flat monthly fee per organization, covering all projects. Enterprise is custom. All plans support annual billing with a 20% discount.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="index.html" class="nav-logo" style="display:inline-flex;"><span class="nav-logo-text">Nexora</span></a>
+            <p>Backend infrastructure for ambitious teams. Postgres, auth, storage, and functions — all in one.</p>
+          </div>
+          <div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="changelog.html">Changelog</a></li></ul></div>
+          <div class="footer-col"><h4>Developers</h4><ul><li><a href="docs.html">Documentation</a></li><li><a href="#">API Reference</a></li><li><a href="#">GitHub</a></li></ul></div>
+          <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+          <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">DPA</a></li></ul></div>
+        </div>
+        <div class="footer-bottom">
+          <span>© 2025 Nexora, Inc.</span>
+          <div style="display:flex; gap:1.25rem;">
+            <a href="#" style="color:var(--text-muted); text-decoration:none;">X (Twitter)</a>
+            <a href="#" style="color:var(--text-muted); text-decoration:none;">GitHub</a>
+            <a href="#" style="color:var(--text-muted); text-decoration:none;">Discord</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- PAYMENT MODAL -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="payment-modal" onclick="handleOverlayClick(event)">
+      <div class="modal" id="modal-box">
+
+        <!-- STEP 1: Choose method -->
+        <div class="step active" id="step-1">
+          <div class="modal-header">
+            <div>
+              <div class="modal-plan-tag" id="modal-plan-tag">Pro Plan</div>
+              <div class="modal-title">Complete your purchase</div>
+              <div class="modal-price-row">
+                <div class="modal-price" id="modal-price">$25</div>
+                <div class="modal-price-sub" id="modal-price-sub">/month</div>
+              </div>
+              <div class="modal-price-npr-badge" id="modal-price-npr">≈ NPR 3,325 / month</div>
+            </div>
+            <button class="modal-close" onclick="closePayment()">✕</button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Plan mini features -->
+            <div class="plan-features-mini" id="plan-features-mini">
+              <div class="pfm-item"><span class="pfm-icon">✓</span> 8GB database</div>
+              <div class="pfm-item"><span class="pfm-icon">✓</span> 50GB bandwidth</div>
+              <div class="pfm-item"><span class="pfm-icon">✓</span> 2M edge invocations</div>
+              <div class="pfm-item"><span class="pfm-icon">✓</span> Custom domains</div>
+            </div>
+
+            <div class="modal-divider"></div>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;">Choose payment method</p>
+
+            <div class="payment-methods">
+              <div class="pay-method" data-method="esewa" onclick="selectMethod('esewa')" id="method-esewa">
+                <span class="check-mark">✓</span>
+                <div class="pay-method-logo logo-esewa">eSewa</div>
+                <div class="pay-method-name">eSewa</div>
+                <div class="pay-method-badge">Digital wallet</div>
+              </div>
+              <div class="pay-method" data-method="khalti" onclick="selectMethod('khalti')" id="method-khalti">
+                <span class="check-mark">✓</span>
+                <div class="pay-method-logo logo-khalti">Khalti</div>
+                <div class="pay-method-name">Khalti</div>
+                <div class="pay-method-badge">Digital wallet</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%; justify-content:center; padding:0.85rem;" onclick="proceedToPayment()" id="proceed-btn" disabled>
+              Continue →
+            </button>
+            <p style="text-align:center; font-size:0.72rem; color:var(--text-muted); margin-top:0.75rem;">🔒 256-bit SSL encrypted · Demo only · No real charges</p>
+          </div>
+        </div>
+
+        <!-- STEP 2: Enter details + OTP -->
+        <div class="step" id="step-2">
+          <div class="modal-header">
+            <div>
+              <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                <button onclick="goToStep(1)" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; padding:0; display:flex; align-items:center; gap:0.3rem;">← Back</button>
+              </div>
+              <div class="modal-title" id="step2-title">Pay with eSewa</div>
+            </div>
+            <button class="modal-close" onclick="closePayment()">✕</button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Step indicator -->
+            <div class="step-indicator">
+              <div class="step-dot done">✓</div>
+              <div class="step-line done"></div>
+              <div class="step-dot active">2</div>
+              <div class="step-line"></div>
+              <div class="step-dot">3</div>
+            </div>
+
+            <!-- Gateway UI -->
+            <div class="gateway-screen" id="gateway-ui">
+              <div class="secure-badge">🔒 Secure</div>
+              <div class="gateway-header">
+                <div class="gateway-logo-big esewa" id="gw-logo">eSewa</div>
+                <div>
+                  <div class="gateway-name" id="gw-name">eSewa Payment</div>
+                  <div class="gateway-sub">Connected to Nexora</div>
+                </div>
+              </div>
+
+              <div class="payment-form">
+                <div class="pay-input-group">
+                  <label class="pay-label" id="gw-input-label">Registered mobile number</label>
+                  <input class="pay-input" id="mobile-input" type="tel" placeholder="98XXXXXXXX" maxlength="10" />
+                </div>
+                <div class="pay-input-group">
+                  <label class="pay-label">One-Time Password (OTP)</label>
+                  <div class="otp-wrap">
+                    <input class="pay-input" id="otp-input" type="text" placeholder="6-digit OTP" maxlength="6" />
+                    <button class="send-otp-btn" id="otp-btn" onclick="sendOTP()">Send OTP</button>
+                  </div>
+                  <div id="otp-status" style="font-size:0.72rem; color:var(--green); display:none; margin-top:0.25rem;">✓ OTP sent to your number</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order summary -->
+            <div class="order-summary">
+              <div class="order-row"><span class="label" id="sum-plan-name">Nexora Pro</span><span class="value" id="sum-plan-price">$25.00</span></div>
+              <div class="order-row"><span class="label">Billing</span><span class="value" id="sum-billing">Monthly</span></div>
+              <div class="order-row"><span class="label">Tax (VAT 13%)</span><span class="value" id="sum-tax">NPR 432</span></div>
+              <div class="order-row total"><span class="label">Total today</span><span class="value" id="sum-total">NPR 3,757</span></div>
+            </div>
+
+            <button class="pay-btn esewa-btn" id="pay-btn" onclick="processPayment()">
+              <span id="pay-btn-logo">💚</span>
+              <span id="pay-btn-text">Pay NPR 3,757 via eSewa</span>
+            </button>
+            <p style="text-align:center; font-size:0.68rem; color:var(--text-muted); margin-top:0.6rem;">Demo only — no real payment is processed</p>
+          </div>
+        </div>
+
+        <!-- STEP 3: Processing -->
+        <div class="step" id="step-3">
+          <div class="modal-body" style="text-align:center; padding:3rem 2rem;">
+            <div style="font-size:3rem; margin-bottom:1.25rem; animation: spin 1s linear infinite;" id="processing-icon">⟳</div>
+            <div style="font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:var(--text-primary); margin-bottom:0.5rem;" id="processing-title">Processing payment…</div>
+            <div style="font-size:0.825rem; color:var(--text-secondary);" id="processing-sub">Connecting to payment gateway</div>
+            <div id="processing-steps" style="margin-top:1.5rem; display:flex; flex-direction:column; gap:0.5rem; text-align:left; max-width:260px; margin-left:auto; margin-right:auto;"></div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Success -->
+        <div class="step" id="step-4">
+          <div class="modal-body" style="text-align:center; padding:2.5rem 2rem; position:relative; overflow:hidden;">
+            <div id="confetti-container"></div>
+            <div class="success-icon green" style="margin:0 auto 1.25rem;">✓</div>
+            <div style="font-family:var(--font-display); font-weight:800; font-size:1.4rem; color:var(--text-primary); margin-bottom:0.5rem; letter-spacing:-0.03em;">Payment successful! 🎉</div>
+            <div style="font-size:0.875rem; color:var(--text-secondary); margin-bottom:1.75rem;" id="success-msg">Your Nexora Pro subscription is now active.</div>
+            <div style="background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:left;">
+              <div style="font-size:0.72rem; color:var(--text-muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.75rem;">Transaction details</div>
+              <div class="order-row"><span class="label">Transaction ID</span><span class="value" id="txn-id" style="font-family:var(--font-mono); font-size:0.78rem;">NXR-2025-XXXXX</span></div>
+              <div class="order-row"><span class="label">Payment via</span><span class="value" id="txn-method">eSewa</span></div>
+              <div class="order-row"><span class="label">Amount paid</span><span class="value" id="txn-amount">NPR 3,757</span></div>
+              <div class="order-row"><span class="label">Status</span><span class="value" style="color:var(--green);">Confirmed ✓</span></div>
+            </div>
+            <a href="dashboard.html" class="btn btn-primary" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Go to Dashboard →</a>
+            <button onclick="closePayment()" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; margin-top:1rem; cursor:pointer;">Close</button>
+          </div>
+        </div>
+
+      </div><!-- /modal-box -->
+    </div><!-- /modal-overlay -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+      <span class="toast-icon" id="toast-icon">✓</span>
+      <div>
+        <div class="toast-text" id="toast-text">OTP Sent!</div>
+        <div class="toast-sub" id="toast-sub">Check your mobile</div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+
+    <script>
+      // ─── STATE ─────────────────────────────────────────
+      let annual = false;
+      let selectedMethod = null;
+      let currentPlan = null;
+      let otpSent = false;
+      let otpTimer = null;
+
+      const USD_TO_NPR = 133;
+
+      const plans = {
+        pro: {
+          name: 'Pro',
+          badge: 'Pro Plan',
+          priceUSD: { monthly: 25, annual: 20 },
+          features: ['8GB database', '50GB bandwidth', '2M edge invocations', 'Custom domains'],
+          summaryName: 'Nexora Pro',
+        },
+        team: {
+          name: 'Team',
+          badge: 'Team Plan',
+          priceUSD: { monthly: 599, annual: 479 },
+          features: ['64GB dedicated DB', 'Read replicas', '10M edge invocations', 'SAML SSO'],
+          summaryName: 'Nexora Team',
+        },
+        enterprise: {
+          name: 'Enterprise',
+          badge: 'Enterprise Plan',
+          priceUSD: { monthly: null, annual: null },
+          features: ['Custom cluster', '24/7 Slack support', 'Dedicated CSM', 'On-prem option'],
+          summaryName: 'Nexora Enterprise',
+        },
+      };
+
+      // ─── BILLING TOGGLE ────────────────────────────────
+      function toggleBilling() {
+        annual = !annual;
+        const toggle = document.getElementById('billing-toggle');
+        const knob = document.getElementById('toggle-knob');
+        toggle.style.background = annual ? 'var(--green)' : 'var(--accent)';
+        knob.style.transform = annual ? 'translateX(20px)' : 'translateX(0)';
+        document.getElementById('monthly-label').classList.toggle('active', !annual);
+        document.getElementById('annual-label').classList.toggle('active', annual);
+
+        const p = annual ? 1 : 0;
+        document.getElementById('pro-price').textContent  = annual ? '$20' : '$25';
+        document.getElementById('team-price').textContent = annual ? '$479' : '$599';
+        document.getElementById('pro-npr').textContent    = annual ? '≈ NPR 2,660 / mo' : '≈ NPR 3,325 / mo';
+        document.getElementById('team-npr').textContent   = annual ? '≈ NPR 63,707 / mo' : '≈ NPR 79,667 / mo';
+      }
+
+      // ─── OPEN / CLOSE MODAL ────────────────────────────
+      function openPayment(plan) {
+        currentPlan = plan;
+        selectedMethod = null;
+        goToStep(1);
+        populateModal(plan);
+        document.getElementById('payment-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePayment() {
+        document.getElementById('payment-modal').classList.remove('open');
+        document.body.style.overflow = '';
+        // reset
+        document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+        document.getElementById('proceed-btn').disabled = true;
+        document.getElementById('mobile-input').value = '';
+        document.getElementById('otp-input').value = '';
+        document.getElementById('otp-status').style.display = 'none';
+        otpSent = false;
+        clearTimeout(otpTimer);
+      }
+
+      function handleOverlayClick(e) {
+        if (e.target.id === 'payment-modal') closePayment();
+      }
+
+      function populateModal(planKey) {
+        if (planKey === 'enterprise') {
+          // redirect to sales CTA
+          document.getElementById('modal-plan-tag').textContent = 'Enterprise Plan';
+          document.getElementById('modal-title') && null;
+          document.querySelector('#step-1 .modal-title').textContent = 'Talk to our team';
+          document.getElementById('modal-price').textContent = 'Custom';
+          document.getElementById('modal-price-sub').textContent = '';
+          document.getElementById('modal-price-npr').textContent = 'Tailored NPR pricing available';
+          document.getElementById('plan-features-mini').innerHTML = `
+            <div class="pfm-item"><span class="pfm-icon">✓</span> Custom cluster size</div>
+            <div class="pfm-item"><span class="pfm-icon">✓</span> 99.99% SLA</div>
+            <div class="pfm-item"><span class="pfm-icon">✓</span> Dedicated CSM</div>
+            <div class="pfm-item"><span class="pfm-icon">✓</span> On-prem option</div>
+          `;
+          return;
+        }
+
+        const plan = plans[planKey];
+        const price = annual ? plan.priceUSD.annual : plan.priceUSD.monthly;
+        const priceNPR = Math.round(price * USD_TO_NPR);
+        const billing = annual ? 'Annually' : 'Monthly';
+
+        document.getElementById('modal-plan-tag').textContent = plan.badge;
+        document.querySelector('#step-1 .modal-title').textContent = 'Complete your purchase';
+        document.getElementById('modal-price').textContent = `$${price}`;
+        document.getElementById('modal-price-sub').textContent = annual ? '/month (billed annually)' : '/month';
+        document.getElementById('modal-price-npr').textContent = `≈ NPR ${priceNPR.toLocaleString()} / month`;
+        document.getElementById('plan-features-mini').innerHTML = plan.features.map(f => `<div class="pfm-item"><span class="pfm-icon">✓</span> ${f}</div>`).join('');
+
+        // summary
+        const tax = Math.round(priceNPR * 0.13);
+        const total = priceNPR + tax;
+        document.getElementById('sum-plan-name').textContent = plan.summaryName;
+        document.getElementById('sum-plan-price').textContent = `$${price}.00`;
+        document.getElementById('sum-billing').textContent = billing;
+        document.getElementById('sum-tax').textContent = `NPR ${tax.toLocaleString()}`;
+        document.getElementById('sum-total').textContent = `NPR ${total.toLocaleString()}`;
+        document.getElementById('txn-amount').textContent = `NPR ${total.toLocaleString()}`;
+        document.getElementById('pay-btn-text').textContent = `Pay NPR ${total.toLocaleString()} via eSewa`;
+        document.getElementById('success-msg').textContent = `Your Nexora ${plan.name} subscription is now active.`;
+      }
+
+      // ─── METHOD SELECTION ──────────────────────────────
+      function selectMethod(method) {
+        selectedMethod = method;
+        document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+        document.getElementById('method-' + method).classList.add('selected');
+        document.getElementById('proceed-btn').disabled = false;
+      }
+
+      // ─── PROCEED TO PAYMENT ────────────────────────────
+      function proceedToPayment() {
+        if (!selectedMethod) return;
+        if (currentPlan === 'enterprise') {
+          showToast('📧', 'Sales team notified!', 'Expect a response within 24 hours');
+          closePayment();
+          return;
+        }
+        updateStep2UI();
+        goToStep(2);
+      }
+
+      function updateStep2UI() {
+        const isEsewa = selectedMethod === 'esewa';
+        const plan = plans[currentPlan];
+        const price = annual ? plan.priceUSD.annual : plan.priceUSD.monthly;
+        const priceNPR = Math.round(price * USD_TO_NPR);
+        const tax = Math.round(priceNPR * 0.13);
+        const total = priceNPR + tax;
+
+        document.getElementById('step2-title').textContent = `Pay with ${isEsewa ? 'eSewa' : 'Khalti'}`;
+        document.getElementById('gw-logo').textContent = isEsewa ? 'eSewa' : 'Khalti';
+        document.getElementById('gw-logo').className = `gateway-logo-big ${isEsewa ? 'esewa' : 'khalti'}`;
+        document.getElementById('gw-name').textContent = isEsewa ? 'eSewa Payment' : 'Khalti Payment';
+        document.getElementById('gw-input-label').textContent = isEsewa ? 'eSewa registered number' : 'Khalti registered number';
+
+        const payBtn = document.getElementById('pay-btn');
+        payBtn.className = `pay-btn ${isEsewa ? 'esewa-btn' : 'khalti-btn'}`;
+        document.getElementById('pay-btn-logo').textContent = isEsewa ? '💚' : '💜';
+        document.getElementById('pay-btn-text').textContent = `Pay NPR ${total.toLocaleString()} via ${isEsewa ? 'eSewa' : 'Khalti'}`;
+        document.getElementById('txn-method').textContent = isEsewa ? 'eSewa' : 'Khalti';
+        document.getElementById('txn-amount').textContent = `NPR ${total.toLocaleString()}`;
+        document.getElementById('sum-total').textContent = `NPR ${total.toLocaleString()}`;
+        document.getElementById('sum-tax').textContent = `NPR ${tax.toLocaleString()}`;
+      }
+
+      // ─── SEND OTP ──────────────────────────────────────
+      function sendOTP() {
+        const mobile = document.getElementById('mobile-input').value.trim();
+        if (mobile.length < 10) {
+          showToast('⚠️', 'Invalid number', 'Enter a valid 10-digit mobile number');
+          return;
+        }
+        const btn = document.getElementById('otp-btn');
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        setTimeout(() => {
+          btn.textContent = 'Resend (60s)';
+          document.getElementById('otp-status').style.display = 'block';
+          otpSent = true;
+          showToast('📱', 'OTP Sent!', `Code sent to ${mobile}`);
+          // countdown
+          let sec = 60;
+          const t = setInterval(() => {
+            sec--;
+            btn.textContent = `Resend (${sec}s)`;
+            if (sec <= 0) { clearInterval(t); btn.disabled = false; btn.textContent = 'Resend OTP'; }
+          }, 1000);
+        }, 1200);
+      }
+
+      // ─── PROCESS PAYMENT ───────────────────────────────
+      function processPayment() {
+        const mobile = document.getElementById('mobile-input').value.trim();
+        const otp = document.getElementById('otp-input').value.trim();
+
+        if (mobile.length < 10) { showToast('⚠️', 'Mobile required', 'Enter your registered mobile number'); return; }
+        if (!otpSent) { showToast('⚠️', 'OTP required', 'Click "Send OTP" first'); return; }
+        if (otp.length < 6) { showToast('⚠️', 'OTP required', 'Enter the 6-digit OTP'); return; }
+
+        goToStep(3);
+        simulateProcessing();
+      }
+
+      function simulateProcessing() {
+        const steps = [
+          { text: 'Verifying OTP…', delay: 800 },
+          { text: 'Connecting to payment gateway…', delay: 1600 },
+          { text: 'Authorizing transaction…', delay: 2600 },
+          { text: 'Confirming subscription…', delay: 3400 },
+        ];
+        const container = document.getElementById('processing-steps');
+        container.innerHTML = '';
+
+        steps.forEach((s, i) => {
+          setTimeout(() => {
+            document.getElementById('processing-sub').textContent = s.text;
+            const el = document.createElement('div');
+            el.style.cssText = 'display:flex; align-items:center; gap:0.5rem; font-size:0.78rem; color:var(--text-secondary); opacity:0; transition:opacity 0.3s;';
+            el.innerHTML = `<span style="color:var(--green);">✓</span> ${s.text}`;
+            container.appendChild(el);
+            setTimeout(() => el.style.opacity = '1', 50);
+          }, s.delay);
+        });
+
+        setTimeout(() => {
+          const txnId = 'NXR-' + Date.now().toString().slice(-8);
+          document.getElementById('txn-id').textContent = txnId;
+          spawnConfetti();
+          goToStep(4);
+        }, 4200);
+      }
+
+      // ─── CONFETTI ──────────────────────────────────────
+      function spawnConfetti() {
+        const container = document.getElementById('confetti-container');
+        const colors = ['#a78bfa','#60BB46','#5C2D91','#f59e0b','#10b981','#38bdf8'];
+        for (let i = 0; i < 18; i++) {
+          setTimeout(() => {
+            const dot = document.createElement('div');
+            dot.className = 'confetti-dot';
+            dot.style.cssText = `
+              left: ${Math.random() * 100}%;
+              top: ${Math.random() * 40}%;
+              background: ${colors[Math.floor(Math.random() * colors.length)]};
+              animation-delay: ${Math.random() * 0.5}s;
+              animation-duration: ${0.8 + Math.random() * 0.6}s;
+            `;
+            container.appendChild(dot);
+            setTimeout(() => dot.remove(), 1500);
+          }, i * 60);
+        }
+      }
+
+      // ─── STEP NAVIGATION ───────────────────────────────
+      function goToStep(n) {
+        document.querySelectorAll('.step').forEach((s, i) => {
+          s.classList.toggle('active', i + 1 === n);
+        });
+      }
+
+      // ─── TOAST ─────────────────────────────────────────
+      function showToast(icon, text, sub) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-icon').textContent = icon;
+        document.getElementById('toast-text').textContent = text;
+        document.getElementById('toast-sub').textContent = sub;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+      }
+
+      // ─── FAQ ───────────────────────────────────────────
+      function toggleFaq(el) {
+        const item = el.closest('.faq-item');
+        item.classList.toggle('open');
+        el.classList.toggle('open');
+      }
+    </script>
+  </body>
+</html>

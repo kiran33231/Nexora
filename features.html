@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Features — Nexora</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .feature-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .feature-section.reverse { direction: rtl; }
+    .feature-section.reverse > * { direction: ltr; }
+    @media(max-width:760px) {
+      .feature-section { grid-template-columns: 1fr; gap: 2.5rem; direction: ltr !important; }
+      .feature-section.reverse > * { direction: ltr; }
+    }
+
+    .feature-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      font-family: 'Fira Code','SF Mono',monospace;
+      font-size: 0.8rem;
+      line-height: 1.85;
+      color: var(--text-secondary);
+      min-height: 280px;
+    }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .tech-pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.78rem; font-weight: 500;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-subtle);
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      color: var(--text-secondary);
+    }
+
+    .integration-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    @media(max-width:700px) { .integration-grid { grid-template-columns: 1fr 1fr; } }
+
+    .integration-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
+    }
+    .integration-card:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card-hover);
+    }
+    .integration-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .integration-name { font-size: 0.825rem; font-weight: 500; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="./logo.png" alt="" width="55" height="40" />
+    <!-- <span class="nav-logo-mark">N</span> -->
+    <span class="nav-logo-text">Nexora</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="features.html" class="active">Features</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="docs.html">Docs</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="changelog.html">Changelog</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost">Sign in</a>
+    <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="section" style="padding-top:8rem; text-align:center;">
+  <div class="container-sm">
+    <span class="label-tag">Features</span>
+    <h1 class="display-title" style="font-size:clamp(2rem,5vw,3.25rem);">Every tool your backend needs</h1>
+    <p class="section-subtitle">From database to auth to edge functions — Nexora handles the infrastructure so you can focus on your product.</p>
+  </div>
+</section>
+
+<!-- Feature Sections -->
+<div class="container">
+
+  <!-- Database -->
+  <div class="feature-section">
+    <div>
+      <div class="feature-icon">🗄</div>
+      <span class="label-tag">Database</span>
+      <h2 class="section-title" style="margin-top:0.5rem;">Postgres. Fully managed.</h2>
+      <p style="color:var(--text-secondary); font-size:0.9375rem; margin-top:0.75rem; line-height:1.75;">
+        Every Nexora project runs on a dedicated Postgres instance. Get auto-generated REST and GraphQL APIs, row-level security, custom functions, and support for every extension.
+      </p>
+      <div class="pill-row">
+        <span class="tech-pill">PostgreSQL 16</span>
+        <span class="tech-pill">Row-Level Security</span>
+        <span class="tech-pill">pgvector</span>
+        <span class="tech-pill">PostGIS</span>
+        <span class="tech-pill">GraphQL</span>
+        <span class="tech-pill">REST API</span>
+      </div>
+    </div>
+    <div class="feature-visual">
+      <span class="code-comment">-- Row-level security example</span><br/>
+      <span class="code-keyword">CREATE POLICY</span> <span class="code-string">"users_own_data"</span><br/>
+      &nbsp;&nbsp;<span class="code-keyword">ON</span> profiles<br/>
+      &nbsp;&nbsp;<span class="code-keyword">FOR ALL</span><br/>
+      &nbsp;&nbsp;<span class="code-keyword">USING</span> (auth.<span class="code-fn">uid</span>() = user_id);<br/><br/>
+      <span class="code-comment">-- Auto-generated REST call</span><br/>
+      <span class="code-keyword">GET</span> /rest/v1/profiles<br/>
+      &nbsp;&nbsp;?select=<span class="code-string">id,name,avatar_url</span><br/>
+      &nbsp;&nbsp;&amp;user_id=eq.<span class="code-fn">auth.uid()</span><br/><br/>
+      <span class="code-comment">-- Or use the client</span><br/>
+      <span class="code-keyword">const</span> { data } = <span class="code-keyword">await</span> nexora<br/>
+      &nbsp;&nbsp;.<span class="code-fn">from</span>(<span class="code-string">'profiles'</span>)<br/>
+      &nbsp;&nbsp;.<span class="code-fn">select</span>(<span class="code-string">'*'</span>)
+    </div>
+  </div>
+
+  <!-- Auth -->
+  <div class="feature-section reverse">
+    <div>
+      <div class="feature-icon">🔐</div>
+      <span class="label-tag">Authentication</span>
+      <h2 class="section-title" style="margin-top:0.5rem;">Auth that just works.</h2>
+      <p style="color:var(--text-secondary); font-size:0.9375rem; margin-top:0.75rem; line-height:1.75;">
+        Add authentication in minutes. Support for email, magic links, phone, and 20+ OAuth providers out of the box. Multi-factor auth, session management, and SAML SSO for teams.
+      </p>
+      <div class="pill-row">
+        <span class="tech-pill">Email + Magic Link</span>
+        <span class="tech-pill">Google / GitHub</span>
+        <span class="tech-pill">MFA / TOTP</span>
+        <span class="tech-pill">SAML SSO</span>
+        <span class="tech-pill">JWT Sessions</span>
+      </div>
+    </div>
+    <div class="feature-visual">
+      <span class="code-comment">// Sign up with email</span><br/>
+      <span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span><br/>
+      &nbsp;&nbsp;nexora.auth.<span class="code-fn">signUp</span>({<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;email: <span class="code-string">'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89fcfaecfbc9ecf1e8e4f9e5eca7eae6e4">[email&#160;protected]</a>'</span>,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;password: <span class="code-string">'super-secure'</span><br/>
+      &nbsp;&nbsp;})<br/><br/>
+      <span class="code-comment">// OAuth with Google</span><br/>
+      <span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signInWithOAuth</span>({<br/>
+      &nbsp;&nbsp;provider: <span class="code-string">'google'</span>,<br/>
+      &nbsp;&nbsp;options: { redirectTo: <span class="code-string">'/dashboard'</span> }<br/>
+      })<br/><br/>
+      <span class="code-comment">// Get current user</span><br/>
+      <span class="code-keyword">const</span> { data: { user } } =<br/>
+      &nbsp;&nbsp;<span class="code-keyword">await</span> nexora.auth.<span class="code-fn">getUser</span>()
+    </div>
+  </div>
+
+  <!-- Edge Functions -->
+  <div class="feature-section">
+    <div>
+      <div class="feature-icon">⚡</div>
+      <span class="label-tag">Edge Functions</span>
+      <h2 class="section-title" style="margin-top:0.5rem;">Serverless at the edge.</h2>
+      <p style="color:var(--text-secondary); font-size:0.9375rem; margin-top:0.75rem; line-height:1.75;">
+        Deploy TypeScript functions to 18 global regions. Sub-5ms cold starts, Deno runtime, native Nexora client access, and first-class support for webhooks and scheduled jobs.
+      </p>
+      <div class="pill-row">
+        <span class="tech-pill">Deno Runtime</span>
+        <span class="tech-pill">TypeScript</span>
+        <span class="tech-pill">18 regions</span>
+        <span class="tech-pill">Cron Jobs</span>
+        <span class="tech-pill">Webhooks</span>
+      </div>
+    </div>
+    <div class="feature-visual">
+      <span class="code-comment">// functions/send-welcome.ts</span><br/>
+      <span class="code-keyword">import</span> { serve } <span class="code-keyword">from</span> <span class="code-string">'https://deno.land/std/http/server.ts'</span><br/><br/>
+      <span class="code-fn">serve</span>(<span class="code-keyword">async</span> (req) => {<br/>
+      &nbsp;&nbsp;<span class="code-keyword">const</span> { email } = <span class="code-keyword">await</span> req.<span class="code-fn">json</span>()<br/><br/>
+      &nbsp;&nbsp;<span class="code-keyword">await</span> <span class="code-fn">sendEmail</span>({<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;to: email,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;subject: <span class="code-string">'Welcome to our app!'</span>,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;html: <span class="code-fn">welcomeTemplate</span>(email)<br/>
+      &nbsp;&nbsp;})<br/><br/>
+      &nbsp;&nbsp;<span class="code-keyword">return new</span> <span class="code-type">Response</span>(<span class="code-string">'OK'</span>)<br/>
+      })
+    </div>
+  </div>
+
+  <!-- Realtime -->
+  <div class="feature-section reverse">
+    <div>
+      <div class="feature-icon">🔄</div>
+      <span class="label-tag">Realtime</span>
+      <h2 class="section-title" style="margin-top:0.5rem;">Live data, everywhere.</h2>
+      <p style="color:var(--text-secondary); font-size:0.9375rem; margin-top:0.75rem; line-height:1.75;">
+        Listen to database changes in real time. Broadcast messages to channels. Track user presence. Build collaborative apps, live dashboards, and notifications — zero polling needed.
+      </p>
+      <div class="pill-row">
+        <span class="tech-pill">WebSockets</span>
+        <span class="tech-pill">DB Change Streams</span>
+        <span class="tech-pill">Presence</span>
+        <span class="tech-pill">Broadcast</span>
+      </div>
+    </div>
+    <div class="feature-visual">
+      <span class="code-comment">// Subscribe to DB changes</span><br/>
+      <span class="code-keyword">const</span> channel = nexora<br/>
+      &nbsp;&nbsp;.<span class="code-fn">channel</span>(<span class="code-string">'messages'</span>)<br/>
+      &nbsp;&nbsp;.<span class="code-fn">on</span>(<span class="code-string">'postgres_changes'</span>, {<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;event: <span class="code-string">'INSERT'</span>,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;schema: <span class="code-string">'public'</span>,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;table: <span class="code-string">'messages'</span><br/>
+      &nbsp;&nbsp;}, (payload) => {<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-fn">addMessage</span>(payload.new)<br/>
+      &nbsp;&nbsp;})<br/>
+      &nbsp;&nbsp;.<span class="code-fn">subscribe</span>()
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- Integrations -->
+<section class="section" style="background:var(--bg-surface);">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:3rem;">
+      <span class="label-tag">Integrations</span>
+      <h2 class="section-title">Works with your stack</h2>
+      <p class="section-subtitle">Official SDKs and integrations for every major framework and platform.</p>
+    </div>
+    <div class="integration-grid">
+      <div class="integration-card"><div class="integration-icon">⚛️</div><div class="integration-name">React</div></div>
+      <div class="integration-card"><div class="integration-icon">💚</div><div class="integration-name">Next.js</div></div>
+      <div class="integration-card"><div class="integration-icon">🟣</div><div class="integration-name">SvelteKit</div></div>
+      <div class="integration-card"><div class="integration-icon">🔷</div><div class="integration-name">Vue / Nuxt</div></div>
+      <div class="integration-card"><div class="integration-icon">🐍</div><div class="integration-name">Python</div></div>
+      <div class="integration-card"><div class="integration-icon">🔴</div><div class="integration-name">Ruby</div></div>
+      <div class="integration-card"><div class="integration-icon">☕</div><div class="integration-name">Kotlin</div></div>
+      <div class="integration-card"><div class="integration-icon">🍎</div><div class="integration-name">Swift</div></div>
+    </div>
+    <div style="text-align:center; margin-top:2.5rem;">
+      <a href="docs.html" class="btn btn-outline">View all SDKs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <h2 class="section-title" style="margin-bottom:0.75rem;">Start building today</h2>
+      <p class="section-subtitle" style="margin-bottom:2rem;">Free tier. No credit card. Up and running in under 2 minutes.</p>
+      <a href="#" class="btn btn-primary btn-xl">Create free project</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="display:inline-flex;"><span class="nav-logo-text">Nexora</span></a>
+        <p>Backend infrastructure for ambitious teams.</p>
+      </div>
+      <div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-col"><h4>Developers</h4><ul><li><a href="docs.html">Documentation</a></li><li><a href="#">GitHub</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>

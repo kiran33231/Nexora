@@ -1,0 +1,1320 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation — Nexora</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .docs-page {
+        padding-top: var(--nav-height);
+      }
+      .docs-search {
+        width: 100%;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 1rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .docs-search:focus {
+        border-color: var(--accent);
+      }
+      .docs-search::placeholder {
+        color: var(--text-muted);
+      }
+
+      .step-num {
+        display: inline-flex;
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        background: rgba(142, 45, 226, 0.15);
+        border: 1px solid rgba(142, 45, 226, 0.3);
+        border-radius: 50%;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--accent-light);
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .callout {
+        background: rgba(142, 45, 226, 0.06);
+        border: 1px solid rgba(142, 45, 226, 0.18);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: 0.875rem 1.25rem;
+        margin: 1.5rem 0;
+      }
+      .callout p {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 0;
+      }
+      .callout-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent-light);
+        margin-bottom: 0.35rem;
+      }
+
+      .callout-green {
+        background: rgba(34, 214, 138, 0.05);
+        border-color: rgba(34, 214, 138, 0.2);
+        border-left-color: var(--green);
+      }
+      .callout-green .callout-label {
+        color: var(--green);
+      }
+
+      .docs-tab-row {
+        display: flex;
+        gap: 0.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 0;
+      }
+      .docs-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: color 0.15s;
+        user-select: none;
+      }
+      .docs-tab.active {
+        color: var(--accent-light);
+        border-bottom-color: var(--accent-light);
+      }
+      .docs-tab:hover:not(.active) {
+        color: var(--text-secondary);
+      }
+
+      .tab-panel {
+        display: none;
+        margin-top: 1.25rem;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      .search-results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .quick-start-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      @media (max-width: 600px) {
+        .quick-start-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Search highlight */
+      mark.search-hl {
+        background: rgba(142, 45, 226, 0.28);
+        color: inherit;
+        border-radius: 2px;
+        padding: 0 2px;
+      }
+
+      /* Sidebar search: hidden items */
+      .docs-sidebar-section[data-hidden="true"] {
+        display: none;
+      }
+      .docs-sidebar-section li[data-hidden="true"] {
+        display: none;
+      }
+
+      /* No results message */
+      #search-no-results {
+        display: none;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      /* Active sidebar link */
+      .docs-sidebar-section li a.active {
+        color: var(--accent-light);
+        font-weight: 600;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .docs-sidebar {
+        position: sticky;
+        top: var(--nav-height, 64px);
+        height: calc(100vh - var(--nav-height, 64px));
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body class="docs-page">
+    <!-- Nav -->
+    <nav>
+      <a href="index.html" class="nav-logo">
+        <img src="./logo.png" alt="" width="55" height="40" />
+        <span class="nav-logo-text">Nexora</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="docs.html" class="active">Docs</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-ghost">Sign in</a>
+        <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+      </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="container" style="margin-top: 0">
+      <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+          <input
+            class="docs-search"
+            id="docsSearchInput"
+            type="text"
+            placeholder="Search docs..."
+            autocomplete="off"
+          />
+          <div id="search-no-results">No results found.</div>
+
+          <div style="margin-top: 1.5rem" id="sidebarNav">
+            <div class="docs-sidebar-section" data-section="Getting Started">
+              <h5>Getting Started</h5>
+              <ul>
+                <li data-label="Introduction">
+                  <a href="#intro">Introduction</a>
+                </li>
+                <li data-label="Quickstart">
+                  <a href="#quickstart">Quickstart</a>
+                </li>
+                <li data-label="Architecture">
+                  <a href="#architecture">Architecture</a>
+                </li>
+                <li data-label="CLI Reference">
+                  <a href="#cli">CLI Reference</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Database">
+              <h5>Database</h5>
+              <ul>
+                <li data-label="Database Overview">
+                  <a href="#db-intro">Overview</a>
+                </li>
+                <li data-label="Tables Views">
+                  <a href="#db-tables">Tables &amp; Views</a>
+                </li>
+                <li data-label="Row-Level Security RLS">
+                  <a href="#db-rls">Row-Level Security</a>
+                </li>
+                <li data-label="Functions">
+                  <a href="#db-functions">Functions</a>
+                </li>
+                <li data-label="Extensions">
+                  <a href="#db-extensions">Extensions</a>
+                </li>
+                <li data-label="Migrations">
+                  <a href="#db-migrations">Migrations</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Auth">
+              <h5>Auth</h5>
+              <ul>
+                <li data-label="Auth Overview Authentication">
+                  <a href="#auth-intro">Overview</a>
+                </li>
+                <li data-label="Email Password">
+                  <a href="#auth-email">Email &amp; Password</a>
+                </li>
+                <li data-label="OAuth Providers">
+                  <a href="#auth-oauth">OAuth Providers</a>
+                </li>
+                <li data-label="MFA Multi-Factor Authentication">
+                  <a href="#auth-mfa">MFA</a>
+                </li>
+                <li data-label="Enterprise SSO SAML">
+                  <a href="#auth-sso">Enterprise SSO</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Edge Functions">
+              <h5>Edge Functions</h5>
+              <ul>
+                <li data-label="Edge Functions Overview">
+                  <a href="#fn-intro">Overview</a>
+                </li>
+                <li data-label="Deploying Functions">
+                  <a href="#fn-deploy">Deploying</a>
+                </li>
+                <li data-label="Secrets Environment Variables">
+                  <a href="#fn-secrets">Secrets &amp; Env</a>
+                </li>
+                <li data-label="Cron Jobs Scheduled">
+                  <a href="#fn-cron">Cron Jobs</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Realtime">
+              <h5>Realtime</h5>
+              <ul>
+                <li data-label="Realtime Overview">
+                  <a href="#rt-intro">Overview</a>
+                </li>
+                <li data-label="Broadcast">
+                  <a href="#rt-broadcast">Broadcast</a>
+                </li>
+                <li data-label="Presence">
+                  <a href="#rt-presence">Presence</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Storage">
+              <h5>Storage</h5>
+              <ul>
+                <li data-label="Storage Overview">
+                  <a href="#storage-intro">Overview</a>
+                </li>
+                <li data-label="Uploads Files">
+                  <a href="#storage-upload">Uploads</a>
+                </li>
+                <li data-label="CDN Transform Images">
+                  <a href="#storage-cdn">CDN &amp; Transform</a>
+                </li>
+              </ul>
+            </div>
+            <div class="docs-sidebar-section" data-section="Self-hosting">
+              <h5>Self-hosting</h5>
+              <ul>
+                <li data-label="Docker Self-hosting">
+                  <a href="#self-docker">Docker</a>
+                </li>
+                <li data-label="Kubernetes K8s">
+                  <a href="#self-k8s">Kubernetes</a>
+                </li>
+                <li data-label="Configuration Config">
+                  <a href="#self-config">Configuration</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="docs-content" id="docsMain">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            <span class="badge badge-green"
+              ><span class="glow-dot" style="width: 6px; height: 6px"></span>
+              v2.0</span
+            >
+            <span style="font-size: 0.8rem; color: var(--text-muted)"
+              >Updated April 2025</span
+            >
+          </div>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           GETTING STARTED
+      ═══════════════════════════════════════════════════════════ -->
+          <h1 id="intro">Introduction</h1>
+          <p>
+            Welcome to Nexora. This documentation covers everything you need to
+            build, deploy, and scale your backend using the Nexora platform.
+          </p>
+
+          <div class="callout">
+            <div class="callout-label">New in v2.0</div>
+            <p>
+              Nexora v2.0 ships with real-time sync improvements, pgvector
+              support, and a redesigned dashboard.
+              <a href="changelog.html" style="color: var(--accent-light)"
+                >See the changelog →</a
+              >
+            </p>
+          </div>
+
+          <p>
+            Nexora is an open-source backend-as-a-service built on Postgres.
+            Each project gets a dedicated Postgres database, instant APIs, auth,
+            real-time subscriptions, storage, and edge functions.
+          </p>
+
+          <!-- Quickstart -->
+          <h2 id="quickstart">Quickstart</h2>
+          <p>Get up and running in under 2 minutes. Choose your language:</p>
+
+          <div class="docs-tab-row" data-tab-group="quickstart">
+            <div class="docs-tab active" data-tab="js">JavaScript</div>
+            <div class="docs-tab" data-tab="python">Python</div>
+            <div class="docs-tab" data-tab="swift">Swift</div>
+            <div class="docs-tab" data-tab="kotlin">Kotlin</div>
+          </div>
+
+          <!-- JS panel -->
+          <div
+            class="tab-panel active"
+            data-tab-group="quickstart"
+            data-panel="js"
+          >
+            <p>Install the Nexora client library:</p>
+            <pre><code><span class="code-comment"># npm</span>
+npm install @nexora/client
+
+<span class="code-comment"># yarn</span>
+yarn add @nexora/client
+
+<span class="code-comment"># pnpm</span>
+pnpm add @nexora/client</code></pre>
+
+            <p>Initialize the client in your app:</p>
+            <pre><code><span class="code-keyword">import</span> { <span class="code-fn">createClient</span> } <span class="code-keyword">from</span> <span class="code-string">'@nexora/client'</span>
+
+<span class="code-keyword">const</span> nexora = <span class="code-fn">createClient</span>(
+  process.env.<span class="code-fn">NEXORA_URL</span>,
+  process.env.<span class="code-fn">NEXORA_ANON_KEY</span>
+)
+
+<span class="code-keyword">export default</span> nexora</code></pre>
+
+            <div class="callout callout-green">
+              <div class="callout-label">Tip</div>
+              <p>
+                Find your project URL and anon key in the
+                <strong>Settings → API</strong> section of your Nexora
+                dashboard.
+              </p>
+            </div>
+
+            <p>Make your first database query:</p>
+            <pre><code><span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora
+  .<span class="code-fn">from</span>(<span class="code-string">'products'</span>)
+  .<span class="code-fn">select</span>(<span class="code-string">'id, name, price'</span>)
+  .<span class="code-fn">order</span>(<span class="code-string">'created_at'</span>, { ascending: <span class="code-keyword">false</span> })
+  .<span class="code-fn">limit</span>(<span class="code-num">20</span>)
+
+<span class="code-keyword">if</span> (error) <span class="code-keyword">throw</span> error
+console.<span class="code-fn">log</span>(data)</code></pre>
+          </div>
+
+          <!-- Python panel -->
+          <div
+            class="tab-panel"
+            data-tab-group="quickstart"
+            data-panel="python"
+          >
+            <p>Install the Nexora Python client:</p>
+            <pre><code><span class="code-comment"># pip</span>
+pip install nexora-py
+
+<span class="code-comment"># poetry</span>
+poetry add nexora-py</code></pre>
+
+            <p>Initialize the client:</p>
+            <pre><code><span class="code-keyword">from</span> nexora <span class="code-keyword">import</span> create_client
+<span class="code-keyword">import</span> os
+
+nexora = create_client(
+    os.environ[<span class="code-string">"NEXORA_URL"</span>],
+    os.environ[<span class="code-string">"NEXORA_ANON_KEY"</span>]
+)</code></pre>
+
+            <p>Make your first query:</p>
+            <pre><code>response = nexora.table(<span class="code-string">"products"</span>) \
+    .select(<span class="code-string">"id, name, price"</span>) \
+    .order(<span class="code-string">"created_at"</span>, desc=<span class="code-keyword">True</span>) \
+    .limit(<span class="code-num">20</span>) \
+    .execute()
+
+print(response.data)</code></pre>
+          </div>
+
+          <!-- Swift panel -->
+          <div class="tab-panel" data-tab-group="quickstart" data-panel="swift">
+            <p>Add the Nexora Swift package via SPM:</p>
+            <pre><code><span class="code-comment">// Package.swift</span>
+.package(url: <span class="code-string">"https://github.com/nexora/nexora-swift"</span>, from: <span class="code-string">"2.0.0"</span>)</code></pre>
+
+            <p>Initialize the client:</p>
+            <pre><code><span class="code-keyword">import</span> Nexora
+
+<span class="code-keyword">let</span> nexora = NexoraClient(
+    nexoraURL: URL(string: <span class="code-string">"https://your-project.nexora.io"</span>)!,
+    nexoraKey: <span class="code-string">"your-anon-key"</span>
+)</code></pre>
+
+            <p>Query the database:</p>
+            <pre><code><span class="code-keyword">let</span> response = <span class="code-keyword">try await</span> nexora.database
+    .from(<span class="code-string">"products"</span>)
+    .select(<span class="code-string">"id, name, price"</span>)
+    .order(<span class="code-string">"created_at"</span>, ascending: <span class="code-keyword">false</span>)
+    .limit(<span class="code-num">20</span>)
+    .execute()
+
+print(response.value)</code></pre>
+          </div>
+
+          <!-- Kotlin panel -->
+          <div
+            class="tab-panel"
+            data-tab-group="quickstart"
+            data-panel="kotlin"
+          >
+            <p>Add the Nexora Kotlin dependency:</p>
+            <pre><code><span class="code-comment">// build.gradle.kts</span>
+implementation(<span class="code-string">"io.nexora:nexora-kt:2.0.0"</span>)</code></pre>
+
+            <p>Initialize the client:</p>
+            <pre><code><span class="code-keyword">val</span> nexora = createNexoraClient(
+    nexoraUrl = <span class="code-string">"https://your-project.nexora.io"</span>,
+    nexoraKey = <span class="code-string">"your-anon-key"</span>
+)</code></pre>
+
+            <p>Query the database:</p>
+            <pre><code><span class="code-keyword">val</span> result = nexora
+    .from(<span class="code-string">"products"</span>)
+    .select(<span class="code-string">"id, name, price"</span>)
+    .order(<span class="code-string">"created_at"</span>, ascending = <span class="code-keyword">false</span>)
+    .limit(<span class="code-num">20</span>)
+    .execute()
+
+println(result.data)</code></pre>
+          </div>
+
+          <!-- Architecture -->
+          <h2 id="architecture">Architecture</h2>
+          <p>
+            Nexora is composed of several open-source components, all
+            orchestrated together:
+          </p>
+          <ul>
+            <li>
+              <strong>Database</strong> — PostgreSQL 16 with pgBouncer for
+              connection pooling
+            </li>
+            <li>
+              <strong>API</strong> — PostgREST for auto-generated REST, and
+              pg_graphql for GraphQL
+            </li>
+            <li><strong>Auth</strong> — GoTrue, a JWT-based auth server</li>
+            <li>
+              <strong>Realtime</strong> — Elixir-powered WebSocket server
+              listening on Postgres WAL
+            </li>
+            <li>
+              <strong>Storage</strong> — S3-compatible object store with
+              Postgres access policies
+            </li>
+            <li>
+              <strong>Edge Functions</strong> — Deno runtime deployed to global
+              edge nodes
+            </li>
+          </ul>
+
+          <!-- CLI Reference -->
+          <h2 id="cli">CLI Reference</h2>
+          <p>
+            The Nexora CLI lets you manage projects, deploy functions, run
+            migrations, and more — all from your terminal.
+          </p>
+
+          <h3>Installation</h3>
+          <pre><code><span class="code-comment"># npm (global)</span>
+npm install -g nexora-cli
+
+<span class="code-comment"># Homebrew (macOS)</span>
+brew install nexora/tap/nexora-cli</code></pre>
+
+          <h3>Common commands</h3>
+          <pre><code><span class="code-comment"># Authenticate</span>
+nexora login
+
+<span class="code-comment"># Link a project</span>
+nexora link --project-ref &lt;ref&gt;
+
+<span class="code-comment"># Run migrations locally</span>
+nexora db reset
+
+<span class="code-comment"># Push schema to remote</span>
+nexora db push
+
+<span class="code-comment"># List edge functions</span>
+nexora functions list
+
+<span class="code-comment"># View logs</span>
+nexora logs --function hello-world</code></pre>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           DATABASE
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="db-intro">Database — Overview</h2>
+          <p>
+            Every Nexora project comes with a dedicated
+            <strong>PostgreSQL 16</strong> database. You get direct SQL access,
+            auto-generated REST and GraphQL APIs, real-time change
+            subscriptions, and built-in row-level security — all on top of a
+            fully managed Postgres instance.
+          </p>
+
+          <div class="callout callout-green">
+            <div class="callout-label">Direct access</div>
+            <p>
+              Connect any Postgres-compatible tool (psql, pgAdmin, Prisma,
+              Drizzle) using the connection string from
+              <strong>Settings → Database</strong>.
+            </p>
+          </div>
+
+          <!-- Tables & Views -->
+          <h2 id="db-tables">Tables &amp; Views</h2>
+          <p>
+            Create tables using the Nexora Table Editor or raw SQL. Views are
+            automatically exposed through the REST API just like regular tables.
+          </p>
+
+          <pre><code><span class="code-comment">-- Create a table</span>
+<span class="code-keyword">CREATE TABLE</span> profiles (
+  id         uuid <span class="code-keyword">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  user_id    uuid <span class="code-keyword">REFERENCES</span> auth.users(id) <span class="code-keyword">ON DELETE CASCADE</span>,
+  username   text <span class="code-keyword">UNIQUE NOT NULL</span>,
+  avatar_url text,
+  updated_at timestamptz <span class="code-keyword">DEFAULT</span> now()
+);
+
+<span class="code-comment">-- Create a view</span>
+<span class="code-keyword">CREATE VIEW</span> public_profiles <span class="code-keyword">AS</span>
+  <span class="code-keyword">SELECT</span> id, username, avatar_url
+  <span class="code-keyword">FROM</span> profiles;</code></pre>
+
+          <!-- Row-Level Security -->
+          <h2 id="db-rls">Row-Level Security</h2>
+          <p>
+            Row-Level Security (RLS) lets you define fine-grained access rules
+            at the database level. Nexora generates JWT tokens for every
+            authenticated user, so you can write policies that reference the
+            current user directly in SQL.
+          </p>
+
+          <h3>Enable RLS on a table</h3>
+          <pre><code><span class="code-keyword">ALTER TABLE</span> posts <span class="code-keyword">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="code-comment">-- Users can only read their own posts</span>
+<span class="code-keyword">CREATE POLICY</span> <span class="code-string">"own posts"</span> <span class="code-keyword">ON</span> posts
+  <span class="code-keyword">FOR SELECT</span>
+  <span class="code-keyword">USING</span> (user_id = auth.<span class="code-fn">uid</span>());
+
+<span class="code-comment">-- Anyone can read published posts</span>
+<span class="code-keyword">CREATE POLICY</span> <span class="code-string">"public posts"</span> <span class="code-keyword">ON</span> posts
+  <span class="code-keyword">FOR SELECT</span>
+  <span class="code-keyword">USING</span> (status = <span class="code-string">'published'</span>);</code></pre>
+
+          <!-- Functions -->
+          <h2 id="db-functions">Database Functions</h2>
+          <p>
+            PostgreSQL functions (stored procedures) let you encapsulate
+            business logic inside the database. Nexora exposes them
+            automatically via the REST API using <code>rpc</code>.
+          </p>
+
+          <pre><code><span class="code-comment">-- Create a Postgres function</span>
+<span class="code-keyword">CREATE OR REPLACE FUNCTION</span> get_user_stats(uid uuid)
+<span class="code-keyword">RETURNS</span> json
+<span class="code-keyword">LANGUAGE</span> sql <span class="code-keyword">STABLE</span>
+<span class="code-keyword">AS</span> $$
+  <span class="code-keyword">SELECT</span> json_build_object(
+    <span class="code-string">'post_count'</span>, COUNT(*),
+    <span class="code-string">'latest_post'</span>, MAX(created_at)
+  ) <span class="code-keyword">FROM</span> posts <span class="code-keyword">WHERE</span> user_id = uid;
+$$;</code></pre>
+
+          <p>Call it from your client:</p>
+          <pre><code><span class="code-keyword">const</span> { data } = <span class="code-keyword">await</span> nexora.<span class="code-fn">rpc</span>(<span class="code-string">'get_user_stats'</span>, { uid: userId })</code></pre>
+
+          <!-- Extensions -->
+          <h2 id="db-extensions">Extensions</h2>
+          <p>
+            Nexora supports many popular PostgreSQL extensions out of the box.
+            Enable them from the <strong>Database → Extensions</strong> panel or
+            via SQL.
+          </p>
+
+          <pre><code><span class="code-comment">-- Enable pgvector for AI embeddings</span>
+<span class="code-keyword">CREATE EXTENSION IF NOT EXISTS</span> vector;
+
+<span class="code-comment">-- Enable pg_cron for scheduled jobs</span>
+<span class="code-keyword">CREATE EXTENSION IF NOT EXISTS</span> pg_cron;
+
+<span class="code-comment">-- Enable uuid-ossp</span>
+<span class="code-keyword">CREATE EXTENSION IF NOT EXISTS</span> "uuid-ossp";</code></pre>
+
+          <p>
+            Commonly used extensions include <code>pgvector</code>,
+            <code>pg_cron</code>, <code>postgis</code>,
+            <code>pg_stat_statements</code>, <code>uuid-ossp</code>, and
+            <code>hstore</code>.
+          </p>
+
+          <!-- Migrations -->
+          <h2 id="db-migrations">Migrations</h2>
+          <p>
+            Nexora uses a file-based migration system compatible with standard
+            Postgres tooling. Each migration is a plain SQL file stored in
+            <code>supabase/migrations/</code>.
+          </p>
+
+          <pre><code><span class="code-comment"># Create a new migration</span>
+nexora migration new add_profiles_table
+
+<span class="code-comment"># Apply pending migrations locally</span>
+nexora db reset
+
+<span class="code-comment"># Push migrations to production</span>
+nexora db push</code></pre>
+
+          <div class="callout">
+            <div class="callout-label">Best practice</div>
+            <p>
+              Always commit migration files to version control. Never edit an
+              existing migration that has already been applied to production —
+              create a new one instead.
+            </p>
+          </div>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           AUTH
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="auth-intro">Authentication — Overview</h2>
+          <p>
+            Nexora Auth is built on GoTrue and handles user management,
+            sessions, and JWT tokens. It integrates tightly with RLS so your
+            database security stays in sync with your auth state.
+          </p>
+
+          <h3>Supported providers</h3>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0.5rem 1.5rem;
+              margin: 1rem 0;
+            "
+          >
+            <div class="feature-check" style="font-size: 0.8rem">
+              Email &amp; Password
+            </div>
+            <div class="feature-check" style="font-size: 0.8rem">
+              Magic Link
+            </div>
+            <div class="feature-check" style="font-size: 0.8rem">Google</div>
+            <div class="feature-check" style="font-size: 0.8rem">GitHub</div>
+            <div class="feature-check" style="font-size: 0.8rem">Discord</div>
+            <div class="feature-check" style="font-size: 0.8rem">
+              Twitter / X
+            </div>
+            <div class="feature-check" style="font-size: 0.8rem">Apple</div>
+            <div class="feature-check" style="font-size: 0.8rem">Microsoft</div>
+            <div class="feature-check" style="font-size: 0.8rem">
+              Phone / SMS
+            </div>
+            <div class="feature-check" style="font-size: 0.8rem">
+              SAML 2.0 SSO
+            </div>
+          </div>
+
+          <!-- Auth — Email & Password -->
+          <h2 id="auth-email">Email &amp; Password</h2>
+          <p>
+            The simplest auth method. Users register with an email and password;
+            Nexora sends a confirmation email automatically.
+          </p>
+
+          <pre><code><span class="code-comment">// Sign up</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signUp</span>({
+  email: <span class="code-string">'user@example.com'</span>,
+  password: <span class="code-string">'super-secret-password'</span>,
+})
+
+<span class="code-comment">// Sign in</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signInWithPassword</span>({
+  email: <span class="code-string">'user@example.com'</span>,
+  password: <span class="code-string">'super-secret-password'</span>,
+})</code></pre>
+
+          <!-- Auth — OAuth -->
+          <h2 id="auth-oauth">OAuth Providers</h2>
+          <p>
+            Enable third-party OAuth in your Nexora dashboard under
+            <strong>Auth → Providers</strong>. Add your OAuth app credentials
+            from each provider.
+          </p>
+
+          <pre><code><span class="code-comment">// Sign in with Google</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signInWithOAuth</span>({
+  provider: <span class="code-string">'google'</span>,
+  options: {
+    redirectTo: <span class="code-string">'https://your-app.com/auth/callback'</span>,
+  },
+})
+
+<span class="code-comment">// GitHub works the same way</span>
+<span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signInWithOAuth</span>({ provider: <span class="code-string">'github'</span> })</code></pre>
+
+          <!-- Auth — MFA -->
+          <h2 id="auth-mfa">Multi-Factor Authentication</h2>
+          <p>
+            Add an extra layer of security with TOTP-based MFA. Users can enroll
+            an authenticator app (Google Authenticator, Authy, etc.) and verify
+            with a 6-digit code on sign-in.
+          </p>
+
+          <pre><code><span class="code-comment">// Enroll TOTP factor</span>
+<span class="code-keyword">const</span> { data } = <span class="code-keyword">await</span> nexora.auth.mfa.<span class="code-fn">enroll</span>({ factorType: <span class="code-string">'totp'</span> })
+<span class="code-comment">// data.totp.qr_code — display as QR for the user</span>
+
+<span class="code-comment">// Verify a TOTP code</span>
+<span class="code-keyword">const</span> { data } = <span class="code-keyword">await</span> nexora.auth.mfa.<span class="code-fn">challengeAndVerify</span>({
+  factorId: data.id,
+  code: <span class="code-string">'123456'</span>,
+})</code></pre>
+
+          <!-- Auth — SSO -->
+          <h2 id="auth-sso">Enterprise SSO</h2>
+          <p>
+            Nexora supports SAML 2.0 for enterprise single sign-on. Configure
+            your identity provider (Okta, Azure AD, Google Workspace) in the
+            Nexora dashboard.
+          </p>
+
+          <pre><code><span class="code-comment">// Initiate SSO login</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.auth.<span class="code-fn">signInWithSSO</span>({
+  domain: <span class="code-string">'yourcompany.com'</span>,
+})</code></pre>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           EDGE FUNCTIONS
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="fn-intro">Edge Functions — Overview</h2>
+          <p>
+            Edge Functions are serverless TypeScript/JavaScript functions
+            deployed to Nexora's global edge network. They run in Deno and have
+            native access to your Nexora project, including the database and
+            auth context.
+          </p>
+
+          <h3 id="fn-deploy">Deploy your first function</h3>
+          <pre><code><span class="code-comment"># Install the Nexora CLI</span>
+npm install -g nexora-cli
+
+<span class="code-comment"># Login</span>
+nexora login
+
+<span class="code-comment"># Create a new function</span>
+nexora functions new hello-world
+
+<span class="code-comment"># Deploy it</span>
+nexora functions deploy hello-world</code></pre>
+
+          <h3>Function template</h3>
+          <pre><code><span class="code-comment">// functions/hello-world/index.ts</span>
+<span class="code-keyword">import</span> { serve } <span class="code-keyword">from</span> <span class="code-string">"https://deno.land/std/http/server.ts"</span>
+<span class="code-keyword">import</span> { <span class="code-fn">createClient</span> } <span class="code-keyword">from</span> <span class="code-string">'@nexora/client'</span>
+
+<span class="code-fn">serve</span>(<span class="code-keyword">async</span> (req) => {
+  <span class="code-keyword">const</span> nexora = <span class="code-fn">createClient</span>(
+    Deno.env.<span class="code-fn">get</span>(<span class="code-string">'NEXORA_URL'</span>)!,
+    Deno.env.<span class="code-fn">get</span>(<span class="code-string">'NEXORA_ANON_KEY'</span>)!
+  )
+
+  <span class="code-keyword">return new</span> <span class="code-type">Response</span>(
+    JSON.<span class="code-fn">stringify</span>({ message: <span class="code-string">'Hello from Nexora!'</span> }),
+    { headers: { <span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span> } }
+  )
+})</code></pre>
+
+          <!-- Secrets -->
+          <h2 id="fn-secrets">Secrets &amp; Environment Variables</h2>
+          <p>
+            Store sensitive values (API keys, tokens) as secrets — they are
+            injected into your function at runtime and never stored in your
+            code.
+          </p>
+
+          <pre><code><span class="code-comment"># Set a secret</span>
+nexora secrets set STRIPE_SECRET_KEY=sk_live_...
+
+<span class="code-comment"># List all secrets</span>
+nexora secrets list
+
+<span class="code-comment"># Access inside a function</span>
+<span class="code-keyword">const</span> stripeKey = Deno.env.<span class="code-fn">get</span>(<span class="code-string">'STRIPE_SECRET_KEY'</span>)</code></pre>
+
+          <!-- Cron Jobs -->
+          <h2 id="fn-cron">Cron Jobs</h2>
+          <p>
+            Schedule edge functions to run on a recurring basis using standard
+            cron syntax. Define your schedule in the function's
+            <code>config.toml</code>.
+          </p>
+
+          <pre><code><span class="code-comment"># functions/daily-digest/config.toml</span>
+[cron]
+schedule = <span class="code-string">"0 8 * * *"</span>  <span class="code-comment"># Every day at 08:00 UTC</span></code></pre>
+
+          <p>
+            Or use the <code>pg_cron</code> extension directly in Postgres to
+            schedule SQL jobs:
+          </p>
+
+          <pre><code><span class="code-keyword">SELECT</span> cron.<span class="code-fn">schedule</span>(
+  <span class="code-string">'nightly-cleanup'</span>,
+  <span class="code-string">'0 2 * * *'</span>,
+  <span class="code-string">$$DELETE FROM audit_log WHERE created_at &lt; now() - interval '90 days'$$</span>
+);</code></pre>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           REALTIME
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="rt-intro">Realtime — Overview</h2>
+          <p>
+            Nexora Realtime is an Elixir-powered WebSocket server that listens
+            to the Postgres WAL (Write-Ahead Log). Subscribe to any table change
+            — inserts, updates, and deletes — and get live events delivered to
+            connected clients.
+          </p>
+
+          <pre><code><span class="code-comment">// Subscribe to all changes on the 'messages' table</span>
+<span class="code-keyword">const</span> channel = nexora
+  .<span class="code-fn">channel</span>(<span class="code-string">'messages-changes'</span>)
+  .<span class="code-fn">on</span>(<span class="code-string">'postgres_changes'</span>,
+    { event: <span class="code-string">'*'</span>, schema: <span class="code-string">'public'</span>, table: <span class="code-string">'messages'</span> },
+    (payload) => console.<span class="code-fn">log</span>(payload)
+  )
+  .<span class="code-fn">subscribe</span>()</code></pre>
+
+          <!-- Broadcast -->
+          <h2 id="rt-broadcast">Broadcast</h2>
+          <p>
+            Send ephemeral messages between connected clients without touching
+            the database. Ideal for cursor positions, typing indicators, and
+            live polls.
+          </p>
+
+          <pre><code><span class="code-keyword">const</span> channel = nexora.<span class="code-fn">channel</span>(<span class="code-string">'room-1'</span>)
+
+<span class="code-comment">// Listen for broadcasts</span>
+channel.<span class="code-fn">on</span>(<span class="code-string">'broadcast'</span>, { event: <span class="code-string">'cursor'</span> }, ({ payload }) => {
+  <span class="code-fn">renderCursor</span>(payload)
+}).<span class="code-fn">subscribe</span>()
+
+<span class="code-comment">// Send a broadcast</span>
+channel.<span class="code-fn">send</span>({
+  type: <span class="code-string">'broadcast'</span>,
+  event: <span class="code-string">'cursor'</span>,
+  payload: { x: <span class="code-num">42</span>, y: <span class="code-num">100</span> },
+})</code></pre>
+
+          <!-- Presence -->
+          <h2 id="rt-presence">Presence</h2>
+          <p>
+            Track which clients are currently connected to a channel. Perfect
+            for "who's online" features and collaborative editors.
+          </p>
+
+          <pre><code><span class="code-keyword">const</span> channel = nexora.<span class="code-fn">channel</span>(<span class="code-string">'room-1'</span>)
+
+channel
+  .<span class="code-fn">on</span>(<span class="code-string">'presence'</span>, { event: <span class="code-string">'sync'</span> }, () => {
+    <span class="code-keyword">const</span> state = channel.presenceState()
+    console.<span class="code-fn">log</span>(<span class="code-string">'Online:'</span>, Object.<span class="code-fn">keys</span>(state))
+  })
+  .<span class="code-fn">subscribe</span>(<span class="code-keyword">async</span> (status) => {
+    <span class="code-keyword">if</span> (status === <span class="code-string">'SUBSCRIBED'</span>) {
+      <span class="code-keyword">await</span> channel.<span class="code-fn">track</span>({ user_id: currentUser.id })
+    }
+  })</code></pre>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           STORAGE
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="storage-intro">Storage — Overview</h2>
+          <p>
+            Nexora Storage is an S3-compatible object store. Create buckets,
+            upload files, and serve them via a global CDN — all protected by the
+            same Postgres-based access policies you use for your database.
+          </p>
+
+          <pre><code><span class="code-comment">// Create a bucket</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.storage.<span class="code-fn">createBucket</span>(<span class="code-string">'avatars'</span>, {
+  public: <span class="code-keyword">false</span>,
+  allowedMimeTypes: [<span class="code-string">'image/png'</span>, <span class="code-string">'image/jpeg'</span>, <span class="code-string">'image/webp'</span>],
+  fileSizeLimit: <span class="code-string">'5MB'</span>,
+})</code></pre>
+
+          <!-- Uploads -->
+          <h2 id="storage-upload">Uploads</h2>
+          <p>
+            Upload files directly from the browser or from your server. Nexora
+            validates MIME type and file size automatically against your
+            bucket's policy.
+          </p>
+
+          <pre><code><span class="code-comment">// Upload a file</span>
+<span class="code-keyword">const</span> { data, error } = <span class="code-keyword">await</span> nexora.storage
+  .<span class="code-fn">from</span>(<span class="code-string">'avatars'</span>)
+  .<span class="code-fn">upload</span>(<span class="code-string">`public/${userId}.webp`</span>, fileBlob, {
+    cacheControl: <span class="code-string">'3600'</span>,
+    upsert: <span class="code-keyword">true</span>,
+  })
+
+<span class="code-comment">// Get a public URL</span>
+<span class="code-keyword">const</span> { data: { publicUrl } } = nexora.storage
+  .<span class="code-fn">from</span>(<span class="code-string">'avatars'</span>)
+  .<span class="code-fn">getPublicUrl</span>(<span class="code-string">`public/${userId}.webp`</span>)</code></pre>
+
+          <!-- CDN & Transform -->
+          <h2 id="storage-cdn">CDN &amp; Transform</h2>
+          <p>
+            Nexora serves files via a global CDN. Use the built-in image
+            transformation API to resize, crop, and convert images on the fly —
+            no extra service needed.
+          </p>
+
+          <pre><code><span class="code-comment">// Get a transformed image URL</span>
+<span class="code-keyword">const</span> { data: { publicUrl } } = nexora.storage
+  .<span class="code-fn">from</span>(<span class="code-string">'avatars'</span>)
+  .<span class="code-fn">getPublicUrl</span>(<span class="code-string">`public/${userId}.webp`</span>, {
+    transform: {
+      width: <span class="code-num">200</span>,
+      height: <span class="code-num">200</span>,
+      resize: <span class="code-string">'cover'</span>,
+      format: <span class="code-string">'webp'</span>,
+      quality: <span class="code-num">80</span>,
+    },
+  })</code></pre>
+
+          <!-- ═══════════════════════════════════════════════════════════
+           SELF-HOSTING
+      ═══════════════════════════════════════════════════════════ -->
+          <h2 id="self-docker">Self-hosting — Docker</h2>
+          <p>
+            Run the entire Nexora stack locally or on your own infrastructure
+            using Docker Compose. The official compose file starts all services
+            with a single command.
+          </p>
+
+          <pre><code><span class="code-comment"># Clone the self-hosting repo</span>
+git clone https://github.com/nexora/nexora
+
+cd nexora/docker
+
+<span class="code-comment"># Copy and edit the env file</span>
+cp .env.example .env
+
+<span class="code-comment"># Start all services</span>
+docker compose up -d</code></pre>
+
+          <div class="callout">
+            <div class="callout-label">Requirements</div>
+            <p>
+              Docker Desktop 4.x or Docker Engine 24+ with Compose v2. At least
+              2 GB of RAM recommended.
+            </p>
+          </div>
+
+          <!-- Kubernetes -->
+          <h2 id="self-k8s">Kubernetes</h2>
+          <p>
+            Deploy Nexora on Kubernetes using the official Helm chart. Supports
+            horizontal scaling for stateless services and managed Postgres via
+            an external RDS or Cloud SQL instance.
+          </p>
+
+          <pre><code><span class="code-comment"># Add the Nexora Helm repo</span>
+helm repo add nexora https://charts.nexora.io
+helm repo update
+
+<span class="code-comment"># Install</span>
+helm install nexora nexora/nexora \
+  --namespace nexora \
+  --create-namespace \
+  --values values.yaml</code></pre>
+
+          <!-- Configuration -->
+          <h2 id="self-config">Configuration</h2>
+          <p>
+            All Nexora services are configured via environment variables. The
+            most important ones are listed below.
+          </p>
+
+          <pre><code><span class="code-comment"># Postgres</span>
+POSTGRES_PASSWORD=your-super-secret-password
+
+<span class="code-comment"># API</span>
+NEXORA_URL=http://localhost:8000
+NEXORA_ANON_KEY=&lt;your-anon-key&gt;
+NEXORA_SERVICE_ROLE_KEY=&lt;your-service-role-key&gt;
+
+<span class="code-comment"># JWT</span>
+JWT_SECRET=your-jwt-secret-min-32-chars
+JWT_EXPIRY=3600
+
+<span class="code-comment"># Email (SMTP)</span>
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=admin@example.com
+SMTP_PASS=smtp-password
+SMTP_SENDER_NAME=Nexora</code></pre>
+
+          <!-- Bottom nav -->
+          <div
+            style="
+              border-top: 1px solid var(--border-subtle);
+              margin-top: 3rem;
+              padding-top: 2rem;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 1rem;
+            "
+          >
+            <a
+              href="#architecture"
+              style="text-decoration: none"
+              class="card"
+              style="padding: 1rem"
+            >
+              <div
+                style="
+                  font-size: 0.75rem;
+                  color: var(--text-muted);
+                  margin-bottom: 0.25rem;
+                "
+              >
+                ← Previous
+              </div>
+              <div
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 500;
+                  color: var(--accent-light);
+                "
+              >
+                Architecture
+              </div>
+            </a>
+            <a
+              href="#db-rls"
+              style="text-decoration: none"
+              class="card"
+              style="padding: 1rem; text-align: right"
+            >
+              <div
+                style="
+                  font-size: 0.75rem;
+                  color: var(--text-muted);
+                  margin-bottom: 0.25rem;
+                "
+              >
+                Next →
+              </div>
+              <div
+                style="
+                  font-size: 0.875rem;
+                  font-weight: 500;
+                  color: var(--accent-light);
+                "
+              >
+                Row-Level Security
+              </div>
+            </a>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      /* ─── TAB SWITCHER ─────────────────────────────────────────── */
+      document.querySelectorAll(".docs-tab-row").forEach((row) => {
+        const group = row.dataset.tabGroup;
+        const panels = document.querySelectorAll(
+          `.tab-panel[data-tab-group="${group}"]`,
+        );
+
+        row.querySelectorAll(".docs-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            // Update active tab
+            row
+              .querySelectorAll(".docs-tab")
+              .forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            // Show matching panel
+            const target = tab.dataset.tab;
+            panels.forEach((p) => {
+              p.classList.toggle("active", p.dataset.panel === target);
+            });
+          });
+        });
+      });
+
+      /* ─── SIDEBAR ACTIVE LINK (scroll spy) ─────────────────────── */
+      const sidebarLinks = document.querySelectorAll(
+        '.docs-sidebar-section a[href^="#"]',
+      );
+
+      function updateActiveLink() {
+        const scrollY = window.scrollY + 120;
+        let current = null;
+
+        document
+          .querySelectorAll("h1[id], h2[id], h3[id]")
+          .forEach((heading) => {
+            if (heading.offsetTop <= scrollY) current = heading.id;
+          });
+
+        sidebarLinks.forEach((link) => {
+          const hash = link.getAttribute("href").slice(1);
+          link.classList.toggle("active", hash === current);
+        });
+      }
+
+      window.addEventListener("scroll", updateActiveLink, { passive: true });
+      updateActiveLink();
+
+      /* Smooth-scroll sidebar links */
+      sidebarLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = link.getAttribute("href").slice(1);
+          const target = document.getElementById(id);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            history.pushState(null, "", "#" + id);
+          }
+        });
+      });
+
+      /* ─── DOCS SEARCH ───────────────────────────────────────────── */
+      const searchInput = document.getElementById("docsSearchInput");
+      const noResults = document.getElementById("search-no-results");
+      const sections = document.querySelectorAll(".docs-sidebar-section");
+      const mainHeadings = document.querySelectorAll(
+        "#docsMain h1[id], #docsMain h2[id], #docsMain h3[id]",
+      );
+
+      // Normalise text for matching
+      function normalise(str) {
+        return str
+          .toLowerCase()
+          .replace(/[^a-z0-9 ]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      searchInput.addEventListener("input", () => {
+        const raw = searchInput.value.trim();
+        const q = normalise(raw);
+
+        // ── Clear search ──────────────────────────────────────────
+        if (!q) {
+          sections.forEach((sec) => {
+            sec.removeAttribute("data-hidden");
+            sec
+              .querySelectorAll("li")
+              .forEach((li) => li.removeAttribute("data-hidden"));
+          });
+          noResults.style.display = "none";
+
+          // Remove highlights in main content
+          mainHeadings.forEach((h) => {
+            if (h._origHTML !== undefined) h.innerHTML = h._origHTML;
+          });
+          return;
+        }
+
+        // ── Filter sidebar links ──────────────────────────────────
+        let anyVisible = false;
+        sections.forEach((sec) => {
+          const secLabel = normalise(sec.dataset.section || "");
+          let secHasMatch = false;
+
+          sec.querySelectorAll("li").forEach((li) => {
+            const label = normalise(li.dataset.label || li.textContent);
+            const match = label.includes(q) || secLabel.includes(q);
+            li.dataset.hidden = match ? "false" : "true";
+            if (match) {
+              secHasMatch = true;
+              anyVisible = true;
+            }
+          });
+
+          sec.dataset.hidden = secHasMatch ? "false" : "true";
+        });
+
+        noResults.style.display = anyVisible ? "none" : "block";
+
+        // ── Highlight matching headings in main content ───────────
+        mainHeadings.forEach((h) => {
+          // Save original HTML once
+          if (h._origHTML === undefined) h._origHTML = h.innerHTML;
+          h.innerHTML = h._origHTML; // reset
+
+          const text = h.textContent;
+          const normTxt = normalise(text);
+          if (!normTxt.includes(q)) return;
+
+          // Highlight matched portion (case-insensitive, plain text)
+          const regex = new RegExp(
+            `(${raw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+            "gi",
+          );
+          h.innerHTML = h._origHTML.replace(
+            regex,
+            '<mark class="search-hl">$1</mark>',
+          );
+        });
+      });
+
+      // Clear search on Escape
+      searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          searchInput.value = "";
+          searchInput.dispatchEvent(new Event("input"));
+          searchInput.blur();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Nexora</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .blog-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    @media(max-width:800px) { .blog-grid { grid-template-columns: 1fr; } }
+
+    .post-card {
+      text-decoration: none;
+      display: block;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.25s, background 0.25s, transform 0.2s;
+    }
+    .post-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .post-card-img {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #1a0d2e 0%, #0f1a2e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .post-card-body { padding: 1.5rem; }
+    .post-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .post-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.6rem; line-height: 1.35; }
+    .post-excerpt { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; }
+
+    .post-list-item {
+      text-decoration: none;
+      display: block;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: color 0.15s;
+    }
+    .post-list-item:last-child { border-bottom: none; }
+    .post-list-title { font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.25rem; transition: color 0.15s; }
+    .post-list-item:hover .post-list-title { color: var(--accent-light); }
+    .post-list-date { font-size: 0.75rem; color: var(--text-muted); }
+
+    .posts-main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    @media(max-width:600px) { .posts-main-grid { grid-template-columns: 1fr; } }
+
+    /* ── Write Post button ─────────────────────────────────── */
+    .write-post-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Modal overlay ────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.22s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-header h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .modal-close {
+      width: 30px; height: 30px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .form-input, .form-textarea, .form-select {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.9rem;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--accent);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+    .form-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+    .form-select { cursor: pointer; }
+    .form-select option { background: #1a1033; }
+
+    .emoji-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .emoji-opt {
+      width: 38px; height: 38px;
+      background: var(--bg-elevated);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+      user-select: none;
+    }
+    .emoji-opt:hover { border-color: var(--border-hover); transform: scale(1.1); }
+    .emoji-opt.selected { border-color: var(--accent); background: rgba(142,45,226,0.12); }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    .modal-footer-left { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ── Read More modal ─────────────────────────────────── */
+    .read-modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .read-modal-body .post-card-img {
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      height: 160px;
+    }
+    .read-modal-body h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+    .read-modal-body .body-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ── User posts section ─────────────────────────────── */
+    #userPostsSection { margin-bottom: 1.5rem; }
+    #userPostsGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    @media(max-width:600px) { #userPostsGrid { grid-template-columns: 1fr; } }
+
+    .user-post-card {
+      position: relative;
+    }
+    .user-post-actions {
+      position: absolute;
+      top: 0.6rem; right: 0.6rem;
+      display: flex;
+      gap: 0.35rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .user-post-card:hover .user-post-actions { opacity: 1; }
+    .icon-btn {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .icon-btn-del { background: rgba(220,38,38,0.15); color: #f87171; }
+    .icon-btn-del:hover { background: rgba(220,38,38,0.3); }
+    .icon-btn-read { background: rgba(142,45,226,0.15); color: var(--accent-light); }
+    .icon-btn-read:hover { background: rgba(142,45,226,0.3); }
+    .icon-btn-edit { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .icon-btn-edit:hover { background: rgba(251,191,36,0.3); }
+
+    /* ── Delete confirm modal ───────────────────────────────── */
+    .confirm-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(16px) scale(0.98);
+      transition: transform 0.22s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open .confirm-modal { transform: translateY(0) scale(1); }
+    .confirm-body {
+      padding: 1.75rem 1.5rem 1.25rem;
+      text-align: center;
+    }
+    .confirm-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    .confirm-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .confirm-desc { font-size: 0.825rem; color: var(--text-muted); line-height: 1.6; }
+    .confirm-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+    .btn-danger {
+      background: rgba(220,38,38,0.85);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.55rem 1.1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-danger:hover { background: rgba(220,38,38,1); }
+
+    /* ── Toast ──────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      display: flex; align-items: center; gap: 0.5rem;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast-icon { font-size: 1rem; }
+
+    /* ── Empty state ─────────────────────────────────────── */
+    .empty-user-posts {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Section divider ─────────────────────────────────── */
+    .posts-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.5rem 0 1.25rem;
+    }
+    .posts-divider span {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .posts-divider::before, .posts-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-subtle);
+    }
+
+    /* Latest posts in sidebar — user posts */
+    .sidebar-user-post {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+    .sidebar-user-post:last-child { border-bottom: none; }
+    .sidebar-user-post-emoji { font-size: 1.1rem; flex-shrink: 0; }
+    .sidebar-user-post-info .post-list-title { transition: color 0.15s; }
+    .sidebar-user-post:hover .post-list-title { color: var(--accent-light); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="./logo.png" alt="" width="55" height="40" />
+    <span class="nav-logo-text">Nexora</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="docs.html">Docs</a></li>
+    <li><a href="blog.html" class="active">Blog</a></li>
+    <li><a href="changelog.html">Changelog</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost">Sign in</a>
+    <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+  </div>
+</nav>
+
+<section class="section" style="padding-top:8rem;">
+  <div class="container">
+    <span class="label-tag">Blog</span>
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:3rem;">
+      <h1 class="display-title" style="font-size:clamp(2rem,5vw,3rem); margin-bottom:0;">From the Nexora team</h1>
+      <button class="btn btn-primary write-post-btn" id="openWriteModal">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Write a post
+      </button>
+    </div>
+
+    <div class="blog-grid">
+      <div>
+
+        <!-- ── User posts ─────────────────────────────────── -->
+        <div id="userPostsSection">
+          <div id="emptyUserPosts" class="empty-user-posts">
+            No posts yet — write your first one!
+          </div>
+          <div id="userPostsGrid"></div>
+          <div id="userPostsDivider" class="posts-divider" style="display:none;">
+            <span>From the team</span>
+          </div>
+        </div>
+
+        <!-- Featured post -->
+        <a href="#" class="post-card" style="margin-bottom:1.25rem;">
+          <div class="post-card-img">🚀</div>
+          <div class="post-card-body">
+            <div class="post-meta">
+              <span class="badge badge-purple">Engineering</span>
+              <span>April 10, 2025</span>
+              <span>8 min read</span>
+            </div>
+            <div class="post-title">Introducing Nexora v2.0: Real-time sync, vector search, and a new dashboard</div>
+            <div class="post-excerpt">We've rebuilt the realtime engine from scratch, added native pgvector support for AI applications, and shipped a completely redesigned studio dashboard. Here's everything that's new.</div>
+          </div>
+        </a>
+
+        <div class="posts-main-grid">
+          <a href="#" class="post-card">
+            <div class="post-card-img" style="height:130px; font-size:2rem;">⚡</div>
+            <div class="post-card-body">
+              <div class="post-meta"><span class="badge badge-amber">Tutorial</span><span>Apr 4</span></div>
+              <div class="post-title" style="font-size:0.95rem;">Building a real-time chat app in 20 minutes</div>
+              <div class="post-excerpt" style="font-size:0.8rem;">Use Nexora's realtime channels and auth to build a full-featured chat application with presence indicators.</div>
+            </div>
+          </a>
+          <a href="#" class="post-card">
+            <div class="post-card-img" style="height:130px; font-size:2rem;">🧠</div>
+            <div class="post-card-body">
+              <div class="post-meta"><span class="badge badge-purple">AI</span><span>Mar 28</span></div>
+              <div class="post-title" style="font-size:0.95rem;">Semantic search with pgvector and OpenAI</div>
+              <div class="post-excerpt" style="font-size:0.8rem;">Store and query vector embeddings directly in Postgres using pgvector. No separate vector database required.</div>
+            </div>
+          </a>
+          <a href="#" class="post-card">
+            <div class="post-card-img" style="height:130px; font-size:2rem;">🔐</div>
+            <div class="post-card-body">
+              <div class="post-meta"><span class="badge badge-green">Security</span><span>Mar 20</span></div>
+              <div class="post-title" style="font-size:0.95rem;">Row-level security patterns you should know</div>
+              <div class="post-excerpt" style="font-size:0.8rem;">A deep dive into RLS policy patterns for multi-tenant apps, team permissions, and shared resources.</div>
+            </div>
+          </a>
+          <a href="#" class="post-card">
+            <div class="post-card-img" style="height:130px; font-size:2rem;">🌍</div>
+            <div class="post-card-body">
+              <div class="post-meta"><span class="badge badge-amber">Infrastructure</span><span>Mar 12</span></div>
+              <div class="post-title" style="font-size:0.95rem;">How we scale to 18 edge regions</div>
+              <div class="post-excerpt" style="font-size:0.8rem;">A look at the architecture behind Nexora's global edge network and how we keep latency under 40ms.</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside>
+        <div class="card">
+          <h3 style="font-family:var(--font-display); font-weight:700; font-size:0.95rem; margin-bottom:1.25rem; color:var(--text-primary);">Latest posts</h3>
+          <!-- User posts injected here -->
+          <div id="sidebarUserPosts"></div>
+          <!-- Static team posts -->
+          <a href="#" class="post-list-item">
+            <div class="post-list-title">Migrating from Firebase to Nexora</div>
+            <div class="post-list-date">March 5, 2025</div>
+          </a>
+          <a href="#" class="post-list-item">
+            <div class="post-list-title">Introducing the Nexora CLI v1.5</div>
+            <div class="post-list-date">February 28, 2025</div>
+          </a>
+          <a href="#" class="post-list-item">
+            <div class="post-list-title">Multi-tenant apps with RLS</div>
+            <div class="post-list-date">February 20, 2025</div>
+          </a>
+          <a href="#" class="post-list-item">
+            <div class="post-list-title">Deploying Edge Functions in 3 steps</div>
+            <div class="post-list-date">February 12, 2025</div>
+          </a>
+          <a href="#" class="post-list-item">
+            <div class="post-list-title">What's new in Postgres 16</div>
+            <div class="post-list-date">February 5, 2025</div>
+          </a>
+        </div>
+
+        <div class="card" style="margin-top:1.25rem;">
+          <h3 style="font-family:var(--font-display); font-weight:700; font-size:0.95rem; margin-bottom:0.75rem; color:var(--text-primary);">Subscribe</h3>
+          <p style="font-size:0.825rem; color:var(--text-secondary); margin-bottom:1rem;">Get new posts delivered to your inbox.</p>
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <input type="email" placeholder="you@example.com" style="background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:0.6rem 0.9rem; color:var(--text-primary); font-family:var(--font-body); font-size:0.875rem; outline:none;" />
+            <button class="btn btn-primary" style="width:100%; justify-content:center;">Subscribe</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="nav-logo" style="display:inline-flex;"><span class="nav-logo-text">Nexora</span></a><p>Backend infrastructure for ambitious teams.</p></div>
+      <div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-col"><h4>Developers</h4><ul><li><a href="docs.html">Documentation</a></li><li><a href="#">GitHub</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Nexora, Inc.</span></div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WRITE POST MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="writeModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="writeModalTitle">
+    <div class="modal-header">
+      <h2 id="writeModalTitle">Write a post</h2>
+      <div class="modal-close" id="closeWriteModal" role="button" aria-label="Close">✕</div>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label" for="postTitle">Title *</label>
+        <input class="form-input" id="postTitle" type="text" placeholder="Give your post a great title…" maxlength="120" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="postExcerpt">Excerpt</label>
+        <input class="form-input" id="postExcerpt" type="text" placeholder="One-sentence summary shown on the card" maxlength="200" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="postBody">Content *</label>
+        <textarea class="form-textarea" id="postBody" placeholder="Write your post content here…" style="min-height:160px;"></textarea>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="postCategory">Category</label>
+          <select class="form-select" id="postCategory">
+            <option value="Engineering">Engineering</option>
+            <option value="Tutorial">Tutorial</option>
+            <option value="AI">AI</option>
+            <option value="Security">Security</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Product">Product</option>
+            <option value="Community">Community</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="postReadTime">Read time (min)</label>
+          <input class="form-input" id="postReadTime" type="number" min="1" max="60" value="5" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cover emoji</label>
+        <div class="emoji-row" id="emojiRow">
+          <div class="emoji-opt selected" data-emoji="✍️">✍️</div>
+          <div class="emoji-opt" data-emoji="🚀">🚀</div>
+          <div class="emoji-opt" data-emoji="⚡">⚡</div>
+          <div class="emoji-opt" data-emoji="🧠">🧠</div>
+          <div class="emoji-opt" data-emoji="🔐">🔐</div>
+          <div class="emoji-opt" data-emoji="🌍">🌍</div>
+          <div class="emoji-opt" data-emoji="📦">📦</div>
+          <div class="emoji-opt" data-emoji="🛠️">🛠️</div>
+          <div class="emoji-opt" data-emoji="💡">💡</div>
+          <div class="emoji-opt" data-emoji="📊">📊</div>
+          <div class="emoji-opt" data-emoji="🎯">🎯</div>
+          <div class="emoji-opt" data-emoji="🔥">🔥</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <span class="modal-footer-left" id="writeModalStatus"></span>
+      <div style="display:flex; gap:0.75rem;">
+        <button class="btn btn-ghost" id="cancelWriteModal">Cancel</button>
+        <button class="btn btn-primary" id="publishPost">Publish post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     READ POST MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="readModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="readModalTitle">
+    <div class="modal-header">
+      <h2 id="readModalTitle" style="font-size:0.85rem; color:var(--text-muted); font-weight:400;">Your post</h2>
+      <div class="modal-close" id="closeReadModal" role="button" aria-label="Close">✕</div>
+    </div>
+    <div class="read-modal-body" id="readModalBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DELETE CONFIRM MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="confirm-modal" role="dialog" aria-modal="true">
+    <div class="confirm-body">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Delete this post?</div>
+      <div class="confirm-desc" id="confirmDesc">This action cannot be undone.</div>
+    </div>
+    <div class="confirm-footer">
+      <button class="btn btn-ghost" id="cancelConfirm">Keep it</button>
+      <button class="btn-danger" id="confirmDelete">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon"></span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   STORAGE HELPERS
+═══════════════════════════════════════════════════════════ */
+const STORAGE_KEY = 'nexora_blog_posts';
+
+function loadPosts() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch { return []; }
+}
+
+function savePosts(posts) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+let toastTimer;
+function showToast(icon, msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent  = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CATEGORY BADGE CLASSES
+═══════════════════════════════════════════════════════════ */
+const CAT_BADGE = {
+  Engineering:    'badge-purple',
+  Tutorial:       'badge-amber',
+  AI:             'badge-purple',
+  Security:       'badge-green',
+  Infrastructure: 'badge-amber',
+  Product:        'badge-purple',
+  Community:      'badge-green',
+};
+
+function badgeFor(cat) {
+  return `<span class="badge ${CAT_BADGE[cat] || 'badge-purple'}">${cat}</span>`;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER USER POSTS
+═══════════════════════════════════════════════════════════ */
+function renderUserPosts() {
+  const posts   = loadPosts();
+  const grid    = document.getElementById('userPostsGrid');
+  const empty   = document.getElementById('emptyUserPosts');
+  const divider = document.getElementById('userPostsDivider');
+  const sidebar = document.getElementById('sidebarUserPosts');
+
+  grid.innerHTML = '';
+
+  if (posts.length === 0) {
+    empty.style.display   = 'block';
+    divider.style.display = 'none';
+  } else {
+    empty.style.display   = 'none';
+    divider.style.display = 'flex';
+
+    posts.slice().reverse().forEach(post => {
+      const card = document.createElement('div');
+      card.className = 'post-card user-post-card';
+
+      const excerpt = post.excerpt || post.body.slice(0, 100) + (post.body.length > 100 ? '…' : '');
+
+      card.innerHTML = `
+        <div class="user-post-actions">
+          <div class="icon-btn icon-btn-read" title="Read"   data-id="${post.id}">👁</div>
+          <div class="icon-btn icon-btn-edit" title="Edit"   data-id="${post.id}">✏️</div>
+          <div class="icon-btn icon-btn-del"  title="Delete" data-id="${post.id}">✕</div>
+        </div>
+        <div class="post-card-img" style="height:130px; font-size:2rem;">${post.emoji}</div>
+        <div class="post-card-body">
+          <div class="post-meta">
+            ${badgeFor(post.category)}
+            <span>${formatDate(post.createdAt)}</span>
+            <span>${post.readTime} min read</span>
+            ${post.updatedAt ? `<span style="color:var(--accent-light); font-style:italic;">edited</span>` : ''}
+          </div>
+          <div class="post-title"  style="font-size:0.95rem;">${escHtml(post.title)}</div>
+          <div class="post-excerpt" style="font-size:0.8rem;">${escHtml(excerpt)}</div>
+        </div>
+      `;
+
+      card.querySelector('.icon-btn-read').addEventListener('click', e => { e.stopPropagation(); openReadModal(post); });
+      card.querySelector('.icon-btn-edit').addEventListener('click', e => { e.stopPropagation(); openEditModal(post); });
+      card.querySelector('.icon-btn-del').addEventListener('click',  e => { e.stopPropagation(); confirmDelete(post.id, post.title); });
+      card.querySelector('.post-card-body').addEventListener('click', () => openReadModal(post));
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Sidebar
+  sidebar.innerHTML = '';
+  posts.slice().reverse().slice(0, 3).forEach(post => {
+    const item = document.createElement('div');
+    item.className = 'sidebar-user-post';
+    item.innerHTML = `
+      <span class="sidebar-user-post-emoji">${post.emoji}</span>
+      <div class="sidebar-user-post-info">
+        <div class="post-list-title">${escHtml(post.title)}</div>
+        <div class="post-list-date">${formatDate(post.createdAt)}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => openReadModal(post));
+    sidebar.appendChild(item);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   READ MODAL
+═══════════════════════════════════════════════════════════ */
+function openReadModal(post) {
+  const body   = document.getElementById('readModalBody');
+  const excerpt = post.excerpt || post.body.slice(0, 150) + '…';
+  body.innerHTML = `
+    <div style="border-radius:var(--radius-md); margin-bottom:1.5rem; height:160px; font-size:3.5rem;
+         background:linear-gradient(135deg,#1a0d2e 0%,#0f1a2e 100%);
+         display:flex; align-items:center; justify-content:center;">
+      ${post.emoji}
+    </div>
+    <div class="post-meta" style="margin-bottom:1rem;">
+      ${badgeFor(post.category)}
+      <span>${formatDate(post.createdAt)}</span>
+      <span>${post.readTime} min read</span>
+      ${post.updatedAt ? `<span style="color:var(--accent-light); font-style:italic;">Edited ${formatDate(post.updatedAt)}</span>` : ''}
+    </div>
+    <h1>${escHtml(post.title)}</h1>
+    <p style="font-size:0.875rem; color:var(--text-muted); font-style:italic; margin-bottom:1.5rem; line-height:1.6;">${escHtml(excerpt)}</p>
+    <div class="body-text">${escHtml(post.body)}</div>
+    <div style="display:flex; gap:0.75rem; margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--border-subtle);">
+      <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="openEditModal(${JSON.stringify(post).replace(/"/g,'&quot;')}); closeModal('readModal');">✏️ Edit post</button>
+      <button class="btn-danger" style="font-size:0.8rem; border-radius:var(--radius-md); padding:0.5rem 1rem;" onclick="confirmDelete('${post.id}', '${escHtml(post.title)}'); closeModal('readModal');">🗑️ Delete</button>
+    </div>
+  `;
+  openModal('readModal');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════════════ */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  // Only restore scroll if no other modal is open
+  const anyOpen = document.querySelector('.modal-overlay.open');
+  if (!anyOpen) document.body.style.overflow = '';
+}
+
+['writeModal','readModal','confirmModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  });
+});
+
+document.getElementById('closeWriteModal').addEventListener('click',  () => closeModal('writeModal'));
+document.getElementById('cancelWriteModal').addEventListener('click', () => closeModal('writeModal'));
+document.getElementById('closeReadModal').addEventListener('click',   () => closeModal('readModal'));
+document.getElementById('cancelConfirm').addEventListener('click',    () => closeModal('confirmModal'));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['confirmModal','readModal','writeModal'].forEach(closeModal);
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   EMOJI HELPERS
+═══════════════════════════════════════════════════════════ */
+function setSelectedEmoji(emoji) {
+  document.querySelectorAll('.emoji-opt').forEach(el => {
+    el.classList.toggle('selected', el.dataset.emoji === emoji);
+  });
+}
+function getSelectedEmoji() {
+  return document.querySelector('.emoji-opt.selected')?.dataset.emoji || '✍️';
+}
+
+document.getElementById('emojiRow').addEventListener('click', e => {
+  const opt = e.target.closest('.emoji-opt');
+  if (!opt) return;
+  document.querySelectorAll('.emoji-opt').forEach(el => el.classList.remove('selected'));
+  opt.classList.add('selected');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   WRITE MODAL — create mode
+═══════════════════════════════════════════════════════════ */
+// Tracks which post is being edited (null = create mode)
+let editingPostId = null;
+
+document.getElementById('openWriteModal').addEventListener('click', () => {
+  editingPostId = null;
+  document.getElementById('writeModalTitle').textContent = 'Write a post';
+  document.getElementById('publishPost').textContent     = 'Publish post';
+  document.getElementById('postTitle').value    = '';
+  document.getElementById('postExcerpt').value  = '';
+  document.getElementById('postBody').value     = '';
+  document.getElementById('postCategory').value = 'Engineering';
+  document.getElementById('postReadTime').value = '5';
+  document.getElementById('writeModalStatus').textContent = '';
+  setSelectedEmoji('✍️');
+  openModal('writeModal');
+  document.getElementById('postTitle').focus();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   EDIT MODAL — pre-fill with existing post data
+═══════════════════════════════════════════════════════════ */
+function openEditModal(post) {
+  // post may arrive as a string from inline onclick attr
+  if (typeof post === 'string') post = JSON.parse(post);
+
+  editingPostId = post.id;
+  document.getElementById('writeModalTitle').textContent = 'Edit post';
+  document.getElementById('publishPost').textContent     = 'Save changes';
+  document.getElementById('postTitle').value    = post.title;
+  document.getElementById('postExcerpt').value  = post.excerpt || '';
+  document.getElementById('postBody').value     = post.body;
+  document.getElementById('postCategory').value = post.category;
+  document.getElementById('postReadTime').value = post.readTime;
+  document.getElementById('writeModalStatus').textContent = '';
+  setSelectedEmoji(post.emoji);
+  openModal('writeModal');
+  document.getElementById('postTitle').focus();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PUBLISH / SAVE
+═══════════════════════════════════════════════════════════ */
+document.getElementById('publishPost').addEventListener('click', () => {
+  const title    = document.getElementById('postTitle').value.trim();
+  const body     = document.getElementById('postBody').value.trim();
+  const excerpt  = document.getElementById('postExcerpt').value.trim();
+  const category = document.getElementById('postCategory').value;
+  const readTime = parseInt(document.getElementById('postReadTime').value) || 5;
+  const emoji    = getSelectedEmoji();
+  const status   = document.getElementById('writeModalStatus');
+
+  if (!title) {
+    status.textContent = '⚠️ Please add a title.';
+    document.getElementById('postTitle').focus();
+    return;
+  }
+  if (!body) {
+    status.textContent = '⚠️ Post content cannot be empty.';
+    document.getElementById('postBody').focus();
+    return;
+  }
+
+  const posts = loadPosts();
+
+  if (editingPostId) {
+    // ── UPDATE existing post ───────────────────────────
+    const idx = posts.findIndex(p => p.id === editingPostId);
+    if (idx !== -1) {
+      posts[idx] = {
+        ...posts[idx],
+        title,
+        body,
+        excerpt,
+        category,
+        readTime,
+        emoji,
+        updatedAt: new Date().toISOString(),
+      };
+      savePosts(posts);
+      renderUserPosts();
+      closeModal('writeModal');
+      showToast('✅', 'Post updated!');
+    }
+  } else {
+    // ── CREATE new post ────────────────────────────────
+    const post = {
+      id: 'post_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      title, body, excerpt, category, readTime, emoji,
+      createdAt: new Date().toISOString(),
+    };
+    posts.push(post);
+    savePosts(posts);
+    renderUserPosts();
+    closeModal('writeModal');
+    showToast('🎉', 'Post published!');
+  }
+
+  editingPostId = null;
+});
+
+/* ═══════════════════════════════════════════════════════════
+   DELETE — with confirmation
+═══════════════════════════════════════════════════════════ */
+let pendingDeleteId = null;
+
+function confirmDelete(id, title) {
+  pendingDeleteId = id;
+  document.getElementById('confirmDesc').textContent =
+    `"${title}" will be permanently removed. This cannot be undone.`;
+  openModal('confirmModal');
+}
+
+document.getElementById('confirmDelete').addEventListener('click', () => {
+  if (!pendingDeleteId) return;
+  const posts = loadPosts().filter(p => p.id !== pendingDeleteId);
+  savePosts(posts);
+  pendingDeleteId = null;
+  renderUserPosts();
+  closeModal('confirmModal');
+  showToast('🗑️', 'Post deleted');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+renderUserPosts();
+</script>
+
+</body>
+</html>

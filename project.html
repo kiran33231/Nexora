@@ -1,0 +1,5658 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project — Nexora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=GeistMono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ── Design Tokens ── */
+      :root {
+        --bg-base: #0a0a0f;
+        --bg-surface: #0f0f18;
+        --bg-card: #13131f;
+        --bg-elevated: #1a1a2a;
+        --bg-hover: #1f1f30;
+
+        --border-subtle: rgba(255, 255, 255, 0.05);
+        --border: rgba(255, 255, 255, 0.09);
+        --border-hover: rgba(255, 255, 255, 0.18);
+        --border-accent: rgba(139, 92, 246, 0.35);
+
+        --text-primary: #f0f0f8;
+        --text-secondary: #a0a0c0;
+        --text-muted: #5a5a7a;
+
+        --accent: #7c3aed;
+        --accent-mid: #9333ea;
+        --accent-bright: #a78bfa;
+        --accent-light: #c4b5fd;
+        --accent-glow: rgba(124, 58, 237, 0.18);
+
+        --green: #34d399;
+        --green-dim: rgba(52, 211, 153, 0.15);
+        --red: #f87171;
+        --red-dim: rgba(248, 113, 113, 0.15);
+        --amber: #fbbf24;
+        --teal: #2dd4bf;
+        --blue: #60a5fa;
+
+        --font-body: "Geist", sans-serif;
+        --font-display: "Instrument Serif", serif;
+        --font-mono: "GeistMono", monospace;
+
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+
+        --shadow-lift:
+          0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+        --shadow-glow: 0 0 24px rgba(124, 58, 237, 0.2);
+        --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg-base);
+        font-family: var(--font-body);
+        color: var(--text-primary);
+        overflow: hidden;
+        height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-family: var(--font-body);
+        font-size: 0.825rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: var(--transition);
+        white-space: nowrap;
+        letter-spacing: -0.01em;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+      }
+      .btn-primary:hover {
+        background: #6d28d9;
+        box-shadow: 0 0 16px rgba(124, 58, 237, 0.35);
+        transform: translateY(-1px);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+      }
+      .btn-ghost:hover {
+        background: var(--bg-hover);
+        border-color: var(--border-hover);
+        color: var(--text-primary);
+      }
+      .btn-danger {
+        background: transparent;
+        color: var(--red);
+        border: 1px solid rgba(248, 113, 113, 0.25);
+      }
+      .btn-danger:hover {
+        background: var(--red-dim);
+        border-color: rgba(248, 113, 113, 0.5);
+      }
+      .btn-sm {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.775rem;
+      }
+      .btn-xs {
+        padding: 0.22rem 0.5rem;
+        font-size: 0.72rem;
+      }
+
+      /* ── Layout ── */
+      .workspace {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── Sidebar ── */
+      .ws-sidebar {
+        width: 224px;
+        flex-shrink: 0;
+        background: var(--bg-surface);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+      }
+      .ws-sidebar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1px;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(124, 58, 237, 0.3) 40%,
+          transparent
+        );
+        pointer-events: none;
+      }
+
+      .ws-sidebar-top {
+        padding: 0.85rem 0.85rem 0.75rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .project-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        border: 1px solid transparent;
+      }
+      .project-selector:hover {
+        background: var(--bg-elevated);
+        border-color: var(--border-subtle);
+      }
+      .proj-icon-sm {
+        width: 30px;
+        height: 30px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+      .proj-sel-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .proj-sel-name {
+        font-family: var(--font-body);
+        font-size: 0.825rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.02em;
+      }
+      .proj-sel-region {
+        font-size: 0.67rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 1px;
+      }
+      .proj-status-active {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        flex-shrink: 0;
+        animation: pulse-dot 2.5s infinite;
+      }
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+          box-shadow: 0 0 6px var(--green);
+        }
+        50% {
+          opacity: 0.5;
+          box-shadow: 0 0 10px var(--green);
+        }
+      }
+
+      .ws-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.75rem 0.65rem;
+      }
+      .ws-nav-section {
+        margin-bottom: 1rem;
+      }
+      .ws-nav-label {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.3rem;
+      }
+      .ws-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.44rem 0.55rem;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        transition: var(--transition);
+        text-decoration: none;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-family: var(--font-body);
+        font-weight: 400;
+        position: relative;
+      }
+      .ws-nav-item:hover {
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+      }
+      .ws-nav-item.active {
+        background: var(--accent-glow);
+        color: var(--accent-light);
+        font-weight: 500;
+        border: 1px solid var(--border-accent);
+      }
+      .ws-nav-item svg {
+        flex-shrink: 0;
+        opacity: 0.65;
+        transition: opacity 0.15s;
+      }
+      .ws-nav-item:hover svg,
+      .ws-nav-item.active svg {
+        opacity: 1;
+      }
+      .ws-nav-badge {
+        margin-left: auto;
+        font-size: 0.62rem;
+        font-weight: 700;
+        background: rgba(124, 58, 237, 0.25);
+        color: var(--accent-light);
+        padding: 0.08rem 0.42rem;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+      }
+
+      .ws-sidebar-bottom {
+        padding: 0.75rem 0.65rem;
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+      .ws-bottom-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.42rem 0.55rem;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.79rem;
+        color: var(--text-muted);
+        transition: var(--transition);
+        text-decoration: none;
+        font-family: var(--font-body);
+      }
+      .ws-bottom-item:hover {
+        background: var(--bg-elevated);
+        color: var(--text-secondary);
+      }
+
+      /* ── Main Panel ── */
+      .ws-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      /* ── Topbar (FIXED) ── */
+      .ws-topbar {
+        height: 52px;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        flex-shrink: 0;
+        background: var(--bg-surface);
+        gap: 1rem;
+      }
+      .ws-topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+        flex: 1;
+      }
+      .ws-topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+      }
+      .ws-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.795rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        min-width: 0;
+      }
+      .ws-breadcrumb a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .ws-breadcrumb a:hover {
+        color: var(--text-primary);
+      }
+      .ws-breadcrumb .sep {
+        opacity: 0.35;
+      }
+      .ws-breadcrumb .current {
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .topbar-status {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        color: var(--green);
+        background: var(--green-dim);
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(52, 211, 153, 0.2);
+        flex-shrink: 0;
+        letter-spacing: 0.01em;
+        font-weight: 500;
+      }
+      .topbar-status-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 5px var(--green);
+        animation: pulse-dot 2.5s infinite;
+      }
+
+      /* ── Content ── */
+      .ws-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: var(--bg-base);
+      }
+
+      /* ── Section Pages ── */
+      .section-page {
+        display: none;
+      }
+      .section-page.active {
+        display: block;
+        animation: fadeUp 0.22s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Page Header ── */
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        gap: 1rem;
+      }
+      .page-title {
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+      }
+      .page-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      /* ── Overview ── */
+      .overview-hero {
+        margin-bottom: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        position: relative;
+        overflow: hidden;
+      }
+      .overview-hero::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 160px;
+        height: 160px;
+        background: radial-gradient(
+          circle,
+          rgba(124, 58, 237, 0.15),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .overview-hero h2 {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: 1.4rem;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        margin-bottom: 0.3rem;
+      }
+      .overview-hero p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+      .metric-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.2rem 1.25rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+      .metric-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lift);
+      }
+      .metric-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+      }
+      .metric-title {
+        font-size: 0.775rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+      .metric-badge {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        background: var(--bg-elevated);
+        padding: 0.12rem 0.45rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-subtle);
+      }
+      .metric-badge.green {
+        color: var(--green);
+        background: var(--green-dim);
+        border-color: rgba(52, 211, 153, 0.2);
+      }
+      .metric-val {
+        font-family: var(--font-mono);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+      .metric-sub {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+      }
+      .metric-bar-bg {
+        height: 3px;
+        background: var(--bg-elevated);
+        border-radius: 99px;
+        margin-top: 0.85rem;
+        overflow: hidden;
+      }
+      .metric-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-mid));
+        transition: width 0.6s ease;
+      }
+      .sparkline {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 36px;
+        margin-top: 0.85rem;
+      }
+      .spark-bar {
+        flex: 1;
+        background: rgba(124, 58, 237, 0.25);
+        border-radius: 2px 2px 0 0;
+        min-height: 3px;
+        transition: background 0.15s;
+      }
+      .spark-bar:hover {
+        background: rgba(124, 58, 237, 0.65);
+      }
+
+      .connect-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .connect-card-header {
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.825rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .connect-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.12s;
+      }
+      .connect-item:last-child {
+        border-bottom: none;
+      }
+      .connect-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .connect-label {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        width: 110px;
+        flex-shrink: 0;
+      }
+      .connect-val {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--accent-light);
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .copy-btn {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.22rem 0.55rem;
+        font-size: 0.69rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: var(--font-body);
+        flex-shrink: 0;
+        letter-spacing: 0.01em;
+      }
+      .copy-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent-light);
+        background: var(--accent-glow);
+      }
+
+      /* ── Table Editor ── */
+      .table-layout {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        gap: 0.85rem;
+        height: calc(100vh - 122px);
+      }
+      .table-list {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .table-list-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.73rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .table-list-items {
+        flex: 1;
+        overflow-y: auto;
+      }
+      .table-list-item {
+        padding: 0.55rem 1rem;
+        font-size: 0.815rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .table-list-item:hover {
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+      }
+      .table-list-item.active {
+        background: var(--accent-glow);
+        color: var(--accent-light);
+        border-left: 2px solid var(--accent);
+        padding-left: calc(1rem - 2px);
+      }
+      .table-list-item svg {
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+      .table-list-item.active svg {
+        opacity: 1;
+      }
+
+      .table-view {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .table-toolbar {
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+      }
+      .table-name-badge {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent-light);
+        background: var(--accent-glow);
+        padding: 0.22rem 0.65rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-accent);
+      }
+      .table-row-count {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        background: var(--bg-elevated);
+        padding: 0.22rem 0.55rem;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+      }
+      .table-scroll {
+        flex: 1;
+        overflow: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.79rem;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+      thead th {
+        background: var(--bg-elevated);
+        padding: 0.6rem 1rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 0.71rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+        letter-spacing: 0.02em;
+      }
+      thead th.pk {
+        color: var(--amber);
+      }
+      tbody td {
+        padding: 0.55rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+        font-size: 0.77rem;
+        white-space: nowrap;
+      }
+      tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .null-val {
+        color: var(--text-muted);
+        font-style: italic;
+      }
+      .bool-true {
+        color: var(--green);
+      }
+      .bool-false {
+        color: var(--red);
+      }
+      .uuid-val {
+        color: var(--accent-light);
+      }
+
+      /* ── SQL Editor ── */
+      .sql-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        height: calc(100vh - 122px);
+      }
+      .sql-editor-pane {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        flex: 0 0 auto;
+      }
+      .sql-editor-header {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .sql-editor-title {
+        font-size: 0.79rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        letter-spacing: -0.01em;
+      }
+      .sql-shortcut {
+        font-size: 0.69rem;
+        color: var(--text-muted);
+        background: var(--bg-elevated);
+        padding: 0.18rem 0.5rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-subtle);
+        font-family: var(--font-mono);
+      }
+      .sql-textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 1rem 1.1rem;
+        color: var(--accent-bright);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        line-height: 1.8;
+        outline: none;
+        resize: none;
+        height: 165px;
+        caret-color: var(--accent-light);
+        tab-size: 2;
+      }
+      .sql-textarea::placeholder {
+        color: var(--text-muted);
+      }
+      .sql-results-pane {
+        flex: 1;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .sql-results-header {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.77rem;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .sql-results-count {
+        color: var(--green);
+        font-weight: 700;
+        font-family: var(--font-mono);
+      }
+      .sql-results-scroll {
+        flex: 1;
+        overflow: auto;
+        min-height: 0;
+      }
+
+      /* ── Auth Users ── */
+      .users-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        gap: 1rem;
+      }
+      .search-wrap {
+        position: relative;
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.65rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+      }
+      .search-input {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.48rem 0.85rem 0.48rem 2.1rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.82rem;
+        outline: none;
+        width: 240px;
+        transition: var(--transition);
+      }
+      .search-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+      }
+      .search-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .table-wrap {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .data-table thead th {
+        background: var(--bg-elevated);
+        padding: 0.6rem 1rem;
+        text-align: left;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .data-table tbody td {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.815rem;
+        color: var(--text-secondary);
+      }
+      .data-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .data-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .avatar-sm {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #fff;
+        margin-right: 0.55rem;
+        vertical-align: middle;
+        flex-shrink: 0;
+      }
+      .provider-badge {
+        font-size: 0.69rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      .provider-email {
+        background: rgba(124, 58, 237, 0.18);
+        color: var(--accent-light);
+      }
+      .provider-google {
+        background: rgba(239, 68, 68, 0.12);
+        color: #f87171;
+      }
+      .provider-github {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--text-secondary);
+      }
+
+      /* ── Storage ── */
+      .storage-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 0.85rem;
+        height: calc(100vh - 122px);
+      }
+      .bucket-list {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .bucket-item {
+        padding: 0.65rem 1rem;
+        font-size: 0.815rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: var(--transition);
+      }
+      .bucket-item:hover {
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+      }
+      .bucket-item.active {
+        background: var(--accent-glow);
+        color: var(--accent-light);
+        border-left: 2px solid var(--accent);
+        padding-left: calc(1rem - 2px);
+      }
+      .file-browser {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .file-toolbar {
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+      }
+      .file-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+        gap: 0.7rem;
+        padding: 1rem;
+      }
+      .file-item {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+      .file-item:hover {
+        border-color: var(--border-hover);
+        background: var(--bg-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lift);
+      }
+      .file-emoji {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+      }
+      .file-name {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .file-size {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
+
+      /* ── Logs ── */
+      .logs-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-mono);
+        font-size: 0.775rem;
+        line-height: 1.75;
+        height: calc(100vh - 160px);
+        overflow-y: auto;
+        padding: 0.75rem 1rem;
+      }
+      .log-line {
+        display: flex;
+        gap: 1rem;
+        padding: 0.08rem 0;
+        border-radius: 4px;
+        padding: 0.1rem 0.5rem;
+        transition: background 0.1s;
+      }
+      .log-line:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .log-time {
+        color: var(--text-muted);
+        flex-shrink: 0;
+        width: 80px;
+      }
+      .log-level-info {
+        color: var(--teal);
+        flex-shrink: 0;
+        width: 44px;
+        font-weight: 600;
+      }
+      .log-level-warn {
+        color: var(--amber);
+        flex-shrink: 0;
+        width: 44px;
+        font-weight: 600;
+      }
+      .log-level-error {
+        color: var(--red);
+        flex-shrink: 0;
+        width: 44px;
+        font-weight: 600;
+      }
+      .log-msg {
+        color: var(--text-secondary);
+      }
+      .log-msg span {
+        color: var(--accent-light);
+      }
+
+      /* ── Edge Functions ── */
+      .functions-empty {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .functions-empty-body {
+        padding: 3.5rem 2rem;
+        text-align: center;
+      }
+      .functions-empty-icon {
+        font-size: 2.25rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .functions-empty-desc {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        max-width: 300px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.6;
+      }
+      .code-snippet {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1.25rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: 0.775rem;
+        max-width: 340px;
+        margin: 0 auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      /* ── Modals ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: var(--bg-card);
+        border: 1px solid var(--border-hover);
+        border-radius: var(--radius-xl);
+        padding: 1.75rem;
+        width: 100%;
+        max-width: 430px;
+        box-shadow:
+          0 40px 100px rgba(0, 0, 0, 0.8),
+          var(--shadow-glow);
+        transform: scale(0.95) translateY(10px);
+        transition:
+          transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.2s;
+        opacity: 0;
+      }
+      .modal-overlay.open .modal {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+      .modal-title {
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text-primary);
+        margin-bottom: 1.25rem;
+        letter-spacing: -0.03em;
+      }
+      .modal-close {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        cursor: pointer;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: var(--transition);
+      }
+      .modal-close:hover {
+        color: var(--text-primary);
+        border-color: var(--border-hover);
+      }
+      .modal {
+        position: relative;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-label {
+        display: block;
+        font-size: 0.79rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        letter-spacing: -0.01em;
+      }
+      .form-label span {
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+      .form-input {
+        width: 100%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.6rem 0.9rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        outline: none;
+        transition: var(--transition);
+      }
+      .form-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+      }
+      .form-input::placeholder {
+        color: var(--text-muted);
+      }
+      .form-select {
+        width: 100%;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.6rem 0.9rem;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        outline: none;
+        appearance: none;
+        cursor: pointer;
+        transition: var(--transition);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235a5a7a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+        padding-right: 2.25rem;
+      }
+      .form-select:focus {
+        border-color: var(--accent);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 1.25rem;
+      }
+      .modal-actions .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      /* ── Table defaults ── */
+      .schema-defaults {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 0.8rem 1rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        line-height: 1.8;
+      }
+      .schema-defaults span {
+        color: var(--accent-light);
+        font-family: var(--font-mono);
+      }
+
+      /* ── Insert row modal ── */
+      #insertRowModal .form-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+
+      /* ── Toast ── */
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-hover);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 1.1rem;
+        font-size: 0.82rem;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-lift);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-width: 320px;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .toast-icon {
+        font-size: 1rem;
+      }
+
+      /* ── Empty states ── */
+      .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.825rem;
+        line-height: 1.6;
+      }
+      .empty-state-icon {
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+        display: block;
+        opacity: 0.6;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        height: 1px;
+        background: var(--border-subtle);
+        margin: 0.25rem 0;
+      }
+
+      /* ── Settings ── */
+      .settings-tabs {
+        display: flex;
+        gap: 0.15rem;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 1.75rem;
+      }
+      .settings-tab {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.6rem 1rem;
+        font-family: var(--font-body);
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: var(--transition);
+        margin-bottom: -1px;
+        letter-spacing: -0.01em;
+      }
+      .settings-tab:hover {
+        color: var(--text-secondary);
+      }
+      .settings-tab.active {
+        color: var(--text-primary);
+        border-bottom-color: var(--accent);
+      }
+
+      .settings-panel {
+        display: none;
+      }
+      .settings-panel.active {
+        display: block;
+        animation: fadeUp 0.2s ease;
+      }
+
+      .settings-section {
+        padding: 1.5rem 0;
+      }
+      .settings-section-header {
+        margin-bottom: 1rem;
+      }
+      .settings-section-title {
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        margin-bottom: 0.3rem;
+      }
+      .settings-section-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+        max-width: 560px;
+      }
+      .settings-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .settings-divider {
+        height: 1px;
+        background: var(--border-subtle);
+      }
+      .settings-readonly-field {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 0.5rem 0.9rem;
+      }
+      .settings-lock-badge {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        letter-spacing: 0.05em;
+      }
+
+      .emoji-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+      .emoji-option {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: var(--transition);
+        background: var(--bg-card);
+      }
+      .emoji-option:hover {
+        border-color: var(--border-hover);
+        background: var(--bg-elevated);
+      }
+      .emoji-option.selected {
+        border-color: var(--accent);
+        background: var(--accent-glow);
+        box-shadow: 0 0 8px rgba(124, 58, 237, 0.2);
+      }
+
+      .settings-key-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 0.65rem 1rem;
+      }
+      .settings-key-box {
+        flex: 1;
+        min-width: 0;
+      }
+      .settings-key-label {
+        display: block;
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+      }
+      .settings-key-value {
+        font-family: var(--font-mono);
+        font-size: 0.775rem;
+        color: var(--accent-light);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      }
+
+      /* Team members */
+      .team-member-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .team-member-row:last-child {
+        border-bottom: none;
+      }
+      .team-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .team-info {
+        flex: 1;
+      }
+      .team-name {
+        font-size: 0.825rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      .team-email {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+      }
+      .team-role-badge {
+        font-size: 0.68rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .role-owner {
+        background: rgba(124, 58, 237, 0.2);
+        color: var(--accent-light);
+        border: 1px solid var(--border-accent);
+      }
+      .role-editor {
+        background: rgba(52, 211, 153, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(52, 211, 153, 0.25);
+      }
+      .role-viewer {
+        background: var(--bg-elevated);
+        color: var(--text-muted);
+        border: 1px solid var(--border-subtle);
+      }
+
+      /* Danger Zone */
+      .danger-zone-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(248, 113, 113, 0.2);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .danger-zone-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(248, 113, 113, 0.1);
+        transition: background 0.15s;
+      }
+      .danger-zone-item:hover {
+        background: rgba(248, 113, 113, 0.03);
+      }
+      .danger-zone-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+      .danger-zone-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        max-width: 400px;
+        line-height: 1.5;
+      }
+
+      /* ── Webhooks ── */
+      .webhook-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .webhook-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: var(--transition);
+      }
+      .webhook-card:hover {
+        border-color: var(--border-hover);
+        background: var(--bg-hover);
+      }
+      .webhook-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .webhook-status-dot.active {
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        animation: pulse-dot 2.5s infinite;
+      }
+      .webhook-status-dot.inactive {
+        background: var(--text-muted);
+      }
+      .webhook-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .webhook-name {
+        font-size: 0.845rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+      }
+      .webhook-url {
+        font-family: var(--font-mono);
+        font-size: 0.73rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .webhook-events {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+        margin-top: 0.4rem;
+      }
+      .event-tag {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 0.12rem 0.45rem;
+        border-radius: 999px;
+        background: var(--accent-glow);
+        color: var(--accent-light);
+        border: 1px solid var(--border-accent);
+        font-family: var(--font-mono);
+      }
+      .webhook-meta {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        flex-shrink: 0;
+        text-align: right;
+        line-height: 1.6;
+      }
+
+      /* ── API Keys ── */
+      .apikey-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.6rem;
+        transition: var(--transition);
+      }
+      .apikey-card:hover {
+        border-color: var(--border-hover);
+      }
+      .apikey-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-md);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-glow);
+        border: 1px solid var(--border-accent);
+        font-size: 0.9rem;
+      }
+      .apikey-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .apikey-name {
+        font-size: 0.845rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+      }
+      .apikey-value {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--accent-light);
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.2rem 0.55rem;
+        display: inline-block;
+        letter-spacing: 0.03em;
+      }
+      .apikey-meta {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .apikey-scope {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        font-family: var(--font-mono);
+      }
+      .scope-full {
+        background: rgba(251, 191, 36, 0.12);
+        color: var(--amber);
+        border: 1px solid rgba(251, 191, 36, 0.25);
+      }
+      .scope-readonly {
+        background: rgba(52, 211, 153, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+      }
+      .scope-custom {
+        background: var(--accent-glow);
+        color: var(--accent-light);
+        border: 1px solid var(--border-accent);
+      }
+
+      /* ── Realtime ── */
+      .realtime-table-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.12s;
+      }
+      .realtime-table-row:last-child {
+        border-bottom: none;
+      }
+      .realtime-table-row:hover {
+        background: rgba(255, 255, 255, 0.015);
+      }
+      .realtime-table-name {
+        font-family: var(--font-mono);
+        font-size: 0.815rem;
+        color: var(--text-primary);
+        flex: 1;
+      }
+      .toggle-switch {
+        width: 36px;
+        height: 20px;
+        border-radius: 999px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        border: none;
+        padding: 0;
+      }
+      .toggle-switch.on {
+        background: var(--accent);
+      }
+      .toggle-switch.off {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+      }
+      .toggle-knob {
+        position: absolute;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        transition: left 0.2s;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      }
+      .toggle-switch.on .toggle-knob {
+        left: 18px;
+      }
+      .toggle-switch.off .toggle-knob {
+        left: 2px;
+      }
+      .realtime-event-tags {
+        display: flex;
+        gap: 0.3rem;
+      }
+
+      /* ── Query History ── */
+      .query-history-item {
+        padding: 0.55rem 0.85rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.1s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .query-history-item:hover {
+        background: var(--bg-elevated);
+        color: var(--accent-light);
+      }
+
+      /* ── Env Vars ── */
+      .env-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .env-row:last-child {
+        border-bottom: none;
+      }
+      .env-key {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--amber);
+        width: 200px;
+        flex-shrink: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .env-val {
+        flex: 1;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ── Column editor ── */
+      .col-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0.22rem 0.55rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--accent-light);
+        margin: 0.2rem;
+      }
+      .col-tag-del {
+        cursor: pointer;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        line-height: 1;
+        transition: color 0.12s;
+      }
+      .col-tag-del:hover {
+        color: var(--red);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="workspace">
+      <!-- ── Left Sidebar ── -->
+      <aside class="ws-sidebar">
+        <div class="ws-sidebar-top">
+          <a href="dashboard.html" class="project-selector" id="projSelector">
+            <div
+              class="proj-icon-sm"
+              id="projIconSm"
+              style="background: linear-gradient(135deg, #7c3aed, #9333ea)"
+            >
+              🚀
+            </div>
+            <div class="proj-sel-info">
+              <div class="proj-sel-name" id="projSelName">my-project</div>
+              <div class="proj-sel-region" id="projSelRegion">Singapore</div>
+            </div>
+            <div class="proj-status-active"></div>
+          </a>
+        </div>
+
+        <nav class="ws-nav">
+          <div class="ws-nav-section">
+            <div class="ws-nav-label">Project</div>
+            <button
+              class="ws-nav-item active"
+              onclick="switchSection('overview', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="5"
+                  height="5"
+                  rx="1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <rect
+                  x="8"
+                  y="1"
+                  width="5"
+                  height="5"
+                  rx="1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <rect
+                  x="1"
+                  y="8"
+                  width="5"
+                  height="5"
+                  rx="1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <rect
+                  x="8"
+                  y="8"
+                  width="5"
+                  height="5"
+                  rx="1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+              </svg>
+              Overview
+            </button>
+          </div>
+
+          <div class="ws-nav-section">
+            <div class="ws-nav-label">Build</div>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('table-editor', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M1 5h12M5 5v7"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+              </svg>
+              Table Editor
+            </button>
+            <button class="ws-nav-item" onclick="switchSection('sql', this)">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2 4h10M2 7h6M2 10h8"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              SQL Editor
+            </button>
+            <button class="ws-nav-item" onclick="switchSection('auth', this)">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M7 1a3.5 3.5 0 100 7A3.5 3.5 0 007 1z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M1.5 13c0-2.485 2.462-4.5 5.5-4.5s5.5 2.015 5.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Authentication
+              <span class="ws-nav-badge" id="userCountBadge">0</span>
+            </button>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('storage', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect
+                  x="1"
+                  y="3"
+                  width="12"
+                  height="8"
+                  rx="2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M4 7h6M7 5v4"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Storage
+            </button>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('functions', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2 7c0-3 1.5-5 5-5s5 2 5 5-1.5 5-5 5-5-2-5-5z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M5 5l1.5 2L5 9M8.5 9h1"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Edge Functions
+            </button>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('realtime', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2 7c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M5 7c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <circle cx="7" cy="7" r="1" fill="currentColor" />
+              </svg>
+              Realtime
+            </button>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('webhooks', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M5 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M7 5V2M7 12v-3M9 9l2 2M3 3l2 2M9 5l2-2M3 11l2-2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Webhooks
+              <span class="ws-nav-badge" id="webhookCountBadge">0</span>
+            </button>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('apikeys', this)"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M9 1a4 4 0 1 1 0 8A4 4 0 0 1 9 1z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M5.5 7.5L1 13M3 11.5h2M1 13h2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              API Keys
+            </button>
+          </div>
+
+          <div class="ws-nav-section">
+            <div class="ws-nav-label">Monitor</div>
+            <button class="ws-nav-item" onclick="switchSection('logs', this)">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2 3h10M2 6h8M2 9h6M2 12h4"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Logs
+            </button>
+          </div>
+
+          <div class="ws-nav-section">
+            <div class="ws-nav-label">Project</div>
+            <button
+              class="ws-nav-item"
+              onclick="switchSection('settings', this)"
+              id="settingsNavBtn"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle
+                  cx="7"
+                  cy="7"
+                  r="2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M7 1.5v1.2M7 11.3v1.2M1.5 7h1.2M11.3 7h1.2M3.1 3.1l.85.85M10.05 10.05l.85.85M10.05 3.95l-.85.85M3.95 10.05l-.85.85"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Settings
+            </button>
+          </div>
+        </nav>
+
+        <div class="ws-sidebar-bottom">
+          <a href="dashboard.html" class="ws-bottom-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path
+                d="M6 1L1 6l5 5M1 6h11"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            All projects
+          </a>
+          <a href="docs.html" class="ws-bottom-item">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <rect
+                x="2"
+                y="1"
+                width="9"
+                height="11"
+                rx="1.5"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <path
+                d="M4.5 4h4M4.5 6.5h4M4.5 9h2"
+                stroke="currentColor"
+                stroke-width="1.1"
+                stroke-linecap="round"
+              />
+            </svg>
+            Documentation
+          </a>
+        </div>
+      </aside>
+
+      <!-- ── Main Panel ── -->
+      <main class="ws-main">
+        <!-- Topbar (FIXED: proper flex layout, no overflow, items aligned) -->
+        <div class="ws-topbar">
+          <div class="ws-topbar-left">
+            <div class="ws-breadcrumb">
+              <a href="dashboard.html">Projects</a>
+              <span class="sep">/</span>
+              <span class="current" id="bcProject">my-project</span>
+              <span class="sep">/</span>
+              <span class="current" id="bcSection">Overview</span>
+            </div>
+          </div>
+          <div class="ws-topbar-right">
+            <div class="topbar-status">
+              <div class="topbar-status-dot"></div>
+              Healthy
+            </div>
+            <button
+              class="btn btn-ghost btn-sm"
+              onclick="
+                switchSection(
+                  'settings',
+                  document.getElementById('settingsNavBtn'),
+                )
+              "
+            >
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M6.5 1v1.5M6.5 10.5V12M1 6.5h1.5M10.5 6.5H12M2.64 2.64l1.06 1.06M9.3 9.3l1.06 1.06M9.3 3.7L10.36 2.64M2.64 10.36l1.06-1.06"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="ws-content">
+          <!-- ── OVERVIEW ── -->
+          <div class="section-page active" id="page-overview">
+            <div class="overview-hero">
+              <h2 id="overviewTitle">my-project</h2>
+              <p id="overviewRegion">Southeast Asia (Singapore) · Free tier</p>
+            </div>
+
+            <div class="overview-grid">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-title">Database size</span>
+                  <span class="metric-badge">500 MB limit</span>
+                </div>
+                <div class="metric-val" id="dbSizeVal">0 B</div>
+                <div class="metric-sub">of 500 MB used</div>
+                <div class="metric-bar-bg">
+                  <div
+                    class="metric-bar-fill"
+                    id="dbBar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-title">Auth users</span>
+                  <span class="metric-badge green" id="newUsersLabel"
+                    >0 new today</span
+                  >
+                </div>
+                <div class="metric-val" id="usersVal">0</div>
+                <div class="metric-sub">total registered users</div>
+                <div class="sparkline" id="usersSparkline"></div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-title">API requests</span>
+                  <span class="metric-badge">last 7 days</span>
+                </div>
+                <div class="metric-val" id="reqVal">0</div>
+                <div class="metric-sub" id="reqSub">100k/month limit</div>
+                <div class="sparkline" id="reqSparkline"></div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-title">Storage used</span>
+                  <span class="metric-badge">1 GB limit</span>
+                </div>
+                <div class="metric-val">0 B</div>
+                <div class="metric-sub">of 1 GB used</div>
+                <div class="metric-bar-bg">
+                  <div
+                    class="metric-bar-fill"
+                    style="
+                      width: 0%;
+                      background: linear-gradient(90deg, #0d9488, #14b8a6);
+                    "
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="connect-card">
+              <div class="connect-card-header">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path
+                    d="M2 6.5h9M8 3.5l3 3-3 3"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Connection info
+              </div>
+              <div class="connect-item">
+                <span class="connect-label">Project URL</span>
+                <span class="connect-val" id="projUrl"
+                  >https://xxxx.nexora.co</span
+                >
+                <button class="copy-btn" onclick="copyVal('projUrl')">
+                  Copy
+                </button>
+              </div>
+              <div class="connect-item">
+                <span class="connect-label">Anon key</span>
+                <span class="connect-val">eyJhbGciOiJIUzI1NiJ9.eyJy•••</span>
+                <button
+                  class="copy-btn"
+                  onclick="showToast('Copied to clipboard')"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="connect-item">
+                <span class="connect-label">Service role</span>
+                <span class="connect-val">eyJhbGciOiJIUzI1NiJ9.eyJy•••</span>
+                <button
+                  class="copy-btn"
+                  onclick="showToast('Copied to clipboard')"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="connect-item">
+                <span class="connect-label">DB Host</span>
+                <span class="connect-val" id="dbHost">db.xxxx.nexora.co</span>
+                <button class="copy-btn" onclick="copyVal('dbHost')">
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TABLE EDITOR ── -->
+          <div class="section-page" id="page-table-editor">
+            <div class="page-header">
+              <span class="page-title">Table Editor</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openNewTableModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  New table
+                </button>
+              </div>
+            </div>
+            <div class="table-layout">
+              <div class="table-list">
+                <div class="table-list-header">
+                  Tables
+                  <span
+                    style="font-family: var(--font-mono); font-size: 0.72rem"
+                    id="tableCount"
+                    >0</span
+                  >
+                </div>
+                <div class="table-list-items" id="tableListItems">
+                  <div class="empty-state">
+                    <span class="empty-state-icon">🗄️</span>
+                    No tables yet.<br />Create one to get started.
+                  </div>
+                </div>
+              </div>
+              <div class="table-view">
+                <div class="table-toolbar">
+                  <span class="table-name-badge" id="activeTableName">—</span>
+                  <span class="table-row-count" id="activeTableRows"
+                    >Select a table</span
+                  >
+                  <div style="margin-left: auto; display: flex; gap: 0.5rem">
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="openManageColsModal()"
+                    >
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 11 11"
+                        fill="none"
+                      >
+                        <path
+                          d="M1 3h9M1 5.5h7M1 8h5"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                      Columns
+                    </button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="openInsertRowModal()"
+                    >
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 11 11"
+                        fill="none"
+                      >
+                        <path
+                          d="M5.5 1v9M1 5.5h9"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                      Insert row
+                    </button>
+                  </div>
+                </div>
+                <div class="table-scroll">
+                  <div id="tableContent" class="empty-state">
+                    <span class="empty-state-icon">📋</span>
+                    Select a table to view its data
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SQL EDITOR ── -->
+          <div class="section-page" id="page-sql">
+            <div class="page-header">
+              <span class="page-title">SQL Editor</span>
+              <div class="page-actions">
+                <button class="btn btn-ghost btn-sm" onclick="clearSQL()">
+                  Clear
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="runSQL()">
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path d="M2 1l8 4.5L2 10V1z" fill="currentColor" />
+                  </svg>
+                  Run
+                </button>
+              </div>
+            </div>
+            <div class="sql-layout">
+              <div class="sql-editor-pane">
+                <div class="sql-editor-header">
+                  <span class="sql-editor-title">Query</span>
+                  <div style="display: flex; align-items: center; gap: 0.6rem">
+                    <button
+                      class="btn btn-ghost btn-xs"
+                      onclick="toggleQueryHistory()"
+                      id="historyToggleBtn"
+                      style="font-family: var(--font-mono)"
+                    >
+                      History
+                    </button>
+                    <span class="sql-shortcut">⌘ + Enter</span>
+                  </div>
+                </div>
+                <div
+                  id="queryHistoryPanel"
+                  style="
+                    display: none;
+                    border-bottom: 1px solid var(--border-subtle);
+                    max-height: 140px;
+                    overflow-y: auto;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 0.4rem 0.85rem;
+                      font-size: 0.65rem;
+                      font-weight: 700;
+                      letter-spacing: 0.08em;
+                      text-transform: uppercase;
+                      color: var(--text-muted);
+                      border-bottom: 1px solid var(--border-subtle);
+                    "
+                  >
+                    Recent queries
+                  </div>
+                  <div id="queryHistoryList">
+                    <div
+                      style="
+                        padding: 0.85rem;
+                        font-size: 0.78rem;
+                        color: var(--text-muted);
+                        text-align: center;
+                      "
+                    >
+                      No queries yet
+                    </div>
+                  </div>
+                </div>
+                <textarea
+                  class="sql-textarea"
+                  id="sqlTextarea"
+                  placeholder="-- Write your SQL here&#10;SELECT * FROM users LIMIT 10;"
+                  spellcheck="false"
+                ></textarea>
+              </div>
+              <div class="sql-results-pane">
+                <div class="sql-results-header">
+                  Results
+                  <span class="sql-results-count" id="sqlResultCount"></span>
+                  <span
+                    id="sqlResultTime"
+                    style="
+                      margin-left: auto;
+                      font-family: var(--font-mono);
+                      font-size: 0.72rem;
+                      color: var(--text-muted);
+                    "
+                  ></span>
+                </div>
+                <div class="sql-results-scroll">
+                  <div id="sqlResults" class="empty-state">
+                    <span class="empty-state-icon">⚡</span>
+                    Run a query to see results here.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── AUTH ── -->
+          <div class="section-page" id="page-auth">
+            <div class="users-toolbar">
+              <div style="display: flex; align-items: center; gap: 0.6rem">
+                <span class="page-title">Users</span>
+                <span
+                  id="totalUsersCount"
+                  style="
+                    font-size: 0.79rem;
+                    color: var(--text-muted);
+                    font-weight: 400;
+                  "
+                  >(0)</span
+                >
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem">
+                <div class="search-wrap">
+                  <svg
+                    class="search-icon"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                  >
+                    <circle
+                      cx="5.5"
+                      cy="5.5"
+                      r="4"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                    />
+                    <path
+                      d="M8.5 8.5l3 3"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  <input
+                    class="search-input"
+                    type="text"
+                    placeholder="Search users…"
+                    id="userSearch"
+                    oninput="filterUsers()"
+                  />
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openInviteModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Invite user
+                </button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Provider</th>
+                    <th>Created</th>
+                    <th>Last sign in</th>
+                    <th style="width: 60px"></th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="5" class="empty-state">No users yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ── STORAGE ── -->
+          <div class="section-page" id="page-storage">
+            <div class="page-header">
+              <span class="page-title">Storage</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openNewBucketModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  New bucket
+                </button>
+              </div>
+            </div>
+            <div class="storage-layout">
+              <div class="bucket-list">
+                <div class="table-list-header">Buckets</div>
+                <div id="bucketListItems">
+                  <div class="empty-state">
+                    <span class="empty-state-icon">🗂️</span>
+                    No buckets yet
+                  </div>
+                </div>
+              </div>
+              <div class="file-browser">
+                <div class="file-toolbar">
+                  <span
+                    style="font-size: 0.82rem; color: var(--text-muted)"
+                    id="bucketName"
+                    >Select a bucket</span
+                  >
+                  <div style="margin-left: auto; display: flex; gap: 0.5rem">
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="showToast('Upload feature coming soon', '⏳')"
+                    >
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 11 11"
+                        fill="none"
+                      >
+                        <path
+                          d="M5.5 7V1M2.5 4L5.5 1l3 3"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M1 9.5h9"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                      Upload file
+                    </button>
+                  </div>
+                </div>
+                <div id="fileContent" class="empty-state">
+                  <span class="empty-state-icon">📁</span>
+                  Select a bucket to browse files
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── EDGE FUNCTIONS ── -->
+          <div class="section-page" id="page-functions">
+            <div class="page-header">
+              <span class="page-title">Edge Functions</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="
+                    showToast('Deploy via CLI: nexora functions deploy', '⚡')
+                  "
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Deploy function
+                </button>
+              </div>
+            </div>
+            <div class="functions-empty">
+              <div class="table-list-header">
+                Edge Functions
+                <span style="font-size: 0.72rem; color: var(--text-muted)"
+                  >0 deployed</span
+                >
+              </div>
+              <div class="functions-empty-body">
+                <span class="functions-empty-icon">⚡</span>
+                <p class="functions-empty-desc">
+                  Deploy serverless functions to 18 global regions.<br />Sub-5ms
+                  cold starts, Deno runtime.
+                </p>
+                <div class="code-snippet">
+                  <span style="color: var(--text-muted)">$</span>
+                  <span style="color: var(--accent-light)">nexora</span>
+                  <span style="color: var(--text-secondary)"
+                    >functions new send-welcome</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── REALTIME ── -->
+          <div class="section-page" id="page-realtime">
+            <div class="page-header">
+              <span class="page-title">Realtime</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-ghost btn-sm"
+                  onclick="showToast('Realtime docs opened', '📖')"
+                >
+                  Docs
+                </button>
+              </div>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                margin-bottom: 0.85rem;
+              "
+            >
+              <div class="table-list-header" style="padding: 0.85rem 1.25rem">
+                <span>Table Subscriptions</span>
+                <span
+                  style="
+                    font-family: var(--font-mono);
+                    font-size: 0.72rem;
+                    color: var(--text-muted);
+                  "
+                  id="realtimeEnabledCount"
+                  >0 enabled</span
+                >
+              </div>
+              <div id="realtimeTableList">
+                <div class="empty-state">
+                  <span class="empty-state-icon">📡</span>No tables yet. Create
+                  tables to enable realtime.
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: 1.25rem;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.825rem;
+                  font-weight: 600;
+                  color: var(--text-primary);
+                  margin-bottom: 0.5rem;
+                "
+              >
+                Connection info
+              </div>
+              <div
+                style="
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  line-height: 1.7;
+                "
+              >
+                <div>
+                  Realtime endpoint:
+                  <span
+                    style="
+                      font-family: var(--font-mono);
+                      color: var(--accent-light);
+                    "
+                    id="realtimeUrl"
+                  ></span>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.78rem">
+                  Subscribe to INSERT, UPDATE, DELETE events on any table. Use
+                  the anon key from API Settings for client connections.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── WEBHOOKS ── -->
+          <div class="section-page" id="page-webhooks">
+            <div class="page-header">
+              <span class="page-title">Webhooks</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openNewWebhookModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  New webhook
+                </button>
+              </div>
+            </div>
+            <div id="webhookList">
+              <div
+                class="empty-state"
+                style="
+                  background: var(--bg-card);
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-lg);
+                "
+              >
+                <span class="empty-state-icon">🔗</span>
+                No webhooks yet. Create one to receive HTTP notifications on
+                database events.
+              </div>
+            </div>
+          </div>
+
+          <!-- ── API KEYS ── -->
+          <div class="section-page" id="page-apikeys">
+            <div class="page-header">
+              <span class="page-title">API Keys</span>
+              <div class="page-actions">
+                <button
+                  class="btn btn-primary btn-sm"
+                  onclick="openNewApiKeyModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  New key
+                </button>
+              </div>
+            </div>
+            <div
+              style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: 0.75rem 1.25rem;
+                margin-bottom: 0.85rem;
+                display: flex;
+                gap: 0.75rem;
+                align-items: flex-start;
+              "
+            >
+              <span style="font-size: 1rem; margin-top: 0.05rem">⚠️</span>
+              <span
+                style="
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  line-height: 1.6;
+                "
+                >Service keys have full access to your project. Keep them
+                secret. Never expose them in client-side code or public
+                repositories.</span
+              >
+            </div>
+            <div id="apikeyList"></div>
+          </div>
+
+          <!-- ── LOGS ── -->
+          <div class="section-page" id="page-logs">
+            <div class="page-header">
+              <span class="page-title">Logs</span>
+              <div class="page-actions">
+                <select
+                  style="
+                    background: var(--bg-card);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-md);
+                    padding: 0.35rem 0.7rem;
+                    color: var(--text-secondary);
+                    font-family: var(--font-body);
+                    font-size: 0.78rem;
+                    outline: none;
+                    cursor: pointer;
+                  "
+                >
+                  <option>All services</option>
+                  <option>API</option>
+                  <option>Auth</option>
+                  <option>Storage</option>
+                  <option>Functions</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" onclick="addLogs()">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path
+                      d="M1 6A5 5 0 0 1 11 6"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M9 4l2 2-2 2"
+                      stroke="currentColor"
+                      stroke-width="1.3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  Refresh
+                </button>
+              </div>
+            </div>
+            <div class="logs-container" id="logsContainer">
+              <div class="empty-state">
+                <span class="empty-state-icon">📋</span>
+                Click Refresh to load logs
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SETTINGS ── -->
+          <div class="section-page" id="page-settings">
+            <div class="page-header">
+              <span class="page-title">Project Settings</span>
+            </div>
+
+            <!-- Settings tabs -->
+            <div class="settings-tabs">
+              <button
+                class="settings-tab active"
+                onclick="switchSettingsTab('general', this)"
+              >
+                General
+              </button>
+              <button
+                class="settings-tab"
+                onclick="switchSettingsTab('api', this)"
+              >
+                API
+              </button>
+              <button
+                class="settings-tab"
+                onclick="switchSettingsTab('team', this)"
+              >
+                Team
+              </button>
+              <button
+                class="settings-tab"
+                onclick="switchSettingsTab('env', this)"
+              >
+                Env Variables
+              </button>
+              <button
+                class="settings-tab"
+                onclick="switchSettingsTab('danger', this)"
+              >
+                Danger Zone
+              </button>
+            </div>
+
+            <!-- General Tab -->
+            <div class="settings-panel active" id="stab-general">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Project name</h3>
+                  <p class="settings-section-desc">
+                    The display name for your project, visible across the
+                    dashboard.
+                  </p>
+                </div>
+                <div class="settings-row">
+                  <input
+                    class="form-input"
+                    id="settingsProjectName"
+                    style="max-width: 320px"
+                    placeholder="my-project"
+                  />
+                  <button
+                    class="btn btn-primary btn-sm"
+                    onclick="renameProject()"
+                  >
+                    Save changes
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Region</h3>
+                  <p class="settings-section-desc">
+                    Your project's primary region. Cannot be changed after
+                    creation.
+                  </p>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-readonly-field">
+                    <span class="settings-readonly-icon">🌏</span>
+                    <span
+                      id="settingsRegionText"
+                      style="font-size: 0.85rem; color: var(--text-secondary)"
+                      >Southeast Asia (Singapore)</span
+                    >
+                    <span class="settings-lock-badge">Locked</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Project icon</h3>
+                  <p class="settings-section-desc">
+                    Choose an emoji to represent your project.
+                  </p>
+                </div>
+                <div class="settings-row" style="flex-wrap: wrap; gap: 0.5rem">
+                  <div class="emoji-picker" id="emojiPicker">
+                    <div
+                      class="emoji-option selected"
+                      onclick="selectEmoji('🚀', this)"
+                    >
+                      🚀
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('⚡', this)">
+                      ⚡
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🔥', this)">
+                      🔥
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🧠', this)">
+                      🧠
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🌐', this)">
+                      🌐
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🔐', this)">
+                      🔐
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('💎', this)">
+                      💎
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🎯', this)">
+                      🎯
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🛸', this)">
+                      🛸
+                    </div>
+                    <div class="emoji-option" onclick="selectEmoji('🦄', this)">
+                      🦄
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Pause project</h3>
+                  <p class="settings-section-desc">
+                    Temporarily pause your project to stop all incoming
+                    requests. Your data is preserved.
+                  </p>
+                </div>
+                <div class="settings-row">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    onclick="togglePauseProject()"
+                    id="pauseBtn"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <rect
+                        x="2"
+                        y="1.5"
+                        width="3"
+                        height="9"
+                        rx="0.8"
+                        stroke="currentColor"
+                        stroke-width="1.3"
+                      />
+                      <rect
+                        x="7"
+                        y="1.5"
+                        width="3"
+                        height="9"
+                        rx="0.8"
+                        stroke="currentColor"
+                        stroke-width="1.3"
+                      />
+                    </svg>
+                    Pause project
+                  </button>
+                  <span
+                    style="font-size: 0.78rem; color: var(--text-muted)"
+                    id="pauseStatusText"
+                    >Project is currently active</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- API Tab -->
+            <div class="settings-panel" id="stab-api">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Project URL</h3>
+                  <p class="settings-section-desc">
+                    The base URL for your Nexora project API.
+                  </p>
+                </div>
+                <div class="settings-key-row">
+                  <div class="settings-key-box">
+                    <span class="settings-key-label">URL</span>
+                    <span class="settings-key-value" id="apiProjectUrl"
+                      >https://xxxx.nexora.co</span
+                    >
+                  </div>
+                  <button
+                    class="copy-btn"
+                    onclick="copySettingsVal('apiProjectUrl')"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">API Keys</h3>
+                  <p class="settings-section-desc">
+                    Use these keys to authenticate your application with Nexora.
+                    Keep the service role key secret.
+                  </p>
+                </div>
+                <div class="settings-key-row" style="margin-bottom: 0.75rem">
+                  <div class="settings-key-box">
+                    <span class="settings-key-label">anon / public</span>
+                    <span class="settings-key-value" id="anonKey"
+                      >eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYW5vbiJ9••••••••</span
+                    >
+                  </div>
+                  <button class="copy-btn" onclick="copySettingsVal('anonKey')">
+                    Copy
+                  </button>
+                </div>
+                <div class="settings-key-row">
+                  <div class="settings-key-box">
+                    <span class="settings-key-label">service_role</span>
+                    <span
+                      class="settings-key-value"
+                      id="serviceKey"
+                      style="
+                        filter: blur(5px);
+                        transition: filter 0.2s;
+                        cursor: pointer;
+                      "
+                      onclick="revealKey(this)"
+                      >eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0••••••</span
+                    >
+                  </div>
+                  <button
+                    class="copy-btn"
+                    onclick="
+                      this.previousElementSibling.querySelector(
+                        'span',
+                      ).style.filter = 'none';
+                      copySettingsVal('serviceKey');
+                    "
+                  >
+                    Reveal & Copy
+                  </button>
+                </div>
+                <p
+                  style="
+                    font-size: 0.75rem;
+                    color: var(--red);
+                    margin-top: 0.75rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                  "
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path
+                      d="M6 1L1 11h10L6 1z"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M6 5v2.5M6 9v.5"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Never expose the service_role key publicly. It bypasses all
+                  row-level security policies.
+                </p>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">JWT expiry</h3>
+                  <p class="settings-section-desc">
+                    The time (in seconds) before a JWT token expires. Shorter
+                    means more secure; longer means fewer re-logins.
+                  </p>
+                </div>
+                <div class="settings-row">
+                  <input
+                    class="form-input"
+                    id="jwtExpiry"
+                    type="number"
+                    value="3600"
+                    min="300"
+                    max="604800"
+                    style="max-width: 160px"
+                  />
+                  <span style="font-size: 0.8rem; color: var(--text-muted)"
+                    >seconds (1 hr default)</span
+                  >
+                  <button
+                    class="btn btn-primary btn-sm"
+                    onclick="saveJwtExpiry()"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Team Tab -->
+            <div class="settings-panel" id="stab-team">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Team members</h3>
+                  <p class="settings-section-desc">
+                    Manage who has access to this project and their roles.
+                  </p>
+                </div>
+                <div id="teamMembersList" style="margin-bottom: 1rem"></div>
+                <button
+                  class="btn btn-ghost btn-sm"
+                  onclick="openInviteTeamModal()"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <path
+                      d="M5.5 1v9M1 5.5h9"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Invite team member
+                </button>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h3 class="settings-section-title">Transfer ownership</h3>
+                  <p class="settings-section-desc">
+                    Transfer this project to another team member. You will lose
+                    owner access.
+                  </p>
+                </div>
+                <div class="settings-row">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    onclick="showToast('Transfer ownership coming soon', '🔄')"
+                  >
+                    Transfer project
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Env Variables Tab -->
+            <div class="settings-panel" id="stab-env">
+              <div class="settings-section">
+                <div
+                  class="settings-section-header"
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                  "
+                >
+                  <div>
+                    <h3 class="settings-section-title">
+                      Environment variables
+                    </h3>
+                    <p class="settings-section-desc">
+                      Secrets and config values available to Edge Functions and
+                      server-side code. Never exposed to clients.
+                    </p>
+                  </div>
+                  <button
+                    class="btn btn-primary btn-sm"
+                    onclick="openNewEnvModal()"
+                    style="flex-shrink: 0; margin-top: 0.1rem"
+                  >
+                    + Add variable
+                  </button>
+                </div>
+                <div
+                  style="
+                    background: var(--bg-card);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-lg);
+                    overflow: hidden;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 0.65rem 1.25rem;
+                      border-bottom: 1px solid var(--border-subtle);
+                      display: grid;
+                      grid-template-columns: 200px 1fr 80px;
+                      gap: 1rem;
+                      font-size: 0.7rem;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      letter-spacing: 0.08em;
+                      color: var(--text-muted);
+                    "
+                  >
+                    <span>Name</span><span>Value</span><span></span>
+                  </div>
+                  <div id="envVarsList"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danger Zone Tab -->
+            <div class="settings-panel" id="stab-danger">
+              <div class="danger-zone-card">
+                <div class="danger-zone-item">
+                  <div>
+                    <div class="danger-zone-title">Rename project</div>
+                    <div class="danger-zone-desc">
+                      Change your project's ID slug. All existing connection
+                      strings will need to be updated.
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    onclick="openRenameModal()"
+                  >
+                    Rename project
+                  </button>
+                </div>
+
+                <div class="danger-zone-item">
+                  <div>
+                    <div class="danger-zone-title">Reset database</div>
+                    <div class="danger-zone-desc">
+                      Permanently delete all tables, rows, and schema. Auth
+                      users and storage buckets are preserved.
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    onclick="openResetDbModal()"
+                  >
+                    Reset database
+                  </button>
+                </div>
+
+                <div class="danger-zone-item" style="border-bottom: none">
+                  <div>
+                    <div class="danger-zone-title" style="color: var(--red)">
+                      Delete project
+                    </div>
+                    <div class="danger-zone-desc">
+                      Permanently delete this project, all data, storage, and
+                      auth users. This action cannot be undone.
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    onclick="openDeleteProjectModal()"
+                  >
+                    Delete project
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /settings -->
+        </div>
+        <!-- ws-content -->
+      </main>
+    </div>
+    <!-- workspace -->
+
+    <!-- ── Modals ── -->
+
+    <!-- New Table Modal -->
+    <div
+      class="modal-overlay"
+      id="newTableModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('newTableModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Create new table</div>
+        <div class="form-group">
+          <label class="form-label">Table name</label>
+          <input
+            class="form-input"
+            id="newTableName"
+            placeholder="e.g. posts, products, orders"
+            onkeydown="if (event.key === 'Enter') createTable();"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description <span>(optional)</span></label>
+          <input
+            class="form-input"
+            id="newTableDesc"
+            placeholder="What is this table for?"
+            onkeydown="if (event.key === 'Enter') createTable();"
+          />
+        </div>
+        <div class="schema-defaults">
+          ✓ <span>id</span> (uuid, primary key)<br />
+          ✓ <span>created_at</span> (timestamptz, default: now())
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('newTableModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createTable()">
+            Create table
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insert Row Modal -->
+    <div
+      class="modal-overlay"
+      id="insertRowModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('insertRowModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Insert row</div>
+        <div id="insertRowFields"></div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('insertRowModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="insertRow()">Insert</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite User Modal -->
+    <div
+      class="modal-overlay"
+      id="inviteModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('inviteModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Invite user</div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input
+            class="form-input"
+            id="inviteEmail"
+            type="email"
+            placeholder="user@example.com"
+            onkeydown="if (event.key === 'Enter') inviteUser();"
+          />
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('inviteModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="inviteUser()">
+            Send invite
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Bucket Modal -->
+    <div
+      class="modal-overlay"
+      id="newBucketModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('newBucketModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Create new bucket</div>
+        <div class="form-group">
+          <label class="form-label">Bucket name</label>
+          <input
+            class="form-input"
+            id="newBucketName"
+            placeholder="e.g. avatars, documents, media"
+            onkeydown="if (event.key === 'Enter') createBucket();"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Access control</label>
+          <select class="form-select" id="bucketAccess">
+            <option value="private">🔒 Private (requires auth)</option>
+            <option value="public">🌐 Public (no auth required)</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('newBucketModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createBucket()">
+            Create bucket
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+      <span class="toast-icon" id="toastIcon">✅</span>
+      <span id="toastMsg">Done</span>
+    </div>
+
+    <!-- New Webhook Modal -->
+    <div
+      class="modal-overlay"
+      id="newWebhookModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('newWebhookModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Create webhook</div>
+        <div class="form-group">
+          <label class="form-label">Webhook name</label>
+          <input
+            class="form-input"
+            id="webhookName"
+            placeholder="e.g. notify-slack-on-insert"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Endpoint URL</label>
+          <input
+            class="form-input"
+            id="webhookUrl"
+            type="url"
+            placeholder="https://your-server.com/webhook"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Table</label>
+          <select class="form-select" id="webhookTable">
+            <option value="*">All tables</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Events</label>
+          <div
+            style="
+              display: flex;
+              gap: 0.75rem;
+              flex-wrap: wrap;
+              margin-top: 0.35rem;
+            "
+          >
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.825rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+              "
+              ><input
+                type="checkbox"
+                id="wh_insert"
+                checked
+                style="accent-color: var(--accent)"
+              />
+              INSERT</label
+            >
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.825rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+              "
+              ><input
+                type="checkbox"
+                id="wh_update"
+                checked
+                style="accent-color: var(--accent)"
+              />
+              UPDATE</label
+            >
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-size: 0.825rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+              "
+              ><input
+                type="checkbox"
+                id="wh_delete"
+                style="accent-color: var(--accent)"
+              />
+              DELETE</label
+            >
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document
+                .getElementById('newWebhookModal')
+                .classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createWebhook()">
+            Create webhook
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- New API Key Modal -->
+    <div
+      class="modal-overlay"
+      id="newApiKeyModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('newApiKeyModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Create API key</div>
+        <div class="form-group">
+          <label class="form-label">Key name</label>
+          <input
+            class="form-input"
+            id="apikeyName"
+            placeholder="e.g. Production, CI/CD, Mobile app"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Permissions</label>
+          <select class="form-select" id="apikeyScope">
+            <option value="full">Full access (read + write + admin)</option>
+            <option value="readonly">Read only</option>
+            <option value="custom">Custom (read + write, no admin)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expiry</label>
+          <select class="form-select" id="apikeyExpiry">
+            <option value="never">Never</option>
+            <option value="30d">30 days</option>
+            <option value="90d">90 days</option>
+            <option value="1y">1 year</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('newApiKeyModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createApiKey()">
+            Generate key
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Env Var Modal -->
+    <div
+      class="modal-overlay"
+      id="newEnvModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('newEnvModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Add environment variable</div>
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input
+            class="form-input"
+            id="envKey"
+            placeholder="e.g. STRIPE_SECRET_KEY"
+            style="font-family: var(--font-mono)"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Value</label>
+          <input
+            class="form-input"
+            id="envValue"
+            type="password"
+            placeholder="sk_live_…"
+            style="font-family: var(--font-mono)"
+          />
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('newEnvModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="createEnvVar()">
+            Add variable
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Columns Modal -->
+    <div
+      class="modal-overlay"
+      id="manageColsModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('manageColsModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Manage columns</div>
+        <p
+          style="
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+          "
+        >
+          Built-in:
+          <span style="font-family: var(--font-mono); color: var(--amber)"
+            >id</span
+          >,
+          <span style="font-family: var(--font-mono); color: var(--amber)"
+            >created_at</span
+          >
+        </p>
+        <div class="form-group">
+          <label class="form-label">Custom columns</label>
+          <div
+            id="colTagsContainer"
+            style="
+              min-height: 44px;
+              background: var(--bg-elevated);
+              border: 1px solid var(--border);
+              border-radius: var(--radius-md);
+              padding: 0.35rem 0.45rem;
+              margin-bottom: 0.65rem;
+            "
+          ></div>
+          <div style="display: flex; gap: 0.5rem">
+            <input
+              class="form-input"
+              id="newColName"
+              placeholder="column_name"
+              style="font-family: var(--font-mono)"
+              onkeydown="if (event.key === 'Enter') addColumnTag();"
+            />
+            <button class="btn btn-ghost btn-sm" onclick="addColumnTag()">
+              Add
+            </button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document
+                .getElementById('manageColsModal')
+                .classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveColumns()">
+            Save columns
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Project Modal -->
+    <div
+      class="modal-overlay"
+      id="renameModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('renameModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Rename project</div>
+        <p
+          style="
+            font-size: 0.825rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+          "
+        >
+          Updating the project name will change how it appears in the dashboard.
+          Connection URLs will be updated to reflect the new slug.
+        </p>
+        <div class="form-group">
+          <label class="form-label">New project name</label>
+          <input
+            class="form-input"
+            id="renameInput"
+            placeholder="e.g. my-new-project-name"
+            onkeydown="if (event.key === 'Enter') confirmRename();"
+          />
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('renameModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmRename()">
+            Rename project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Project Modal -->
+    <div
+      class="modal-overlay"
+      id="deleteProjectModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document
+              .getElementById('deleteProjectModal')
+              .classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title" style="color: var(--red)">Delete project</div>
+        <p
+          style="
+            font-size: 0.825rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+          "
+        >
+          This will permanently delete
+          <strong
+            id="deleteProjectName"
+            style="color: var(--text-primary)"
+          ></strong>
+          and all associated data. This action
+          <strong style="color: var(--red)">cannot be undone</strong>.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Type your project name to confirm</label>
+          <input
+            class="form-input"
+            id="deleteConfirmInput"
+            placeholder=""
+            style="border-color: rgba(248, 113, 113, 0.3)"
+          />
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document
+                .getElementById('deleteProjectModal')
+                .classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-danger" onclick="confirmDeleteProject()">
+            Delete project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reset DB Modal -->
+    <div
+      class="modal-overlay"
+      id="resetDbModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('resetDbModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title" style="color: var(--amber)">
+          Reset database
+        </div>
+        <p
+          style="
+            font-size: 0.825rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+          "
+        >
+          All tables and rows will be permanently deleted. Auth users and
+          storage buckets will be preserved. This action cannot be undone.
+        </p>
+        <div class="form-group">
+          <label class="form-label"
+            >Type
+            <strong style="color: var(--amber); font-family: var(--font-mono)"
+              >reset</strong
+            >
+            to confirm</label
+          >
+          <input
+            class="form-input"
+            id="resetDbInput"
+            placeholder="reset"
+            style="border-color: rgba(251, 191, 36, 0.3)"
+          />
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document.getElementById('resetDbModal').classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-sm"
+            style="background: var(--amber); color: #000; font-weight: 600"
+            onclick="confirmResetDb()"
+          >
+            Reset database
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Team Modal -->
+    <div
+      class="modal-overlay"
+      id="inviteTeamModal"
+      onclick="if (event.target === this) this.classList.remove('open');"
+    >
+      <div class="modal">
+        <button
+          class="modal-close"
+          onclick="
+            document.getElementById('inviteTeamModal').classList.remove('open')
+          "
+        >
+          ✕
+        </button>
+        <div class="modal-title">Invite team member</div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input
+            class="form-input"
+            id="inviteTeamEmail"
+            type="email"
+            placeholder="colleague@example.com"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="inviteTeamRole">
+            <option value="owner">Owner — Full access, billing</option>
+            <option value="editor" selected>
+              Editor — Read + write, no billing
+            </option>
+            <option value="viewer">Viewer — Read only</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="
+              document
+                .getElementById('inviteTeamModal')
+                .classList.remove('open')
+            "
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="inviteTeamMember()">
+            Send invite
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── State ──
+      const params = new URLSearchParams(location.search);
+      const projectId = params.get("id") || "my-project";
+      const projectRegion =
+        params.get("region") || "Southeast Asia (Singapore)";
+      const projectTemplate = params.get("template") || "Blank";
+
+      const storageKey = `nexora_proj_${projectId}`;
+      let state = JSON.parse(localStorage.getItem(storageKey) || "null") || {
+        tables: [],
+        users: [],
+        buckets: [],
+        requests: Math.floor(Math.random() * 500),
+        dbSizeMB: 0,
+      };
+
+      let activeTableIdx = -1;
+
+      // ── Init ──
+      function initUI() {
+        const slug = projectId.toLowerCase().replace(/[^a-z0-9]/g, "");
+        document.getElementById("projSelName").textContent = projectId;
+        document.getElementById("projSelRegion").textContent = projectRegion;
+        document.getElementById("bcProject").textContent = projectId;
+        document.getElementById("overviewTitle").textContent = projectId;
+        document.getElementById("overviewRegion").textContent =
+          `${projectRegion} · Free tier`;
+        document.getElementById("projUrl").textContent =
+          `https://${slug}.nexora.co`;
+        document.getElementById("dbHost").textContent = `db.${slug}.nexora.co`;
+        document.getElementById("userCountBadge").textContent =
+          state.users.length;
+
+        renderOverviewMetrics();
+        renderSparklines();
+        renderTableList();
+        renderUsersList();
+        renderBucketList();
+      }
+
+      function saveState() {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      // ── Section Switching ──
+      function switchSection(id, el) {
+        document
+          .querySelectorAll(".section-page")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".ws-nav-item")
+          .forEach((i) => i.classList.remove("active"));
+        document.getElementById("page-" + id).classList.add("active");
+        el.classList.add("active");
+        const labels = {
+          overview: "Overview",
+          "table-editor": "Table Editor",
+          sql: "SQL Editor",
+          auth: "Authentication",
+          storage: "Storage",
+          functions: "Edge Functions",
+          logs: "Logs",
+          settings: "Settings",
+        };
+        document.getElementById("bcSection").textContent = labels[id] || id;
+        // Auto-load logs when switching to logs
+        if (id === "logs") addLogs();
+        // Init settings when switching to settings
+        if (id === "settings") initSettings();
+      }
+
+      // ── Overview ──
+      function renderOverviewMetrics() {
+        document.getElementById("usersVal").textContent = state.users.length;
+        document.getElementById("totalUsersCount").textContent =
+          `(${state.users.length})`;
+        document.getElementById("newUsersLabel").textContent =
+          `${Math.min(state.users.length, 3)} new today`;
+        document.getElementById("userCountBadge").textContent =
+          state.users.length;
+
+        const req = state.requests;
+        document.getElementById("reqVal").textContent =
+          req > 1000 ? (req / 1000).toFixed(1) + "k" : req;
+
+        const dbMB = state.tables.reduce(
+          (a, t) => a + t.rows.length * 0.002,
+          0,
+        );
+        document.getElementById("dbSizeVal").textContent =
+          dbMB < 1 ? (dbMB * 1000).toFixed(0) + " KB" : dbMB.toFixed(2) + " MB";
+        document.getElementById("dbBar").style.width =
+          Math.min((dbMB / 500) * 100, 100) + "%";
+      }
+
+      function renderSparklines() {
+        const heights = Array.from({ length: 14 }, () =>
+          Math.floor(Math.random() * 80 + 20),
+        );
+        ["usersSparkline", "reqSparkline"].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el)
+            el.innerHTML = heights
+              .map((h) => `<div class="spark-bar" style="height:${h}%"></div>`)
+              .join("");
+        });
+      }
+
+      // ── Table Editor ──
+      function renderTableList() {
+        const container = document.getElementById("tableListItems");
+        document.getElementById("tableCount").textContent = state.tables.length;
+        if (!state.tables.length) {
+          container.innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">🗄️</span>No tables yet.<br/>Create one to get started.</div>';
+          activeTableIdx = -1;
+          return;
+        }
+        container.innerHTML = state.tables
+          .map(
+            (t, i) => `
+          <div class="table-list-item ${i === 0 ? "active" : ""}" onclick="selectTable(${i}, this)">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M1 5h11M5 5v7" stroke="currentColor" stroke-width="1.1"/></svg>
+            ${t.name}
+          </div>`,
+          )
+          .join("");
+        if (state.tables.length) {
+          selectTable(0, container.querySelector(".table-list-item"));
+        }
+      }
+
+      function selectTable(idx, el) {
+        document
+          .querySelectorAll(".table-list-item")
+          .forEach((i) => i.classList.remove("active"));
+        el.classList.add("active");
+        activeTableIdx = idx;
+        const t = state.tables[idx];
+        document.getElementById("activeTableName").textContent = t.name;
+        document.getElementById("activeTableRows").textContent =
+          `${t.rows.length} row${t.rows.length !== 1 ? "s" : ""}`;
+        renderTableData(t);
+      }
+
+      function renderTableData(t) {
+        const container = document.getElementById("tableContent");
+        if (!t.rows.length) {
+          container.innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">📋</span>No data. Insert a row to get started.</div>';
+          return;
+        }
+        const cols = ["id", "created_at", ...t.columns];
+        container.innerHTML = `<table><thead><tr>${cols.map((c) => `<th class="${c === "id" ? "pk" : ""}">${c}</th>`).join("")}<th></th></tr></thead><tbody>${t.rows
+          .map(
+            (r, ri) =>
+              `<tr>${cols
+                .map((c) => {
+                  const v = r[c];
+                  if (v === null || v === undefined)
+                    return `<td><span class="null-val">NULL</span></td>`;
+                  if (typeof v === "boolean")
+                    return `<td><span class="${v ? "bool-true" : "bool-false"}">${v}</span></td>`;
+                  if (c === "id")
+                    return `<td><span class="uuid-val">${v}</span></td>`;
+                  return `<td>${v}</td>`;
+                })
+                .join(
+                  "",
+                )}<td><button class="btn btn-xs btn-danger" onclick="deleteRow(${t.rows.indexOf(r)})">×</button></td></tr>`,
+          )
+          .join("")}</tbody></table>`;
+      }
+
+      function openNewTableModal() {
+        document.getElementById("newTableModal").classList.add("open");
+        setTimeout(() => document.getElementById("newTableName").focus(), 150);
+      }
+
+      function createTable() {
+        const name = document
+          .getElementById("newTableName")
+          .value.trim()
+          .replace(/\s+/g, "_")
+          .toLowerCase();
+        if (!name) {
+          document.getElementById("newTableName").focus();
+          return;
+        }
+        if (state.tables.find((t) => t.name === name)) {
+          showToast(`Table "${name}" already exists`, "⚠️");
+          return;
+        }
+        const desc = document.getElementById("newTableDesc").value.trim();
+        state.tables.push({ name, desc, columns: ["email", "name"], rows: [] });
+        saveState();
+        document.getElementById("newTableModal").classList.remove("open");
+        document.getElementById("newTableName").value = "";
+        document.getElementById("newTableDesc").value = "";
+        renderTableList();
+        renderOverviewMetrics();
+        showToast(`Table "${name}" created`);
+      }
+
+      function openInsertRowModal() {
+        if (activeTableIdx < 0 || !state.tables.length) {
+          showToast("Select a table first", "⚠️");
+          return;
+        }
+        const t = state.tables[activeTableIdx];
+        const fields = document.getElementById("insertRowFields");
+        fields.innerHTML = t.columns
+          .map(
+            (col) => `
+          <div class="form-group">
+            <label class="form-label">${col}</label>
+            <input class="form-input" id="insertField_${col}" placeholder="Enter ${col}…"/>
+          </div>`,
+          )
+          .join("");
+        document.getElementById("insertRowModal").classList.add("open");
+        setTimeout(() => {
+          const first = document.querySelector("#insertRowFields .form-input");
+          if (first) first.focus();
+        }, 150);
+      }
+
+      function insertRow() {
+        if (activeTableIdx < 0) return;
+        const t = state.tables[activeTableIdx];
+        const row = {
+          id: crypto.randomUUID
+            ? crypto.randomUUID()
+            : Math.random().toString(36).slice(2),
+          created_at: new Date().toISOString(),
+        };
+        let hasValue = false;
+        t.columns.forEach((col) => {
+          const el = document.getElementById(`insertField_${col}`);
+          if (el) {
+            row[col] = el.value || null;
+            if (el.value) hasValue = true;
+          }
+        });
+        t.rows.push(row);
+        state.requests += 1;
+        saveState();
+        document.getElementById("insertRowModal").classList.remove("open");
+        renderTableData(t);
+        document.getElementById("activeTableRows").textContent =
+          `${t.rows.length} row${t.rows.length !== 1 ? "s" : ""}`;
+        renderOverviewMetrics();
+        showToast("Row inserted");
+      }
+
+      function deleteRow(rowIdx) {
+        if (activeTableIdx < 0) return;
+        const t = state.tables[activeTableIdx];
+        t.rows.splice(rowIdx, 1);
+        saveState();
+        renderTableData(t);
+        document.getElementById("activeTableRows").textContent =
+          `${t.rows.length} row${t.rows.length !== 1 ? "s" : ""}`;
+        renderOverviewMetrics();
+        showToast("Row deleted", "🗑️");
+      }
+
+      // ── SQL Editor ──
+      const SQL_MOCK = [
+        [
+          {
+            id: "550e8400",
+            email: "alice@example.com",
+            name: "Alice Chen",
+            created_at: "2024-01-15",
+          },
+          {
+            id: "f47ac10b",
+            email: "bob@example.com",
+            name: "Bob Smith",
+            created_at: "2024-01-16",
+          },
+        ],
+        [{ count: 42 }],
+        [
+          { id: "1a2b3c4d", product: "Pro Plan", amount: 99, status: "active" },
+          { id: "9f8e7d6c", product: "Starter", amount: 29, status: "active" },
+        ],
+      ];
+
+      function runSQL() {
+        const q = document.getElementById("sqlTextarea").value.trim();
+        if (!q) return;
+        const start = Date.now();
+        document.getElementById("sqlResultCount").textContent = "";
+        document.getElementById("sqlResultTime").textContent = "...";
+        document.getElementById("sqlResults").innerHTML =
+          '<div class="empty-state"><span class="empty-state-icon" style="animation:spin 1s linear infinite;display:inline-block">⟳</span>Running…</div>';
+
+        setTimeout(
+          () => {
+            const elapsed = Date.now() - start;
+            const data = SQL_MOCK[Math.floor(Math.random() * SQL_MOCK.length)];
+            let html;
+            if (data.length) {
+              document.getElementById("sqlResultCount").textContent =
+                `${data.length} row${data.length !== 1 ? "s" : ""}`;
+              document.getElementById("sqlResultTime").textContent =
+                `${elapsed}ms`;
+              const cols = Object.keys(data[0]);
+              html = `<table><thead><tr>${cols.map((c) => `<th>${c}</th>`).join("")}</tr></thead><tbody>${data
+                .map(
+                  (r) =>
+                    `<tr>${cols.map((c) => `<td>${r[c] ?? '<span class="null-val">NULL</span>'}</td>`).join("")}</tr>`,
+                )
+                .join("")}</tbody></table>`;
+            } else {
+              document.getElementById("sqlResultCount").textContent = "";
+              document.getElementById("sqlResultTime").textContent =
+                `${elapsed}ms`;
+              html =
+                '<div class="empty-state">Query executed successfully — no rows returned.</div>';
+            }
+            document.getElementById("sqlResults").innerHTML = html;
+          },
+          180 + Math.floor(Math.random() * 200),
+        );
+      }
+
+      function clearSQL() {
+        document.getElementById("sqlTextarea").value = "";
+        document.getElementById("sqlResults").innerHTML =
+          '<div class="empty-state"><span class="empty-state-icon">⚡</span>Run a query to see results here.</div>';
+        document.getElementById("sqlResultCount").textContent = "";
+        document.getElementById("sqlResultTime").textContent = "";
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+          const page = document.getElementById("page-sql");
+          if (page.classList.contains("active")) {
+            e.preventDefault();
+            runSQL();
+          }
+        }
+      });
+
+      // ── Auth Users ──
+      const AVATAR_COLORS = [
+        "#7c3aed",
+        "#0d9488",
+        "#dc2626",
+        "#d97706",
+        "#2563eb",
+        "#db2777",
+      ];
+      const NAMES = [
+        "Alice Chen",
+        "Bob Smith",
+        "Carol White",
+        "David Park",
+        "Emma Wilson",
+        "Frank Lee",
+        "Grace Kim",
+        "Henry Jones",
+      ];
+
+      function renderUsersList() {
+        const tbody = document.getElementById("usersTableBody");
+        if (!state.users.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="empty-state" style="display:table-cell">No users yet. Invite one to get started.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = state.users
+          .map((u, i) => {
+            const initials = u.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("");
+            const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
+            return `<tr>
+            <td style="display:flex;align-items:center">
+              <span class="avatar-sm" style="background:${color}">${initials}</span>
+              <div>
+                <div style="font-weight:500;color:var(--text-primary);font-size:0.815rem">${u.name}</div>
+                <div style="font-size:0.72rem;color:var(--text-muted)">${u.email}</div>
+              </div>
+            </td>
+            <td><span class="provider-badge provider-${u.provider}">${u.provider}</span></td>
+            <td style="color:var(--text-muted);font-size:0.78rem">${u.created}</td>
+            <td style="color:var(--text-muted);font-size:0.78rem">${u.lastSignIn}</td>
+            <td><button class="btn btn-xs btn-danger" onclick="deleteUser(${i})">Remove</button></td>
+          </tr>`;
+          })
+          .join("");
+        document.getElementById("totalUsersCount").textContent =
+          `(${state.users.length})`;
+      }
+
+      function filterUsers() {
+        const q = document.getElementById("userSearch").value.toLowerCase();
+        document.querySelectorAll("#usersTableBody tr").forEach((row) => {
+          row.style.display = row.textContent.toLowerCase().includes(q)
+            ? ""
+            : "none";
+        });
+      }
+
+      function openInviteModal() {
+        document.getElementById("inviteModal").classList.add("open");
+        setTimeout(() => document.getElementById("inviteEmail").focus(), 150);
+      }
+
+      function inviteUser() {
+        const email = document.getElementById("inviteEmail").value.trim();
+        if (!email || !email.includes("@")) {
+          document.getElementById("inviteEmail").focus();
+          return;
+        }
+        if (state.users.find((u) => u.email === email)) {
+          showToast("User already exists", "⚠️");
+          return;
+        }
+        const name = NAMES[state.users.length % NAMES.length];
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        state.users.push({
+          name,
+          email,
+          provider: "email",
+          created: dateStr,
+          lastSignIn: "Just now",
+        });
+        state.requests += 2;
+        saveState();
+        document.getElementById("inviteModal").classList.remove("open");
+        document.getElementById("inviteEmail").value = "";
+        renderUsersList();
+        renderOverviewMetrics();
+        showToast(`Invite sent to ${email}`);
+      }
+
+      function deleteUser(idx) {
+        state.users.splice(idx, 1);
+        saveState();
+        renderUsersList();
+        renderOverviewMetrics();
+        showToast("User removed", "🗑️");
+      }
+
+      // ── Storage ──
+      function renderBucketList() {
+        const container = document.getElementById("bucketListItems");
+        if (!state.buckets.length) {
+          container.innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">🗂️</span>No buckets yet</div>';
+          return;
+        }
+        container.innerHTML = state.buckets
+          .map(
+            (b, i) => `
+          <div class="bucket-item ${i === 0 ? "active" : ""}" onclick="selectBucket(${i}, this)">
+            <span style="font-size:1rem">${b.access === "public" ? "🌐" : "🔒"}</span>
+            <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.name}</span>
+            <span style="font-size:0.65rem;color:var(--text-muted);flex-shrink:0">${b.access}</span>
+          </div>`,
+          )
+          .join("");
+        selectBucket(0, container.querySelector(".bucket-item"));
+      }
+
+      function selectBucket(idx, el) {
+        document
+          .querySelectorAll(".bucket-item")
+          .forEach((i) => i.classList.remove("active"));
+        el.classList.add("active");
+        const b = state.buckets[idx];
+        document.getElementById("bucketName").textContent = b.name;
+        if (!b.files || !b.files.length) {
+          document.getElementById("fileContent").innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">📂</span>Bucket is empty. Upload a file to get started.</div>';
+        } else {
+          document.getElementById("fileContent").innerHTML =
+            `<div class="file-grid">${b.files
+              .map(
+                (f) => `
+            <div class="file-item">
+              <div class="file-emoji">${f.emoji}</div>
+              <div class="file-name">${f.name}</div>
+              <div class="file-size">${f.size}</div>
+            </div>`,
+              )
+              .join("")}</div>`;
+        }
+      }
+
+      function openNewBucketModal() {
+        document.getElementById("newBucketModal").classList.add("open");
+        setTimeout(() => document.getElementById("newBucketName").focus(), 150);
+      }
+
+      function createBucket() {
+        const name = document
+          .getElementById("newBucketName")
+          .value.trim()
+          .replace(/\s+/g, "-")
+          .toLowerCase();
+        if (!name) {
+          document.getElementById("newBucketName").focus();
+          return;
+        }
+        if (state.buckets.find((b) => b.name === name)) {
+          showToast(`Bucket "${name}" already exists`, "⚠️");
+          return;
+        }
+        const access = document.getElementById("bucketAccess").value;
+        state.buckets.push({ name, access, files: [] });
+        saveState();
+        document.getElementById("newBucketModal").classList.remove("open");
+        document.getElementById("newBucketName").value = "";
+        renderBucketList();
+        showToast(`Bucket "${name}" created`);
+      }
+
+      // ── Logs ──
+      const LOG_MSGS = [
+        ["INFO", "GET /rest/v1/profiles?select=* 200 OK 4ms", "API"],
+        ["INFO", "Auth: user signed in <span>alex@example.com</span>", "Auth"],
+        [
+          "INFO",
+          "Realtime: client connected channel=<span>public:messages</span>",
+          "Realtime",
+        ],
+        [
+          "WARN",
+          "Slow query detected: 320ms on table <span>orders</span>",
+          "DB",
+        ],
+        [
+          "INFO",
+          "Storage: file uploaded <span>avatars/user_123.jpg</span> 48.2 KB",
+          "Storage",
+        ],
+        ["INFO", "POST /rest/v1/messages 201 Created 12ms", "API"],
+        [
+          "INFO",
+          "Edge Function invoked: <span>send-welcome</span> 12ms",
+          "Functions",
+        ],
+        [
+          "INFO",
+          "Auth: magic link sent to <span>user@example.com</span>",
+          "Auth",
+        ],
+        ["INFO", "GET /rest/v1/products?limit=20 200 OK 8ms", "API"],
+        ["WARN", "Rate limit approaching: 80% of hourly quota", "API"],
+        [
+          "ERROR",
+          "Edge Function <span>process-payment</span> returned 500",
+          "Functions",
+        ],
+        ["INFO", "DELETE /rest/v1/sessions 204 No Content 6ms", "API"],
+      ];
+
+      function addLogs() {
+        const container = document.getElementById("logsContainer");
+        const now = new Date();
+        let html = "";
+        for (let i = 0; i < 18; i++) {
+          const t = new Date(now - i * 3000 - Math.random() * 2000);
+          const ts = t.toTimeString().slice(0, 8);
+          const [level, msg] =
+            LOG_MSGS[Math.floor(Math.random() * LOG_MSGS.length)];
+          const cls =
+            level === "WARN" ? "warn" : level === "ERROR" ? "error" : "info";
+          html += `<div class="log-line">
+            <span class="log-time">${ts}</span>
+            <span class="log-level-${cls}">${level}</span>
+            <span class="log-msg">${msg}</span>
+          </div>`;
+        }
+        container.innerHTML = html;
+      }
+
+      // ── Toast ──
+      let toastTimeout;
+      function showToast(msg, icon = "✅") {
+        clearTimeout(toastTimeout);
+        const t = document.getElementById("toast");
+        document.getElementById("toastMsg").textContent = msg;
+        document.getElementById("toastIcon").textContent = icon;
+        t.classList.add("show");
+        toastTimeout = setTimeout(() => t.classList.remove("show"), 2800);
+      }
+
+      function copyVal(id) {
+        const val = document.getElementById(id).textContent;
+        navigator.clipboard
+          ?.writeText(val)
+          .then(() => showToast("Copied to clipboard"));
+      }
+
+      // ── Settings ──
+      let teamMembers = JSON.parse(
+        localStorage.getItem("nexora_team_" + projectId) || "null",
+      ) || [
+        {
+          name: "Alex Johnson",
+          email: "alex@example.com",
+          role: "owner",
+          color: "#7c3aed",
+        },
+        {
+          name: "Maria Torres",
+          email: "maria@example.com",
+          role: "editor",
+          color: "#0d9488",
+        },
+      ];
+
+      function initSettings() {
+        document.getElementById("settingsProjectName").value =
+          state.projectName || projectId;
+        document.getElementById("settingsRegionText").textContent =
+          projectRegion;
+        document.getElementById("apiProjectUrl").textContent =
+          document.getElementById("projUrl").textContent;
+        renderTeamMembers();
+        renderEnvVars();
+        // Sync pause state
+        const paused = state.paused || false;
+        const btn = document.getElementById("pauseBtn");
+        const txt = document.getElementById("pauseStatusText");
+        if (paused) {
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polygon points="2,1.5 10,6 2,10.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg> Resume project`;
+          txt.textContent = "Project is currently paused";
+          txt.style.color = "var(--amber)";
+        } else {
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="1.5" width="3" height="9" rx="0.8" stroke="currentColor" stroke-width="1.3"/><rect x="7" y="1.5" width="3" height="9" rx="0.8" stroke="currentColor" stroke-width="1.3"/></svg> Pause project`;
+          txt.textContent = "Project is currently active";
+          txt.style.color = "var(--text-muted)";
+        }
+        // sync emoji picker
+        const savedEmoji = state.projectEmoji || "🚀";
+        document.querySelectorAll(".emoji-option").forEach((el) => {
+          el.classList.toggle("selected", el.textContent.trim() === savedEmoji);
+        });
+      }
+
+      function switchSettingsTab(id, el) {
+        document
+          .querySelectorAll(".settings-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".settings-panel")
+          .forEach((p) => p.classList.remove("active"));
+        el.classList.add("active");
+        document.getElementById("stab-" + id).classList.add("active");
+      }
+
+      function renameProject() {
+        const newName = document
+          .getElementById("settingsProjectName")
+          .value.trim();
+        if (!newName) return;
+        state.projectName = newName;
+        const slug = newName
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "");
+        saveState();
+        // Update UI
+        document.getElementById("projSelName").textContent = newName;
+        document.getElementById("bcProject").textContent = newName;
+        document.getElementById("overviewTitle").textContent = newName;
+        document.getElementById("projUrl").textContent =
+          `https://${slug}.nexora.co`;
+        document.getElementById("dbHost").textContent = `db.${slug}.nexora.co`;
+        document.getElementById("apiProjectUrl").textContent =
+          `https://${slug}.nexora.co`;
+        document.getElementById("overviewRegion").textContent =
+          `${projectRegion} · Free tier`;
+        showToast("Project renamed successfully");
+      }
+
+      function selectEmoji(emoji, el) {
+        document
+          .querySelectorAll(".emoji-option")
+          .forEach((e) => e.classList.remove("selected"));
+        el.classList.add("selected");
+        state.projectEmoji = emoji;
+        saveState();
+        document.getElementById("projIconSm").textContent = emoji;
+        showToast("Project icon updated");
+      }
+
+      function togglePauseProject() {
+        state.paused = !state.paused;
+        saveState();
+        initSettings();
+        const statusDot = document.querySelector(".proj-status-active");
+        if (state.paused) {
+          statusDot.style.background = "var(--amber)";
+          statusDot.style.boxShadow = "0 0 6px var(--amber)";
+          document.querySelector(".topbar-status").style.background =
+            "rgba(251,191,36,0.12)";
+          document.querySelector(".topbar-status").style.color = "var(--amber)";
+          document.querySelector(".topbar-status").innerHTML =
+            `<div class="topbar-status-dot" style="background:var(--amber);box-shadow:0 0 5px var(--amber)"></div> Paused`;
+          showToast("Project paused", "⏸️");
+        } else {
+          statusDot.style.background = "";
+          statusDot.style.boxShadow = "";
+          document.querySelector(".topbar-status").style.background = "";
+          document.querySelector(".topbar-status").style.color = "";
+          document.querySelector(".topbar-status").innerHTML =
+            `<div class="topbar-status-dot"></div> Healthy`;
+          showToast("Project resumed", "▶️");
+        }
+      }
+
+      function saveJwtExpiry() {
+        const val = document.getElementById("jwtExpiry").value;
+        if (!val || val < 300) {
+          showToast("Minimum 300 seconds", "⚠️");
+          return;
+        }
+        state.jwtExpiry = val;
+        saveState();
+        showToast(`JWT expiry set to ${val}s`);
+      }
+
+      function revealKey(el) {
+        el.style.filter = "none";
+      }
+
+      function copySettingsVal(id) {
+        const el = document.getElementById(id);
+        if (el)
+          navigator.clipboard
+            ?.writeText(el.textContent)
+            .then(() => showToast("Copied to clipboard"));
+      }
+
+      // ── Team Members ──
+      function renderTeamMembers() {
+        const container = document.getElementById("teamMembersList");
+        container.innerHTML = teamMembers
+          .map((m, i) => {
+            const initials = m.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("");
+            return `<div class="team-member-row">
+            <div class="team-avatar" style="background:${m.color}">${initials}</div>
+            <div class="team-info">
+              <div class="team-name">${m.name}</div>
+              <div class="team-email">${m.email}</div>
+            </div>
+            <span class="team-role-badge role-${m.role}">${m.role}</span>
+            ${i > 0 ? `<button class="btn btn-xs btn-danger" onclick="removeTeamMember(${i})">Remove</button>` : '<span style="font-size:0.72rem;color:var(--text-muted)">You</span>'}
+          </div>`;
+          })
+          .join("");
+      }
+
+      function openInviteTeamModal() {
+        document.getElementById("inviteTeamModal").classList.add("open");
+        setTimeout(
+          () => document.getElementById("inviteTeamEmail").focus(),
+          150,
+        );
+      }
+
+      function inviteTeamMember() {
+        const email = document.getElementById("inviteTeamEmail").value.trim();
+        const role = document.getElementById("inviteTeamRole").value;
+        if (!email || !email.includes("@")) {
+          document.getElementById("inviteTeamEmail").focus();
+          return;
+        }
+        if (teamMembers.find((m) => m.email === email)) {
+          showToast("Member already added", "⚠️");
+          return;
+        }
+        const colors = [
+          "#7c3aed",
+          "#0d9488",
+          "#dc2626",
+          "#d97706",
+          "#2563eb",
+          "#db2777",
+        ];
+        const name = email
+          .split("@")[0]
+          .replace(/[._-]/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        teamMembers.push({
+          name,
+          email,
+          role,
+          color: colors[teamMembers.length % colors.length],
+        });
+        localStorage.setItem(
+          "nexora_team_" + projectId,
+          JSON.stringify(teamMembers),
+        );
+        document.getElementById("inviteTeamModal").classList.remove("open");
+        document.getElementById("inviteTeamEmail").value = "";
+        renderTeamMembers();
+        showToast(`Invite sent to ${email}`);
+      }
+
+      function removeTeamMember(idx) {
+        teamMembers.splice(idx, 1);
+        localStorage.setItem(
+          "nexora_team_" + projectId,
+          JSON.stringify(teamMembers),
+        );
+        renderTeamMembers();
+        showToast("Team member removed", "🗑️");
+      }
+
+      // ── Rename Modal ──
+      function openRenameModal() {
+        document.getElementById("renameInput").value =
+          state.projectName || projectId;
+        document.getElementById("renameModal").classList.add("open");
+        setTimeout(() => document.getElementById("renameInput").focus(), 150);
+      }
+
+      function confirmRename() {
+        const newName = document.getElementById("renameInput").value.trim();
+        if (!newName) return;
+        document.getElementById("settingsProjectName").value = newName;
+        document.getElementById("renameModal").classList.remove("open");
+        renameProject();
+      }
+
+      // ── Reset DB Modal ──
+      function openResetDbModal() {
+        document.getElementById("resetDbInput").value = "";
+        document.getElementById("resetDbModal").classList.add("open");
+        setTimeout(() => document.getElementById("resetDbInput").focus(), 150);
+      }
+
+      function confirmResetDb() {
+        if (
+          document.getElementById("resetDbInput").value.trim().toLowerCase() !==
+          "reset"
+        ) {
+          showToast('Type "reset" to confirm', "⚠️");
+          return;
+        }
+        state.tables = [];
+        state.requests = 0;
+        saveState();
+        document.getElementById("resetDbModal").classList.remove("open");
+        renderTableList();
+        renderOverviewMetrics();
+        showToast("Database reset successfully", "🗑️");
+      }
+
+      // ── Delete Project Modal ──
+      function openDeleteProjectModal() {
+        const name = state.projectName || projectId;
+        document.getElementById("deleteProjectName").textContent = name;
+        document.getElementById("deleteConfirmInput").placeholder = name;
+        document.getElementById("deleteConfirmInput").value = "";
+        document.getElementById("deleteProjectModal").classList.add("open");
+        setTimeout(
+          () => document.getElementById("deleteConfirmInput").focus(),
+          150,
+        );
+      }
+
+      function confirmDeleteProject() {
+        const name = state.projectName || projectId;
+        const input = document
+          .getElementById("deleteConfirmInput")
+          .value.trim();
+        if (input !== name) {
+          showToast(`Type "${name}" to confirm`, "⚠️");
+          return;
+        }
+
+        // Remove project state and team data
+        localStorage.removeItem(storageKey);
+        localStorage.removeItem("nexora_team_" + projectId);
+
+        // Remove from the dashboard projects list
+        const projects = JSON.parse(
+          localStorage.getItem("nexora_projects") || "[]",
+        );
+        const updated = projects.filter(
+          (p) => p.name !== projectId && p.name !== name,
+        );
+        localStorage.setItem("nexora_projects", JSON.stringify(updated));
+
+        document.getElementById("deleteProjectModal").classList.remove("open");
+        showToast("Project deleted. Redirecting…", "🗑️");
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1500);
+      }
+
+      // ── Realtime ──
+      function renderRealtimeSection() {
+        const container = document.getElementById("realtimeTableList");
+        const slug = (state.projectName || projectId)
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        document.getElementById("realtimeUrl").textContent =
+          `wss://${slug}.nexora.co/realtime/v1`;
+        state.realtimeEnabled = state.realtimeEnabled || {};
+        if (!state.tables.length) {
+          container.innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">📡</span>No tables yet. Create tables to enable realtime.</div>';
+          document.getElementById("realtimeEnabledCount").textContent =
+            "0 enabled";
+          return;
+        }
+        const enabledCount = state.tables.filter(
+          (t) => state.realtimeEnabled[t.name],
+        ).length;
+        document.getElementById("realtimeEnabledCount").textContent =
+          `${enabledCount} enabled`;
+        container.innerHTML = state.tables
+          .map((t) => {
+            const on = !!state.realtimeEnabled[t.name];
+            const events = on ? ["INSERT", "UPDATE", "DELETE"] : [];
+            return `<div class="realtime-table-row">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="color:var(--text-muted);flex-shrink:0"><rect x="1" y="1" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M1 5h11M5 5v7" stroke="currentColor" stroke-width="1.1"/></svg>
+            <span class="realtime-table-name">${t.name}</span>
+            <div class="realtime-event-tags">
+              ${on ? events.map((e) => `<span class="event-tag">${e}</span>`).join("") : '<span style="font-size:0.72rem;color:var(--text-muted)">No events</span>'}
+            </div>
+            <button class="toggle-switch ${on ? "on" : "off"}" onclick="toggleRealtime('${t.name}', this)" title="${on ? "Disable" : "Enable"} realtime">
+              <div class="toggle-knob"></div>
+            </button>
+          </div>`;
+          })
+          .join("");
+      }
+
+      function toggleRealtime(tableName, btn) {
+        state.realtimeEnabled = state.realtimeEnabled || {};
+        state.realtimeEnabled[tableName] = !state.realtimeEnabled[tableName];
+        saveState();
+        renderRealtimeSection();
+        showToast(
+          state.realtimeEnabled[tableName]
+            ? `Realtime enabled for ${tableName}`
+            : `Realtime disabled for ${tableName}`,
+          state.realtimeEnabled[tableName] ? "📡" : "🔇",
+        );
+      }
+
+      // ── Webhooks ──
+      function renderWebhooks() {
+        state.webhooks = state.webhooks || [];
+        document.getElementById("webhookCountBadge").textContent =
+          state.webhooks.length;
+        const container = document.getElementById("webhookList");
+        if (!state.webhooks.length) {
+          container.innerHTML = `<div class="empty-state" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);">
+            <span class="empty-state-icon">🔗</span>
+            No webhooks yet. Create one to receive HTTP notifications on database events.
+          </div>`;
+          return;
+        }
+        container.innerHTML = `<div class="webhook-list">${state.webhooks
+          .map(
+            (w, i) => `
+          <div class="webhook-card">
+            <div class="webhook-status-dot ${w.active ? "active" : "inactive"}"></div>
+            <div class="webhook-info">
+              <div class="webhook-name">${w.name}</div>
+              <div class="webhook-url">${w.url}</div>
+              <div class="webhook-events">${w.events.map((e) => `<span class="event-tag">${e}</span>`).join("")}</div>
+            </div>
+            <div class="webhook-meta">
+              <div style="font-size:0.7rem;margin-bottom:0.25rem;">${w.table === "*" ? "All tables" : w.table}</div>
+              <div style="display:flex;gap:0.4rem;justify-content:flex-end;margin-top:0.35rem;">
+                <button class="btn btn-xs btn-ghost" onclick="toggleWebhook(${i})">${w.active ? "Pause" : "Resume"}</button>
+                <button class="btn btn-xs btn-danger" onclick="deleteWebhook(${i})">Delete</button>
+              </div>
+            </div>
+          </div>`,
+          )
+          .join("")}</div>`;
+      }
+
+      function openNewWebhookModal() {
+        // Populate table dropdown
+        const sel = document.getElementById("webhookTable");
+        sel.innerHTML =
+          '<option value="*">All tables</option>' +
+          (state.tables || [])
+            .map((t) => `<option value="${t.name}">${t.name}</option>`)
+            .join("");
+        document.getElementById("webhookName").value = "";
+        document.getElementById("webhookUrl").value = "";
+        document.getElementById("newWebhookModal").classList.add("open");
+        setTimeout(() => document.getElementById("webhookName").focus(), 150);
+      }
+
+      function createWebhook() {
+        const name = document.getElementById("webhookName").value.trim();
+        const url = document.getElementById("webhookUrl").value.trim();
+        if (!name || !url) {
+          showToast("Fill in name and URL", "⚠️");
+          return;
+        }
+        if (!url.startsWith("http")) {
+          showToast("URL must start with https://", "⚠️");
+          return;
+        }
+        const events = [];
+        if (document.getElementById("wh_insert").checked) events.push("INSERT");
+        if (document.getElementById("wh_update").checked) events.push("UPDATE");
+        if (document.getElementById("wh_delete").checked) events.push("DELETE");
+        if (!events.length) {
+          showToast("Select at least one event", "⚠️");
+          return;
+        }
+        const table = document.getElementById("webhookTable").value;
+        state.webhooks = state.webhooks || [];
+        state.webhooks.push({
+          name,
+          url,
+          events,
+          table,
+          active: true,
+          created: new Date().toLocaleDateString(),
+        });
+        saveState();
+        document.getElementById("newWebhookModal").classList.remove("open");
+        renderWebhooks();
+        showToast(`Webhook "${name}" created`, "🔗");
+      }
+
+      function toggleWebhook(i) {
+        state.webhooks[i].active = !state.webhooks[i].active;
+        saveState();
+        renderWebhooks();
+        showToast(
+          state.webhooks[i].active ? "Webhook resumed" : "Webhook paused",
+          state.webhooks[i].active ? "▶️" : "⏸️",
+        );
+      }
+
+      function deleteWebhook(i) {
+        if (!confirm("Delete this webhook?")) return;
+        const name = state.webhooks[i].name;
+        state.webhooks.splice(i, 1);
+        saveState();
+        renderWebhooks();
+        showToast(`Webhook "${name}" deleted`, "🗑️");
+      }
+
+      // ── API Keys ──
+      function renderApiKeys() {
+        state.apiKeys = state.apiKeys || [];
+        const container = document.getElementById("apikeyList");
+        // Always show built-in keys first
+        const builtIn = [
+          {
+            name: "anon (public)",
+            scope: "readonly",
+            expiry: "never",
+            created: "Project created",
+            builtin: true,
+            value:
+              "eyJhbGciOiJIUzI1NiJ9." +
+              btoa(JSON.stringify({ role: "anon", project: projectId })) +
+              ".anon",
+          },
+          {
+            name: "service_role (secret)",
+            scope: "full",
+            expiry: "never",
+            created: "Project created",
+            builtin: true,
+            value:
+              "eyJhbGciOiJIUzI1NiJ9." +
+              btoa(
+                JSON.stringify({ role: "service_role", project: projectId }),
+              ) +
+              ".svc",
+          },
+        ];
+        const all = [...builtIn, ...(state.apiKeys || [])];
+        container.innerHTML = all
+          .map((k, i) => {
+            const masked = k.value.slice(0, 20) + "••••••••••••••••••••";
+            const scopeClass =
+              k.scope === "full"
+                ? "scope-full"
+                : k.scope === "readonly"
+                  ? "scope-readonly"
+                  : "scope-custom";
+            return `<div class="apikey-card">
+            <div class="apikey-icon">🔑</div>
+            <div class="apikey-info">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                <span class="apikey-name">${k.name}</span>
+                <span class="apikey-scope ${scopeClass}">${k.scope}</span>
+                ${k.builtin ? '<span style="font-size:0.65rem;color:var(--text-muted);background:var(--bg-elevated);padding:0.1rem 0.4rem;border-radius:999px;border:1px solid var(--border-subtle);">built-in</span>' : ""}
+              </div>
+              <span class="apikey-value" id="keyval-${i}">${masked}</span>
+            </div>
+            <div class="apikey-meta">
+              <div>Expiry: ${k.expiry}</div>
+              <div style="margin-top:0.2rem;">${k.created}</div>
+              <div style="display:flex;gap:0.4rem;margin-top:0.4rem;justify-content:flex-end;">
+                <button class="btn btn-xs btn-ghost" onclick="toggleKeyReveal(${i}, ${JSON.stringify(k.value)}, ${JSON.stringify(masked)})">Reveal</button>
+                <button class="btn btn-xs btn-ghost" onclick="navigator.clipboard?.writeText(${JSON.stringify(k.value)}).then(()=>showToast('Key copied!'))">Copy</button>
+                ${!k.builtin ? `<button class="btn btn-xs btn-danger" onclick="deleteApiKey(${i - 2})">Revoke</button>` : ""}
+              </div>
+            </div>
+          </div>`;
+          })
+          .join("");
+      }
+
+      function toggleKeyReveal(idx, full, masked) {
+        const el = document.getElementById("keyval-" + idx);
+        if (!el) return;
+        if (el.textContent.includes("••")) {
+          el.textContent = full;
+          el.style.color = "var(--green)";
+        } else {
+          el.textContent = masked;
+          el.style.color = "";
+        }
+      }
+
+      function openNewApiKeyModal() {
+        document.getElementById("apikeyName").value = "";
+        document.getElementById("newApiKeyModal").classList.add("open");
+        setTimeout(() => document.getElementById("apikeyName").focus(), 150);
+      }
+
+      function createApiKey() {
+        const name = document.getElementById("apikeyName").value.trim();
+        if (!name) {
+          document.getElementById("apikeyName").focus();
+          return;
+        }
+        const scope = document.getElementById("apikeyScope").value;
+        const expiry = document.getElementById("apikeyExpiry").value;
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const value =
+          "nxr_" +
+          Array.from(
+            { length: 48 },
+            () => chars[Math.floor(Math.random() * chars.length)],
+          ).join("");
+        state.apiKeys = state.apiKeys || [];
+        state.apiKeys.push({
+          name,
+          scope,
+          expiry,
+          value,
+          created: new Date().toLocaleDateString(),
+        });
+        saveState();
+        document.getElementById("newApiKeyModal").classList.remove("open");
+        renderApiKeys();
+        showToast(`Key "${name}" created — copy it now!`, "🔑");
+      }
+
+      function deleteApiKey(i) {
+        if (!confirm("Revoke this API key? This cannot be undone.")) return;
+        const name = state.apiKeys[i].name;
+        state.apiKeys.splice(i, 1);
+        saveState();
+        renderApiKeys();
+        showToast(`Key "${name}" revoked`, "🗑️");
+      }
+
+      // ── Environment Variables ──
+      function renderEnvVars() {
+        state.envVars = state.envVars || [
+          {
+            key: "NEXORA_URL",
+            value: document.getElementById("projUrl")?.textContent || "",
+          },
+          { key: "NEXORA_ANON_KEY", value: "••••••••••••••••••••" },
+        ];
+        const container = document.getElementById("envVarsList");
+        if (!container) return;
+        if (!state.envVars.length) {
+          container.innerHTML =
+            '<div class="empty-state"><span class="empty-state-icon">🔐</span>No variables yet</div>';
+          return;
+        }
+        container.innerHTML = state.envVars
+          .map(
+            (v, i) => `
+          <div class="env-row" style="padding:0.65rem 1.25rem;display:grid;grid-template-columns:200px 1fr 80px;gap:1rem;align-items:center;">
+            <span class="env-key">${v.key}</span>
+            <span class="env-val" id="envval-${i}">${"•".repeat(Math.min(v.value.length, 24))}</span>
+            <div style="display:flex;gap:0.35rem;justify-content:flex-end;">
+              <button class="btn btn-xs btn-ghost" onclick="toggleEnvReveal(${i}, ${JSON.stringify(v.value)})">Show</button>
+              <button class="btn btn-xs btn-danger" onclick="deleteEnvVar(${i})">✕</button>
+            </div>
+          </div>`,
+          )
+          .join("");
+      }
+
+      function toggleEnvReveal(i, val) {
+        const el = document.getElementById("envval-" + i);
+        if (!el) return;
+        if (el.textContent.includes("•")) {
+          el.textContent = val;
+          el.style.color = "var(--green)";
+        } else {
+          el.textContent = "•".repeat(Math.min(val.length, 24));
+          el.style.color = "";
+        }
+      }
+
+      function openNewEnvModal() {
+        document.getElementById("envKey").value = "";
+        document.getElementById("envValue").value = "";
+        document.getElementById("newEnvModal").classList.add("open");
+        setTimeout(() => document.getElementById("envKey").focus(), 150);
+      }
+
+      function createEnvVar() {
+        const key = document
+          .getElementById("envKey")
+          .value.trim()
+          .toUpperCase()
+          .replace(/\s+/g, "_");
+        const value = document.getElementById("envValue").value.trim();
+        if (!key || !value) {
+          showToast("Fill in both fields", "⚠️");
+          return;
+        }
+        state.envVars = state.envVars || [];
+        if (state.envVars.find((v) => v.key === key)) {
+          showToast("Variable already exists", "⚠️");
+          return;
+        }
+        state.envVars.push({ key, value });
+        saveState();
+        document.getElementById("newEnvModal").classList.remove("open");
+        renderEnvVars();
+        showToast(`${key} added`, "🔐");
+      }
+
+      function deleteEnvVar(i) {
+        const key = state.envVars[i].key;
+        state.envVars.splice(i, 1);
+        saveState();
+        renderEnvVars();
+        showToast(`${key} removed`, "🗑️");
+      }
+
+      // ── Column Manager ──
+      let _editingColsTableIdx = -1;
+      let _editingCols = [];
+
+      function openManageColsModal() {
+        if (activeTableIdx < 0 || !state.tables.length) {
+          showToast("Select a table first", "⚠️");
+          return;
+        }
+        _editingColsTableIdx = activeTableIdx;
+        _editingCols = [...(state.tables[activeTableIdx].columns || [])];
+        renderColTags();
+        document.getElementById("newColName").value = "";
+        document.getElementById("manageColsModal").classList.add("open");
+        setTimeout(() => document.getElementById("newColName").focus(), 150);
+      }
+
+      function renderColTags() {
+        document.getElementById("colTagsContainer").innerHTML =
+          _editingCols.length
+            ? _editingCols
+                .map(
+                  (c, i) =>
+                    `<span class="col-tag">${c}<span class="col-tag-del" onclick="removeColTag(${i})">×</span></span>`,
+                )
+                .join("")
+            : '<span style="font-size:0.78rem;color:var(--text-muted);padding:0.35rem 0.25rem;">No custom columns — add one below</span>';
+      }
+
+      function addColumnTag() {
+        const val = document
+          .getElementById("newColName")
+          .value.trim()
+          .toLowerCase()
+          .replace(/\s+/g, "_")
+          .replace(/[^a-z0-9_]/g, "");
+        if (!val) return;
+        if (["id", "created_at"].includes(val)) {
+          showToast('"id" and "created_at" are built-in', "⚠️");
+          return;
+        }
+        if (_editingCols.includes(val)) {
+          showToast("Column already exists", "⚠️");
+          return;
+        }
+        _editingCols.push(val);
+        renderColTags();
+        document.getElementById("newColName").value = "";
+        document.getElementById("newColName").focus();
+      }
+
+      function removeColTag(i) {
+        _editingCols.splice(i, 1);
+        renderColTags();
+      }
+
+      function saveColumns() {
+        if (_editingColsTableIdx < 0) return;
+        state.tables[_editingColsTableIdx].columns = [..._editingCols];
+        saveState();
+        document.getElementById("manageColsModal").classList.remove("open");
+        renderTableList();
+        showToast("Columns updated");
+      }
+
+      // ── Query History ──
+      const queryHistory = [];
+
+      function toggleQueryHistory() {
+        const panel = document.getElementById("queryHistoryPanel");
+        const btn = document.getElementById("historyToggleBtn");
+        const visible = panel.style.display !== "none";
+        panel.style.display = visible ? "none" : "block";
+        btn.style.color = visible ? "" : "var(--accent-light)";
+      }
+
+      function addToQueryHistory(sql) {
+        const trimmed = sql.trim();
+        if (!trimmed || queryHistory[0] === trimmed) return;
+        queryHistory.unshift(trimmed);
+        if (queryHistory.length > 20) queryHistory.pop();
+        const list = document.getElementById("queryHistoryList");
+        list.innerHTML = queryHistory
+          .map(
+            (q, i) => `
+          <div class="query-history-item" onclick="loadHistoryQuery(${i})" title="${q}">${q.length > 80 ? q.slice(0, 80) + "…" : q}</div>`,
+          )
+          .join("");
+      }
+
+      function loadHistoryQuery(i) {
+        document.getElementById("sqlTextarea").value = queryHistory[i];
+        document.getElementById("queryHistoryPanel").style.display = "none";
+        document.getElementById("historyToggleBtn").style.color = "";
+        document.getElementById("sqlTextarea").focus();
+      }
+
+      // ── Storage file upload simulation ──
+      function simulateFileUpload(bucketIdx) {
+        const DEMO_FILES = [
+          { name: "avatar.jpg", emoji: "🖼️", size: "48.2 KB" },
+          { name: "report.pdf", emoji: "📄", size: "1.2 MB" },
+          { name: "data.csv", emoji: "📊", size: "320 KB" },
+          { name: "logo.png", emoji: "🖼️", size: "12.8 KB" },
+          { name: "backup.zip", emoji: "🗜️", size: "4.5 MB" },
+          { name: "video.mp4", emoji: "🎬", size: "22.1 MB" },
+          { name: "audio.mp3", emoji: "🎵", size: "3.8 MB" },
+          { name: "notes.txt", emoji: "📝", size: "2.1 KB" },
+        ];
+        const b = state.buckets[bucketIdx];
+        b.files = b.files || [];
+        const available = DEMO_FILES.filter(
+          (f) => !b.files.find((x) => x.name === f.name),
+        );
+        if (!available.length) {
+          showToast("Demo bucket is full", "⚠️");
+          return;
+        }
+        const file = available[Math.floor(Math.random() * available.length)];
+        b.files.push(file);
+        saveState();
+        // Re-render the file browser
+        const fileContainer = document.getElementById("fileContent");
+        fileContainer.innerHTML = `<div class="file-grid">${b.files
+          .map(
+            (f) => `
+          <div class="file-item">
+            <div class="file-emoji">${f.emoji}</div>
+            <div class="file-name">${f.name}</div>
+            <div class="file-size">${f.size}</div>
+          </div>`,
+          )
+          .join("")}</div>`;
+        showToast(`${file.name} uploaded`, "📤");
+      }
+
+      // Override upload button to use simulation
+      document.addEventListener("DOMContentLoaded", () => {});
+
+      // ── Patch runSQL to save query history ──
+      const _origRunSQL = runSQL;
+      runSQL = function () {
+        const sql = document.getElementById("sqlTextarea").value.trim();
+        if (sql) addToQueryHistory(sql);
+        _origRunSQL();
+      };
+
+      // ── Patch switchSection to init new sections ──
+      const _origSwitchSection = switchSection;
+      switchSection = function (id, el) {
+        _origSwitchSection(id, el);
+        if (id === "realtime") renderRealtimeSection();
+        if (id === "webhooks") renderWebhooks();
+        if (id === "apikeys") renderApiKeys();
+      };
+
+      // ── Patch renderBucketList to add real upload button ──
+      const _origSelectBucket = selectBucket;
+      selectBucket = function (idx, el) {
+        _origSelectBucket(idx, el);
+        // Replace the upload button click with simulation
+        const uploadBtn = document.querySelector(".file-toolbar .btn-ghost");
+        if (uploadBtn) {
+          uploadBtn.onclick = () => simulateFileUpload(idx);
+        }
+      };
+
+      // ── Boot ──
+      initUI();
+    </script>
+  </body>
+</html>

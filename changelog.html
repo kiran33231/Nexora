@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog — Nexora</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .changelog-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 4rem;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+    @media(max-width:700px) { .changelog-layout { grid-template-columns: 1fr; } }
+
+    .changelog-nav {
+      position: sticky;
+      top: calc(var(--nav-height) + 2rem);
+      height: fit-content;
+    }
+    .changelog-nav h5 {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .changelog-nav ul { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+    .changelog-nav ul a {
+      text-decoration: none;
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+    .changelog-nav ul a:hover { color: var(--text-primary); }
+
+    .cl-entry { margin-bottom: 4rem; }
+    .cl-entry-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cl-version {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.04em;
+    }
+    .cl-date { font-size: 0.825rem; color: var(--text-muted); }
+
+    .cl-section-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 1.25rem 0 0.6rem;
+    }
+
+    .cl-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      padding: 0.35rem 0;
+      line-height: 1.55;
+    }
+    .cl-item strong { color: var(--text-primary); font-weight: 500; }
+
+    .cl-dot-new    { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-light); flex-shrink: 0; margin-top: 6px; }
+    .cl-dot-fix    { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 6px; }
+    .cl-dot-break  { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; margin-top: 6px; }
+    .cl-dot-perf   { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
+
+    .cl-legend {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .cl-legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="./logo.png" alt="" width="55" height="40" />
+    <!-- <span class="nav-logo-mark">N</span> -->
+    <span class="nav-logo-text">Nexora</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="features.html">Features</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="docs.html">Docs</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="changelog.html" class="active">Changelog</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="btn btn-ghost">Sign in</a>
+    <a href="dashboard.html" class="btn btn-primary">Start for free</a>
+  </div>
+</nav>
+
+<section class="section" style="padding-top:8rem;">
+  <div class="container">
+    <div style="max-width:880px; margin:0 auto 4rem;">
+      <span class="label-tag">Changelog</span>
+      <h1 class="display-title" style="font-size:clamp(2rem,5vw,3rem);">What's new in Nexora</h1>
+      <p class="section-subtitle">Every release, every fix, every improvement — documented.</p>
+
+      <div class="cl-legend" style="margin-top:1.5rem;">
+        <div class="cl-legend-item"><span class="cl-dot-new"></span> New feature</div>
+        <div class="cl-legend-item"><span class="cl-dot-fix"></span> Bug fix</div>
+        <div class="cl-legend-item"><span class="cl-dot-perf"></span> Performance</div>
+        <div class="cl-legend-item"><span class="cl-dot-break"></span> Breaking change</div>
+      </div>
+    </div>
+
+    <div class="changelog-layout">
+      <!-- Side nav -->
+      <nav class="changelog-nav">
+        <h5>Releases</h5>
+        <ul>
+          <li><a href="#v2-0">v2.0.0</a></li>
+          <li><a href="#v1-9">v1.9.4</a></li>
+          <li><a href="#v1-8">v1.8.0</a></li>
+          <li><a href="#v1-7">v1.7.2</a></li>
+          <li><a href="#v1-6">v1.6.0</a></li>
+        </ul>
+      </nav>
+
+      <!-- Entries -->
+      <div>
+
+        <!-- v2.0 -->
+        <div class="cl-entry" id="v2-0">
+          <div class="cl-entry-header">
+            <span class="cl-version">v2.0.0</span>
+            <span class="badge badge-purple">Major</span>
+            <span class="cl-date">April 10, 2025</span>
+          </div>
+
+          <div class="cl-section-title">New features</div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Real-time engine v2</strong> — Rebuilt Elixir-based realtime server with 10× throughput, sub-100ms delivery globally, and support for up to 500k concurrent connections per project.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>pgvector support</strong> — Native vector embedding storage and similarity search. Use <code>VECTOR(1536)</code> columns with IVFFlat or HNSW indexes.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>New dashboard (Studio)</strong> — Completely redesigned interface with dark mode, inline SQL editor, and a visual schema editor.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Branching (beta)</strong> — Create database branches for staging/preview environments. Each branch is an isolated Postgres instance synced from main.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Edge Functions logs UI</strong> — Real-time function logs with filtering, search, and export from the dashboard.</div></div>
+
+          <div class="cl-section-title">Performance</div>
+          <div class="cl-item"><span class="cl-dot-perf"></span><div><strong>Connection pooling</strong> — pgBouncer updated to 1.22 with improved transaction mode defaults. Connection limits increased across all plans.</div></div>
+          <div class="cl-item"><span class="cl-dot-perf"></span><div><strong>Storage CDN</strong> — New CDN layer with 18-region PoPs. Average TTFB for file downloads improved from 240ms to 38ms.</div></div>
+
+          <div class="cl-section-title">Bug fixes</div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Fixed an issue where realtime subscriptions would silently drop after 30 minutes under certain network conditions.</div></div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Auth: Fixed magic link expiry not being respected on mobile Safari.</div></div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Storage: Fixed CORS headers not propagating correctly on transformation endpoint.</div></div>
+
+          <div class="cl-section-title">Breaking changes</div>
+          <div class="cl-item"><span class="cl-dot-break"></span><div><strong>Realtime channel API</strong> — <code>.on('*', ...)</code> wildcard subscriptions are deprecated. Use specific event types (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>). <a href="docs.html" style="color:var(--accent-light);">Migration guide →</a></div></div>
+        </div>
+
+        <!-- v1.9 -->
+        <div class="cl-entry" id="v1-9">
+          <div class="cl-entry-header">
+            <span class="cl-version">v1.9.4</span>
+            <span class="badge badge-green">Patch</span>
+            <span class="cl-date">March 12, 2025</span>
+          </div>
+          <div class="cl-section-title">Bug fixes</div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Fixed session token refresh race condition that caused intermittent 401 errors on mobile clients.</div></div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Edge Functions: Fixed environment variable injection for projects with more than 50 secrets.</div></div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Database: Fixed slow query on <code>auth.users</code> when filtering by <code>email</code> without an index.</div></div>
+        </div>
+
+        <!-- v1.8 -->
+        <div class="cl-entry" id="v1-8">
+          <div class="cl-entry-header">
+            <span class="cl-version">v1.8.0</span>
+            <span class="badge badge-purple">Minor</span>
+            <span class="cl-date">February 18, 2025</span>
+          </div>
+          <div class="cl-section-title">New features</div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>MFA (TOTP)</strong> — Multi-factor authentication via authenticator apps is now available on all paid plans.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Storage transformations</strong> — Resize, crop, and convert images on-the-fly via URL params. Powered by libvips at the edge.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>PostgREST 11</strong> — Upgraded to PostgREST 11 with support for aggregate functions and improved OpenAPI spec output.</div></div>
+
+          <div class="cl-section-title">Performance</div>
+          <div class="cl-item"><span class="cl-dot-perf"></span><div>Auth token verification latency reduced by 40% with in-memory JWKS cache.</div></div>
+        </div>
+
+        <!-- v1.7 -->
+        <div class="cl-entry" id="v1-7">
+          <div class="cl-entry-header">
+            <span class="cl-version">v1.7.2</span>
+            <span class="badge badge-green">Patch</span>
+            <span class="cl-date">January 30, 2025</span>
+          </div>
+          <div class="cl-section-title">Bug fixes</div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Fixed OAuth state parameter not being validated correctly on GitHub OAuth flow.</div></div>
+          <div class="cl-item"><span class="cl-dot-fix"></span><div>Realtime: Fixed presence state not clearing after unexpected disconnects.</div></div>
+        </div>
+
+        <!-- v1.6 -->
+        <div class="cl-entry" id="v1-6">
+          <div class="cl-entry-header">
+            <span class="cl-version">v1.6.0</span>
+            <span class="badge badge-purple">Minor</span>
+            <span class="cl-date">January 8, 2025</span>
+          </div>
+          <div class="cl-section-title">New features</div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Cron jobs</strong> — Schedule Edge Functions on a cron schedule directly from the dashboard or CLI.</div></div>
+          <div class="cl-item"><span class="cl-dot-new"></span><div><strong>Read replicas (Team+)</strong> — Automatic read replica provisioning in a second region for reduced read latency.</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="nav-logo" style="display:inline-flex;"><span class="nav-logo-text">Nexora</span></a><p>Backend infrastructure for ambitious teams.</p></div>
+      <div class="footer-col"><h4>Product</h4><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-col"><h4>Developers</h4><ul><li><a href="docs.html">Documentation</a></li><li><a href="#">GitHub</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Nexora, Inc.</span></div>
+  </div>
+</footer>
+
+</body>
+</html>
